@@ -262,14 +262,15 @@ export default {
 .header {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 2000; /* Aumentar o z-index do header */
   width: 100%;
+  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
 }
 
 .header-container {
-  max-width: 1200px; /* Limita a largura máxima para centralizar o conteúdo */
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 3rem; /* Aumenta o padding lateral */
+  padding: 1rem 3rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -279,7 +280,7 @@ export default {
 
 .logo {
   flex-shrink: 0;
-  min-width: 200px; /* Garante espaço mínimo para o logo */
+  min-width: 120px;
 }
 
 .logo-link {
@@ -297,14 +298,13 @@ export default {
   transform: scale(1.05);
 }
 
-
 .desktop-nav {
   display: flex;
   gap: 2rem;
   flex: 1;
   justify-content: center;
   max-width: 600px;
-  margin: 0 2rem; /* Adiciona margem lateral ao menu */
+  margin: 0 2rem;
 }
 
 .nav-link {
@@ -333,7 +333,7 @@ export default {
   align-items: center;
   gap: 1rem;
   flex-shrink: 0;
-  min-width: 200px; /* Garante espaço mínimo para área do usuário */
+  min-width: 120px;
   justify-content: flex-end;
 }
 
@@ -465,7 +465,7 @@ export default {
   min-width: 300px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  z-index: 999;
+  z-index: 9999; /* Aumentar para aparecer acima de tudo */
 }
 
 .dropdown-header {
@@ -581,6 +581,7 @@ export default {
   border-radius: 15px;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  flex-shrink: 0;
 }
 
 .mobile-menu-btn:hover {
@@ -618,12 +619,11 @@ export default {
 }
 
 .mobile-menu {
-  background: rgba(255, 255, 255, 0.98); /* Aumentar opacidade */
-  /* backdrop-filter: blur(20px); - REMOVER esta linha */
+  background: rgba(255, 255, 255, 0.98);
   border-top: 1px solid rgba(255, 255, 255, 0.3);
   padding: 2rem;
-  position: relative; /* Garantir posicionamento correto */
-  z-index: 1000; /* Z-index alto para ficar acima do overlay */
+  position: relative;
+  z-index: 1000;
 }
 
 .mobile-nav {
@@ -646,8 +646,8 @@ export default {
   font-size: 1.1rem;
   background: rgba(140, 82, 255, 0.05);
   border: 1px solid rgba(140, 82, 255, 0.1);
-  position: relative; /* Adicionar */
-  z-index: 1001; /* Z-index alto para garantir clique */
+  position: relative;
+  z-index: 1001;
 }
 
 .mobile-nav-link:hover,
@@ -775,8 +775,7 @@ export default {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 999; /* Menor que o menu mobile */
-  /* backdrop-filter: blur(5px); - REMOVER esta linha também */
+  z-index: 999;
 }
 
 .dropdown-enter-active,
@@ -837,23 +836,46 @@ export default {
 
 @media (max-width: 480px) {
   .header-container {
-    padding: 0.75rem;
+    padding: 0.75rem 1rem;
+    min-height: 70px;
+  }
+  
+  .logo {
+    min-width: auto;
   }
   
   .logo-link {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
   
   .logo-text {
-    display: none;
+    display: block; /* Manter o texto visível */
   }
+  
+  .mobile-menu-btn {
+    padding: 0.5rem;
+  }
+  
+  .hamburger {
+    width: 20px;
+    height: 16px;
+  }
+}
 
+@media (max-width: 360px) {
+  .header-container {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .logo-link {
+    font-size: 1.2rem;
+  }
 }
 
 @media (min-width: 1400px) {
   .header-container {
     max-width: 1400px;
-    padding: 1rem 4rem; /* Mais padding em telas grandes */
+    padding: 1rem 4rem;
   }
   
   .desktop-nav {
