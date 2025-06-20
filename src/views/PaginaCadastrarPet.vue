@@ -19,6 +19,7 @@
             >
               <img v-if="photo" :src="photo" :alt="`Foto ${index + 1}`" />
               <div v-else class="photo-placeholder">
+                <i class="fas fa-camera"></i>
                 <span>Foto {{ index + 1 }}</span>
                 <small>Clique para adicionar</small>
               </div>
@@ -28,7 +29,7 @@
                 class="remove-photo-btn"
                 @click.stop="removePhoto(index)"
               >
-                ×
+                <i class="fas fa-times"></i>
               </button>
             </div>
           </div>
@@ -81,6 +82,17 @@
           </div>
 
           <div class="form-group">
+            <label for="gender"><i class="fas fa-venus-mars"></i> Gênero</label>
+            <select v-model="petForm.gender" id="gender">
+              <option value="">Selecione o gênero</option>
+              <option value="macho">Macho</option>
+              <option value="femea">Fêmea</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
             <label for="status">Status *</label>
             <select v-model="petForm.status" id="status" required>
               <option value="">Selecione o status</option>
@@ -89,18 +101,17 @@
               <option value="adocao">Para Adoção</option>
             </select>
           </div>
-        </div>
 
-        <!-- Localização -->
-        <div class="form-group">
-          <label for="lastSeen">Local (Último local visto ou onde foi encontrado) *</label>
-          <input
-            v-model="petForm.lastSeen"
-            type="text"
-            id="lastSeen"
-            placeholder="Ex: Parque Central, Rua das Flores, 123"
-            required
-          />
+          <div class="form-group">
+            <label for="lastSeen">Local *</label>
+            <input
+              v-model="petForm.lastSeen"
+              type="text"
+              id="lastSeen"
+              placeholder="Ex: Parque Central, Rua das Flores"
+              required
+            />
+          </div>
         </div>
 
         <!-- Descrição -->
@@ -116,10 +127,11 @@
 
         <!-- Informações de Contato -->
         <div class="contact-section">
-          <h3>Informações de Contato</h3>
+          <h3><i class="fas fa-address-book"></i> Informações de Contato</h3>
+          
           <div class="form-row">
             <div class="form-group">
-              <label for="email">Email</label>
+              <label for="email"><i class="fas fa-envelope"></i> Email</label>
               <input
                 v-model="petForm.email"
                 type="email"
@@ -129,23 +141,38 @@
             </div>
 
             <div class="form-group">
-              <label for="phone">Telefone</label>
+              <label for="phone"><i class="fab fa-whatsapp"></i> WhatsApp *</label>
               <input
                 v-model="petForm.phone"
                 type="tel"
                 id="phone"
                 placeholder="(11) 99999-9999"
+                required
               />
+              <small class="field-help">Número será usado para contato via WhatsApp</small>
             </div>
+          </div>
+
+          <div class="form-group">
+            <label for="instagram"><i class="fab fa-instagram"></i> Instagram (opcional)</label>
+            <input
+              v-model="petForm.instagram"
+              type="text"
+              id="instagram"
+              placeholder="@seuperfil ou https://instagram.com/seuperfil"
+            />
+            <small class="field-help">Seu perfil do Instagram para contato adicional</small>
           </div>
         </div>
 
         <!-- Botões -->
         <div class="form-buttons">
           <button type="button" @click="$router.go(-1)" class="btn-cancel">
+            <i class="fas fa-arrow-left"></i>
             Cancelar
           </button>
           <button type="submit" class="btn-submit" :disabled="loading">
+            <i class="fas fa-paw"></i>
             {{ loading ? 'Cadastrando...' : 'Cadastrar Pet' }}
           </button>
         </div>
@@ -154,9 +181,11 @@
 
     <!-- Mensagens -->
     <div v-if="successMessage" class="alert alert-success">
+      <i class="fas fa-check-circle"></i>
       {{ successMessage }}
     </div>
     <div v-if="error" class="alert alert-error">
+      <i class="fas fa-exclamation-triangle"></i>
       {{ error }}
     </div>
   </div>
@@ -184,11 +213,13 @@ export default {
       name: '',
       type: '',
       species: '',
+      gender: '',
       status: '',
       lastSeen: '',
       description: '',
       email: '',
       phone: '',
+      instagram: '',
       photos: [null, null, null] // Array para até 3 fotos
     })
 
@@ -299,11 +330,13 @@ export default {
           name: petForm.value.name,
           type: petForm.value.type,
           species: petForm.value.species || 'Não informado',
+          gender: petForm.value.gender || '',
           status: petForm.value.status,
           lastSeen: petForm.value.lastSeen,
           description: petForm.value.description || '',
           email: petForm.value.email || user.value.email,
           phone: petForm.value.phone || '',
+          instagram: petForm.value.instagram || '',
           photos: validPhotos, // Array de fotos
           photo: validPhotos[0] || null, // Primeira foto como principal (compatibilidade)
           userId: user.value.uid,
@@ -323,11 +356,13 @@ export default {
           name: '',
           type: '',
           species: '',
+          gender: '',
           status: '',
           lastSeen: '',
           description: '',
           email: '',
           phone: '',
+          instagram: '',
           photos: [null, null, null]
         }
 
@@ -362,17 +397,20 @@ export default {
 
 <style scoped>
 .cadastrar-pet-page {
-  max-width: 800px;
-  margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
   padding: 2rem;
-  min-height: 80vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .cadastrar-container {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
   padding: 3rem;
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -382,14 +420,14 @@ export default {
 }
 
 .header h1 {
-  color: #FFD700;
+  color: #8B5CF6;
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .header p {
-  color: rgba(255, 255, 255, 0.8);
+  color: #6B7280;
   font-size: 1.1rem;
 }
 
@@ -406,39 +444,52 @@ export default {
 }
 
 .form-group label {
-  color: #FFD700;
+  color: #374151;
   font-weight: 600;
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group label i {
+  color: #8B5CF6;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   padding: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid #E5E7EB;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  background: white;
+  color: #374151;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
 
 .form-group input::placeholder,
 .form-group textarea::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: #9CA3AF;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #FFD700;
-  background: rgba(255, 255, 255, 0.15);
+  border-color: #8B5CF6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 .form-group select option {
-  background: #333;
-  color: white;
+  background: white;
+  color: #374151;
+}
+
+.field-help {
+  color: #6B7280;
+  font-size: 0.85rem;
+  font-style: italic;
 }
 
 .form-row {
@@ -448,7 +499,10 @@ export default {
 }
 
 .photo-section {
-  align-items: center;
+  background: #F9FAFB;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 2px dashed #D1D5DB;
 }
 
 .photos-upload {
@@ -460,9 +514,9 @@ export default {
 
 .photo-preview {
   position: relative;
-  width: 150px;
-  height: 120px;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  width: 180px;
+  height: 140px;
+  border: 2px dashed #D1D5DB;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -471,11 +525,12 @@ export default {
   cursor: pointer;
   transition: all 0.3s ease;
   overflow: hidden;
+  background: white;
 }
 
 .photo-preview:hover {
-  border-color: #FFD700;
-  background: rgba(255, 255, 255, 0.05);
+  border-color: #8B5CF6;
+  background: #F3F4F6;
 }
 
 .photo-preview img {
@@ -486,30 +541,36 @@ export default {
 
 .photo-placeholder {
   text-align: center;
-  color: rgba(255, 255, 255, 0.6);
+  color: #6B7280;
   font-size: 0.9rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.photo-placeholder i {
+  font-size: 2rem;
+  color: #8B5CF6;
 }
 
 .photo-placeholder small {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   opacity: 0.8;
 }
 
 .remove-photo-btn {
   position: absolute;
-  top: 5px;
-  right: 5px;
-  width: 25px;
-  height: 25px;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: rgba(255, 71, 87, 0.9);
+  background: rgba(239, 68, 68, 0.9);
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -517,29 +578,36 @@ export default {
 }
 
 .remove-photo-btn:hover {
-  background: #ff4757;
+  background: #DC2626;
   transform: scale(1.1);
 }
 
 .photo-help {
   text-align: center;
-  color: rgba(255, 255, 255, 0.7);
+  color: #6B7280;
   font-size: 0.9rem;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   font-style: italic;
 }
 
 .contact-section {
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
   padding: 2rem;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  border: 1px solid #D1D5DB;
 }
 
 .contact-section h3 {
-  color: #FFD700;
+  color: #374151;
   margin-bottom: 1.5rem;
   font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-section h3 i {
+  color: #8B5CF6;
 }
 
 .form-buttons {
@@ -550,22 +618,26 @@ export default {
 }
 
 .btn-cancel {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: #F3F4F6;
+  color: #6B7280;
+  border: 2px solid #D1D5DB;
   padding: 1rem 2rem;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #E5E7EB;
+  color: #374151;
 }
 
 .btn-submit {
-  background: linear-gradient(135deg, #8C52FF, #a071ff);
+  background: linear-gradient(135deg, #8B5CF6, #A855F7);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -573,11 +645,15 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: linear-gradient(135deg, #7a47e6, #8f5fff);
+  background: linear-gradient(135deg, #7C3AED, #9333EA);
   transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
 }
 
 .btn-submit:disabled {
@@ -594,18 +670,21 @@ export default {
   font-weight: 600;
   z-index: 10000;
   max-width: 400px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .alert-success {
-  background: rgba(46, 213, 115, 0.9);
+  background: rgba(34, 197, 94, 0.95);
   color: white;
-  border: 1px solid #2ed573;
+  border: 1px solid #22C55E;
 }
 
 .alert-error {
-  background: rgba(255, 71, 87, 0.9);
+  background: rgba(239, 68, 68, 0.95);
   color: white;
-  border: 1px solid #ff4757;
+  border: 1px solid #EF4444;
 }
 
 @media (max-width: 768px) {
@@ -626,8 +705,9 @@ export default {
   }
   
   .photo-preview {
-    width: 200px;
-    height: 150px;
+    width: 100%;
+    max-width: 250px;
+    height: 180px;
   }
   
   .form-buttons {
