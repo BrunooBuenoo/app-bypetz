@@ -7,10 +7,10 @@
           Conectamos famílias e seus pets. Cadastre animais perdidos, publique achados ou descubra um novo amigo para adotar. Juntos, podemos transformar vidas!
         </p>
         <div class="button-group">
-          <router-link to="/perdi-pet" class="btn-primary">
+          <router-link to="/cadastrar-pet" class="btn-primary">
             Perdi meu pet
           </router-link>
-          <router-link to="/achei-pet" class="btn-secondary">
+          <router-link to="/cadastrar-pet" class="btn-secondary">
             Achei um pet
           </router-link>
         </div>

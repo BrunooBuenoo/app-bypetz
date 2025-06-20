@@ -44,11 +44,11 @@
     <!-- Grid estilo Instagram -->
     <div v-else-if="sortedAndFilteredPets.length > 0" class="pet-grid">
       <div 
-        v-for="pet in sortedAndFilteredPets" 
+        v-for="(pet, index) in sortedAndFilteredPets" 
         :key="pet.id"
         class="pet-card"
         :style="{ backgroundColor: getRandomColor() }"
-        @click="selectPet(pet)"
+        @click="selectPet(pet, index)"
       >
         <img 
           :src="getMainPhoto(pet) || placeholderImg" 
@@ -74,12 +74,19 @@
 
     <!-- Modal Redesenhado -->
     <div v-if="selectedPet" class="modal-overlay-new" @click="closePopup">
-      <div class="modal-content-new" @click.stop>
+      <div 
+        class="modal-content-new" 
+        @click.stop
+        @touchstart="handleTouchStart"
+        @touchmove="handleTouchMove"
+        @touchend="handleTouchEnd"
+      >
         <button class="modal-close-new" @click="closePopup">
           <i class="fas fa-times"></i>
         </button>
         
-        <div class="modal-body-new">
+        <!-- Desktop Layout -->
+        <div class="modal-body-desktop">
           <!-- Left side - Image Card -->
           <div class="modal-image-card">
             <div class="image-card">
@@ -195,6 +202,113 @@
             </div>
           </div>
         </div>
+
+        <!-- Mobile Layout -->
+        <div class="modal-body-mobile">
+          <!-- Image Section -->
+          <div class="mobile-image-section">
+            <img 
+              :src="currentPhoto || placeholderImg" 
+              :alt="selectedPet.name"
+              class="mobile-image"
+              @error="onImageError"
+            />
+            
+            <!-- Image navigation dots for mobile -->
+            <div v-if="selectedPet.photos && selectedPet.photos.length > 1" class="mobile-image-nav">
+              <button 
+                v-for="(photo, index) in selectedPet.photos"
+                :key="index"
+                class="mobile-nav-dot"
+                :class="{ active: currentPhoto === photo }"
+                @click="currentPhoto = photo"
+              ></button>
+            </div>
+          </div>
+
+          <!-- Info Section -->
+          <div class="mobile-info-section">
+            <!-- User Header -->
+            <div class="mobile-user-header">
+              <div class="mobile-user-info">
+                <div class="mobile-owner-avatar">
+                  <img v-if="petOwner?.photoURL" :src="petOwner.photoURL" :alt="petOwner.displayName || 'Usuário'" />
+                  <span v-else class="mobile-avatar-placeholder">{{ getOwnerInitials() }}</span>
+                </div>
+                <span class="mobile-owner-name">{{ getOwnerDisplayName() }}</span>
+              </div>
+              
+              <!-- Social buttons -->
+              <div class="mobile-social-buttons">
+                <button 
+                  v-if="selectedPet.phone" 
+                  class="mobile-whatsapp-btn" 
+                  @click="contactWhatsApp"
+                >
+                  <i class="fab fa-whatsapp"></i>
+                </button>
+                
+                <button 
+                  v-if="selectedPet.instagram" 
+                  class="mobile-instagram-btn" 
+                  @click="openInstagram"
+                >
+                  <i class="fab fa-instagram"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Pet Details -->
+            <div class="mobile-pet-details">
+              <div class="mobile-detail-item">{{ getStatusLabel(selectedPet.status) }}</div>
+              <div class="mobile-detail-item">{{ getTypeLabel(selectedPet.type) }}</div>
+              <div v-if="selectedPet.species" class="mobile-detail-item">Raça do pet: {{ selectedPet.species }}</div>
+              <div v-if="selectedPet.gender" class="mobile-detail-item">Gênero: {{ getGenderLabel(selectedPet.gender) }}</div>
+              <div class="mobile-detail-item">Nome do Pet: {{ selectedPet.name }}</div>
+            </div>
+
+            <!-- Comments Section with Scrollable Area -->
+            <div class="mobile-comments-container">
+              <h4 class="mobile-comments-title">comentários</h4>
+              
+              <!-- Scrollable Comments List -->
+              <div class="mobile-comments-scroll">
+                <div v-if="comments.length > 0" class="mobile-comments-list">
+                  <div v-for="comment in comments" :key="comment.id" class="mobile-comment-item">
+                    <div class="mobile-comment-avatar">
+                      <img v-if="comment.userPhotoURL" :src="comment.userPhotoURL" :alt="comment.userName" />
+                      <span v-else class="mobile-comment-avatar-placeholder">{{ getCommentUserInitials(comment) }}</span>
+                    </div>
+                    <div class="mobile-comment-content">
+                      <span class="mobile-comment-username">{{ comment.userName || comment.userDisplayName }}</span>
+                      <p class="mobile-comment-text">{{ comment.text }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-else class="mobile-no-comments">
+                  <p>Seja o primeiro a comentar!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fixed Comment Input at Bottom -->
+          <div class="mobile-comment-fixed">
+            <div class="mobile-add-comment">
+              <input 
+                v-model="newComment" 
+                type="text" 
+                placeholder="Comentar"
+                class="mobile-comment-input"
+                @keyup.enter="addComment"
+              >
+              <button @click="addComment" class="mobile-send-btn" :disabled="!newComment.trim()">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -225,12 +339,19 @@ export default {
     })
     
     const selectedPet = ref(null)
+    const selectedPetIndex = ref(0)
     const currentPhoto = ref(null)
     const comments = ref([])
     const newComment = ref('')
     const petOwner = ref(null)
     const currentUser = ref(null)
     const auth = getAuth()
+    
+    // Touch/Swipe variables
+    const touchStartY = ref(0)
+    const touchStartX = ref(0)
+    const touchEndY = ref(0)
+    const touchEndX = ref(0)
     
     // Placeholders válidos
     const placeholderImg = 'https://via.placeholder.com/400x300/8C52FF/FFFFFF?text=Sem+Foto'
@@ -274,11 +395,64 @@ export default {
       })
     })
 
-    const selectPet = async (pet) => {
+    const selectPet = async (pet, index) => {
       selectedPet.value = pet
+      selectedPetIndex.value = index
       currentPhoto.value = getMainPhoto(pet)
       await loadPetOwner(pet.userId || pet.ownerId)
       await loadComments(pet.id)
+    }
+
+    // Touch/Swipe handlers
+    const handleTouchStart = (e) => {
+      touchStartY.value = e.touches[0].clientY
+      touchStartX.value = e.touches[0].clientX
+    }
+
+    const handleTouchMove = (e) => {
+      // Only prevent default on image area, not on scrollable content
+      const target = e.target.closest('.mobile-comments-scroll')
+      if (!target) {
+        e.preventDefault()
+      }
+    }
+
+    const handleTouchEnd = (e) => {
+      touchEndY.value = e.changedTouches[0].clientY
+      touchEndX.value = e.changedTouches[0].clientX
+      handleSwipe()
+    }
+
+    const handleSwipe = () => {
+      const deltaY = touchStartY.value - touchEndY.value
+      const deltaX = Math.abs(touchStartX.value - touchEndX.value)
+      
+      // Only handle vertical swipes (ignore horizontal)
+      if (Math.abs(deltaY) > 50 && deltaX < 100) {
+        if (deltaY > 0) {
+          // Swipe up - previous pet
+          goToPreviousPet()
+        } else {
+          // Swipe down - next pet
+          goToNextPet()
+        }
+      }
+    }
+
+    const goToNextPet = async () => {
+      const nextIndex = selectedPetIndex.value + 1
+      if (nextIndex < sortedAndFilteredPets.value.length) {
+        const nextPet = sortedAndFilteredPets.value[nextIndex]
+        await selectPet(nextPet, nextIndex)
+      }
+    }
+
+    const goToPreviousPet = async () => {
+      const prevIndex = selectedPetIndex.value - 1
+      if (prevIndex >= 0) {
+        const prevPet = sortedAndFilteredPets.value[prevIndex]
+        await selectPet(prevPet, prevIndex)
+      }
     }
 
     const loadPetOwner = async (userId) => {
@@ -320,6 +494,7 @@ export default {
 
     const closePopup = () => {
       selectedPet.value = null
+      selectedPetIndex.value = 0
       currentPhoto.value = null
       comments.value = []
       newComment.value = ''
@@ -512,6 +687,7 @@ export default {
       loading,
       filter,
       selectedPet,
+      selectedPetIndex,
       currentPhoto,
       comments,
       newComment,
@@ -541,7 +717,12 @@ export default {
       getRandomColor,
       applyFilters,
       formatDate,
-      fetchPets
+      fetchPets,
+      handleTouchStart,
+      handleTouchMove,
+      handleTouchEnd,
+      goToNextPet,
+      goToPreviousPet
     }
   },
 }
@@ -720,14 +901,14 @@ export default {
   font-weight: 600;
 }
 
-/* Novo Modal Redesenhado */
+/* Modal Overlay */
 .modal-overlay-new {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.80);
+  background: rgba(0, 0, 0, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -761,7 +942,8 @@ export default {
   font-size: 1.2rem;
 }
 
-.modal-body-new {
+/* Desktop Layout */
+.modal-body-desktop {
   display: grid;
   grid-template-columns: 1fr 350px;
   gap: 2rem;
@@ -1056,7 +1238,309 @@ export default {
   cursor: not-allowed;
 }
 
+/* Mobile Layout */
+.modal-body-mobile {
+  display: none;
+}
+
+/* Mobile Styles */
 @media (max-width: 768px) {
+  .modal-overlay-new {
+    padding: 0;
+    background: rgba(0, 0, 0, 1);
+  }
+
+  .modal-content-new {
+    max-width: 100%;
+    width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+  }
+
+  .modal-close-new {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 20;
+  }
+
+  .modal-body-desktop {
+    display: none;
+  }
+
+  .modal-body-mobile {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+  }
+
+  .mobile-image-section {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    max-height: 60vh;
+  }
+
+  .mobile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-image-nav {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .mobile-nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+  }
+
+  .mobile-nav-dot.active {
+    background: white;
+  }
+
+  .mobile-info-section {
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 40vh;
+    padding-bottom: 80px; /* Space for fixed comment input */
+  }
+
+  .mobile-user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .mobile-owner-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #8B5CF6;
+  }
+
+  .mobile-owner-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-avatar-placeholder {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .mobile-owner-name {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .mobile-social-buttons {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .mobile-whatsapp-btn {
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+
+  .mobile-instagram-btn {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+
+  .mobile-pet-details {
+    margin-bottom: 1rem;
+  }
+
+  .mobile-detail-item {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+  }
+
+  .mobile-comments-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .mobile-comments-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+
+  .mobile-comments-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .mobile-comments-list {
+    padding-bottom: 1rem;
+  }
+
+  .mobile-comment-item {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .mobile-comment-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #8B5CF6;
+  }
+
+  .mobile-comment-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-comment-avatar-placeholder {
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  .mobile-comment-content {
+    flex: 1;
+  }
+
+  .mobile-comment-username {
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .mobile-comment-text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    opacity: 0.9;
+  }
+
+  .mobile-no-comments {
+    text-align: center;
+    opacity: 0.6;
+    font-size: 0.9rem;
+    margin: 2rem 0;
+  }
+
+  /* Fixed Comment Input at Bottom */
+  .mobile-comment-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 15;
+  }
+
+  .mobile-add-comment {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 0.5rem;
+  }
+
+  .mobile-comment-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    outline: none;
+  }
+
+  .mobile-comment-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .mobile-send-btn {
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .mobile-send-btn:disabled {
+    opacity: 0.5;
+  }
+
   .filters-container {
     flex-direction: column;
     gap: 0.75rem;
@@ -1071,29 +1555,11 @@ export default {
     grid-template-columns: repeat(2, 1fr);
     padding: 0 1rem 2rem;
   }
-  
-  .modal-body-new {
-    grid-template-columns: 1fr;
-    height: auto;
-    gap: 1rem;
-  }
-  
-  .modal-info-section {
-    max-height: 400px;
-  }
-  
-  .social-contact-buttons {
-    justify-content: center;
-  }
 }
 
 @media (max-width: 480px) {
   .pet-grid {
     grid-template-columns: 1fr;
-  }
-  
-  .modal-overlay-new {
-    padding: 1rem;
   }
 }
 </style>
