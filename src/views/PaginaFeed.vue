@@ -228,25 +228,6 @@
                 @click="currentPhoto = photo"
               ></button>
             </div>
-
-            <!-- Social Buttons - Positioned like in reference image -->
-            <div class="mobile-social-buttons-right">
-              <button 
-                v-if="selectedPet.phone" 
-                class="mobile-whatsapp-btn" 
-                @click="contactWhatsApp"
-              >
-                <i class="fab fa-whatsapp"></i>
-              </button>
-              
-              <button 
-                v-if="selectedPet.instagram" 
-                class="mobile-instagram-btn" 
-                @click="openInstagram"
-              >
-                <i class="fab fa-instagram"></i>
-              </button>
-            </div>
           </div>
 
           <!-- Bottom Info Section -->
@@ -271,65 +252,81 @@
               <div class="mobile-detail-item">Nome do Pet: {{ selectedPet.name }}</div>
             </div>
 
-            <!-- Comments Section -->
-            <div class="mobile-comments-section">
-              <!-- Comment Input Always Visible -->
-              <div class="mobile-comment-input-container">
-                <input 
-                  v-model="newComment" 
-                  type="text" 
-                  placeholder="Comentar"
-                  class="mobile-comment-input"
-                  @keyup.enter="addComment"
-                >
-                <button @click="addComment" class="mobile-send-btn" :disabled="!newComment.trim()">
-                  <i class="fas fa-paper-plane"></i>
-                </button>
-              </div>
+            <!-- Social Buttons - OVERLAPPING INFO SECTION -->
+            <div class="mobile-social-buttons-overlay">
+              <button 
+                v-if="selectedPet.phone" 
+                class="mobile-whatsapp-btn-overlay" 
+                @click="contactWhatsApp"
+              >
+                <i class="fab fa-whatsapp"></i>
+              </button>
+              
+              <button 
+                v-if="selectedPet.instagram" 
+                class="mobile-instagram-btn-overlay" 
+                @click="openInstagram"
+              >
+                <i class="fab fa-instagram"></i>
+              </button>
+            </div>
 
-              <!-- Comments Header - Toggle (with proper spacing) -->
-              <div class="mobile-comments-header-container">
-                <div class="mobile-comments-header" @click="toggleComments">
-                  <h4 class="mobile-comments-title">
-                    comentários {{ comments.length > 0 ? `(${comments.length})` : '' }}
-                  </h4>
-                  <i class="fas fa-chevron-down" :class="{ 'rotated-up': showComments }"></i>
+            <!-- Comment Input Always Visible -->
+            <div class="mobile-comment-input-container">
+              <input 
+                v-model="newComment" 
+                type="text" 
+                placeholder="Comentar"
+                class="mobile-comment-input"
+                @keyup.enter="addComment"
+              >
+              <button @click="addComment" class="mobile-send-btn" :disabled="!newComment.trim()">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+
+            <!-- Comments Toggle Button - BELOW PET INFO -->
+            <div class="mobile-comments-toggle-section">
+              <button class="mobile-comments-toggle-btn" @click="toggleComments">
+                <span class="mobile-comments-toggle-text">
+                  Ver comentários {{ comments.length > 0 ? `(${comments.length})` : '' }}
+                </span>
+                <i class="fas fa-chevron-up" :class="{ 'rotated-down': showComments }"></i>
+              </button>
+            </div>
+
+            <!-- Comments Overlay - SLIDES UP FROM BOTTOM -->
+            <div class="mobile-comments-overlay-popup" :class="{ 'show': showComments }" @click="closeCommentsIfClickOutside">
+              <div class="mobile-comments-content" @click.stop>
+                <div class="mobile-comments-header-overlay">
+                  <h4>Comentários</h4>
+                  <button @click="toggleComments" class="close-comments-btn">
+                    <i class="fas fa-times"></i>
+                  </button>
                 </div>
-              </div>
-
-              <!-- Comments Overlay - SLIDES UP FROM BOTTOM -->
-              <div class="mobile-comments-overlay" :class="{ 'show': showComments }" @click="closeCommentsIfClickOutside">
-                <div class="mobile-comments-content" @click.stop>
-                  <div class="mobile-comments-header-overlay">
-                    <h4>Comentários</h4>
-                    <button @click="toggleComments" class="close-comments-btn">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                  
-                  <div 
-                    class="mobile-comments-scroll"
-                    @touchstart="handleCommentsScrollStart"
-                    @touchmove="handleCommentsScrollMove"
-                    @touchend="handleCommentsScrollEnd"
-                  >
-                    <div v-if="comments.length > 0" class="mobile-comments-list">
-                      <div v-for="comment in comments" :key="comment.id" class="mobile-comment-item">
-                        <div class="mobile-comment-avatar">
-                          <img v-if="comment.userPhotoURL" :src="comment.userPhotoURL" :alt="comment.userName" />
-                          <span v-else class="mobile-comment-avatar-placeholder">{{ getCommentUserInitials(comment) }}</span>
-                        </div>
-                        <div class="mobile-comment-content">
-                          <span class="mobile-comment-username">{{ comment.userName || comment.userDisplayName }}</span>
-                          <p class="mobile-comment-text">{{ comment.text }}</p>
-                          <span class="mobile-comment-time">{{ formatCommentTime(comment.createdAt) }}</span>
-                        </div>
+                
+                <div 
+                  class="mobile-comments-scroll"
+                  @touchstart="handleCommentsScrollStart"
+                  @touchmove="handleCommentsScrollMove"
+                  @touchend="handleCommentsScrollEnd"
+                >
+                  <div v-if="comments.length > 0" class="mobile-comments-list">
+                    <div v-for="comment in comments" :key="comment.id" class="mobile-comment-item">
+                      <div class="mobile-comment-avatar">
+                        <img v-if="comment.userPhotoURL" :src="comment.userPhotoURL" :alt="comment.userName" />
+                        <span v-else class="mobile-comment-avatar-placeholder">{{ getCommentUserInitials(comment) }}</span>
+                      </div>
+                      <div class="mobile-comment-content">
+                        <span class="mobile-comment-username">{{ comment.userName || comment.userDisplayName }}</span>
+                        <p class="mobile-comment-text">{{ comment.text }}</p>
+                        <span class="mobile-comment-time">{{ formatCommentTime(comment.createdAt) }}</span>
                       </div>
                     </div>
+                  </div>
 
-                    <div v-else class="mobile-no-comments">
-                      <p>Seja o primeiro a comentar!</p>
-                    </div>
+                  <div v-else class="mobile-no-comments">
+                    <p>Seja o primeiro a comentar!</p>
                   </div>
                 </div>
               </div>
@@ -448,7 +445,7 @@ export default {
     }
 
     const closeCommentsIfClickOutside = (e) => {
-      if (e.target.classList.contains('mobile-comments-overlay')) {
+      if (e.target.classList.contains('mobile-comments-overlay-popup')) {
         showComments.value = false
       }
     }
@@ -1077,12 +1074,12 @@ export default {
   font-size: 1.2rem;
 }
 
-/* Desktop Layout */
+/* Desktop Layout - ALTURA 600PX MANTIDA */
 .modal-body-desktop {
   display: grid;
   grid-template-columns: 1fr 350px;
   gap: 2rem;
-  height: 600px;
+  height: 600px; /* ALTURA MANTIDA COMO SOLICITADO */
 }
 
 /* Left side - Image Card */
@@ -1503,19 +1500,33 @@ export default {
     background: white;
   }
 
-  /* MOBILE: Social Buttons - Positioned like in reference image */
-  .mobile-social-buttons-right {
+  /* MOBILE: Bottom Info Section - MAIS ESPAÇO */
+  .mobile-bottom-info {
+    background: rgba(0, 0, 0, 0.95); /* BACKGROUND MAIS ESCURO */
+    color: white;
+    padding: 1rem; /* PADDING RESTAURADO */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 45vh; /* MAIS ESPAÇO */
+    max-height: 45vh; /* LIMITADO */
+    overflow: hidden;
+    border-radius: 0 0 20px 20px; /* BORDAS ARREDONDADAS APENAS EMBAIXO */
+    position: relative; /* IMPORTANTE PARA POSICIONAMENTO DOS ÍCONES */
+  }
+
+  /* MOBILE: Social Buttons - OVERLAPPING INFO SECTION */
+  .mobile-social-buttons-overlay {
     position: absolute;
+    top: 20px; /* POSICIONADO NO TOPO DA SEÇÃO DE INFO */
     right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
     display: flex;
     flex-direction: column;
     gap: 15px;
-    z-index: 6;
+    z-index: 10; /* ACIMA DAS INFORMAÇÕES */
   }
 
-  .mobile-whatsapp-btn {
+  .mobile-whatsapp-btn-overlay {
     background: #25D366;
     color: white;
     border: none;
@@ -1531,11 +1542,11 @@ export default {
     transition: transform 0.2s;
   }
 
-  .mobile-whatsapp-btn:active {
+  .mobile-whatsapp-btn-overlay:active {
     transform: scale(0.95);
   }
 
-  .mobile-instagram-btn {
+  .mobile-instagram-btn-overlay {
     background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     color: white;
     border: none;
@@ -1551,22 +1562,8 @@ export default {
     transition: transform 0.2s;
   }
 
-  .mobile-instagram-btn:active {
+  .mobile-instagram-btn-overlay:active {
     transform: scale(0.95);
-  }
-
-  /* MOBILE: Bottom Info Section - MAIS ESPAÇO */
-  .mobile-bottom-info {
-    background: rgba(0, 0, 0, 0.95); /* BACKGROUND MAIS ESCURO */
-    color: white;
-    padding: 1rem; /* PADDING RESTAURADO */
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 45vh; /* MAIS ESPAÇO */
-    max-height: 45vh; /* LIMITADO */
-    overflow: hidden;
-    border-radius: 0 0 20px 20px; /* BORDAS ARREDONDADAS APENAS EMBAIXO */
   }
 
   /* MOBILE: User Section */
@@ -1575,6 +1572,7 @@ export default {
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
+    padding-right: 140px; /* ESPAÇO PARA OS ÍCONES SOCIAIS */
   }
 
   .mobile-user-info {
@@ -1619,6 +1617,7 @@ export default {
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
+    padding-right: 140px; /* ESPAÇO PARA OS ÍCONES SOCIAIS */
   }
 
   .mobile-detail-item {
@@ -1629,15 +1628,6 @@ export default {
 
   .mobile-detail-item:last-child {
     margin-bottom: 0;
-  }
-
-  /* MOBILE: Comments Section */
-  .mobile-comments-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    min-height: 0;
   }
 
   /* MOBILE: Comment Input Always Visible */
@@ -1684,48 +1674,47 @@ export default {
     opacity: 0.5;
   }
 
-  /* MOBILE: Comments Header Container - PROPER SPACING */
-  .mobile-comments-header-container {
+  /* MOBILE: Comments Toggle Section - BELOW PET INFO */
+  .mobile-comments-toggle-section {
     flex-shrink: 0;
-    margin-bottom: 1rem; /* ESPAÇO ADEQUADO */
-    padding: 0 0.5rem; /* PADDING LATERAL PARA NÃO CORTAR */
+    margin-bottom: 1rem;
   }
 
-  /* MOBILE: Comments Header - Toggle */
-  .mobile-comments-header {
+  .mobile-comments-toggle-btn {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
     padding: 1rem;
     background: rgba(255, 255, 255, 0.1);
+    border: none;
     border-radius: 15px;
     transition: background-color 0.2s;
-    width: 100%; /* LARGURA TOTAL */
   }
 
-  .mobile-comments-header:hover {
+  .mobile-comments-toggle-btn:hover {
     background: rgba(255, 255, 255, 0.15);
   }
 
-  .mobile-comments-title {
+  .mobile-comments-toggle-text {
     font-size: 1rem;
     font-weight: 600;
     color: white;
   }
 
-  .mobile-comments-header i.fa-chevron-down {
+  .mobile-comments-toggle-btn i.fa-chevron-up {
     color: white;
     transition: transform 0.3s ease;
     font-size: 0.9rem;
   }
 
-  .mobile-comments-header i.fa-chevron-down.rotated-up {
+  .mobile-comments-toggle-btn i.fa-chevron-up.rotated-down {
     transform: rotate(180deg);
   }
 
   /* MOBILE: Comments Overlay - SLIDES UP FROM BOTTOM */
-  .mobile-comments-overlay {
+  .mobile-comments-overlay-popup {
     position: fixed;
     top: 0;
     left: 0;
@@ -1739,7 +1728,7 @@ export default {
     align-items: flex-end;
   }
 
-  .mobile-comments-overlay.show {
+  .mobile-comments-overlay-popup.show {
     transform: translateY(0);
   }
 
@@ -1858,12 +1847,12 @@ export default {
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .filter-select {
     width: 100%;
     max-width: 300px;
   }
-  
+
   .pet-grid {
     grid-template-columns: repeat(2, 1fr);
     padding: 0 1rem 2rem;
