@@ -53,7 +53,7 @@
         <img 
           :src="getMainPhoto(pet) || placeholderImg" 
           :alt="pet.name"
-          class="pet-image"
+          class="pet-image smart-crop"
           @error="onImageError"
         />
         <div v-if="hasMultiplePhotos(pet)" class="photo-count">
@@ -95,7 +95,7 @@
               <img 
                 :src="currentPhoto || placeholderImg" 
                 :alt="selectedPet.name"
-                class="modal-image-new"
+                class="modal-image-new smart-crop"
                 @error="onImageError"
               />
             </div>
@@ -214,7 +214,7 @@
             <img 
               :src="currentPhoto || placeholderImg" 
               :alt="selectedPet.name"
-              class="mobile-image-centered"
+              class="mobile-image-centered smart-crop"
               @error="onImageError"
             />
             
@@ -988,10 +988,28 @@ export default {
   transform: scale(1.02);
 }
 
+/* SMART CROP - Centralização Inteligente das Imagens */
 .pet-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.smart-crop {
+  object-position: center 30%; /* Foca na parte superior-central (onde geralmente está o rosto) */
+}
+
+/* Para diferentes tipos de animais, podemos usar classes específicas */
+.pet-image.dog {
+  object-position: center 25%; /* Cachorros - foco um pouco mais alto */
+}
+
+.pet-image.cat {
+  object-position: center 35%; /* Gatos - foco um pouco mais baixo */
+}
+
+.pet-image.bird {
+  object-position: center 20%; /* Pássaros - foco bem alto */
 }
 
 .photo-count {
@@ -1059,7 +1077,7 @@ export default {
 .modal-body-desktop {
   display: grid;
   grid-template-columns: 1fr 350px;
-  gap: 1rem;
+  gap: 2rem;
   height: 600px;
 }
 
@@ -1390,25 +1408,27 @@ export default {
 /* Mobile Styles */
 @media (max-width: 768px) {
   .modal-overlay-new {
-    padding: 10px;
+    padding: 0; /* REMOVIDO PADDING PARA OCUPAR TELA TODA */
     background: rgba(0, 0, 0, 0.5);
   }
 
   .modal-content-new {
     max-width: 100%;
     width: 100%;
-    height: calc(100vh - 20px);
-    max-height: calc(100vh - 20px);
-    border-radius: 12px;
+    height: 100vh; /* ALTURA TOTAL DA TELA */
+    max-height: 100vh; /* ALTURA MÁXIMA TOTAL */
+    border-radius: 0; /* SEM BORDER RADIUS PARA OCUPAR TELA TODA */
     overflow: hidden;
   }
 
   .modal-close-new {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 15px; /* MAIS PRÓXIMO DO TOPO */
+    right: 15px; /* MAIS PRÓXIMO DA LATERAL */
     background: rgba(0, 0, 0, 0.8);
     z-index: 20;
+    width: 35px; /* MENOR */
+    height: 35px; /* MENOR */
   }
 
   .modal-body-desktop {
@@ -1420,7 +1440,6 @@ export default {
     flex-direction: column;
     height: 100%;
     width: 100%;
-    border-radius: 12px;
     overflow: hidden;
   }
 
@@ -1432,7 +1451,7 @@ export default {
     align-items: center;
     justify-content: center;
     background: #000;
-    max-height: 60vh;
+    max-height: 55vh; /* REDUZIDO PARA DAR MAIS ESPAÇO PARA INFO */
   }
 
   .mobile-image-centered {
@@ -1443,7 +1462,7 @@ export default {
 
   .mobile-image-nav {
     position: absolute;
-    bottom: 20px;
+    bottom: 15px; /* MAIS PRÓXIMO DA BORDA */
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -1467,11 +1486,11 @@ export default {
   /* MOBILE: Social Buttons - Bottom Right (like Instagram) */
   .mobile-social-buttons-bottom-right {
     position: absolute;
-    bottom: 80px;
-    right: 20px;
+    bottom: 60px; /* AJUSTADO */
+    right: 15px; /* MAIS PRÓXIMO DA LATERAL */
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem; /* MENOR GAP */
     z-index: 5;
   }
 
@@ -1480,13 +1499,13 @@ export default {
     color: white;
     border: none;
     border-radius: 50%;
-    width: 56px;
-    height: 56px;
+    width: 50px; /* MENOR */
+    height: 50px; /* MENOR */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* MENOR */
     box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
     transition: transform 0.2s;
   }
@@ -1500,13 +1519,13 @@ export default {
     color: white;
     border: none;
     border-radius: 50%;
-    width: 56px;
-    height: 56px;
+    width: 50px; /* MENOR */
+    height: 50px; /* MENOR */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* MENOR */
     box-shadow: 0 4px 15px rgba(188, 24, 136, 0.4);
     transition: transform 0.2s;
   }
@@ -1515,22 +1534,25 @@ export default {
     transform: scale(0.95);
   }
 
-  /* MOBILE: Bottom Info Section */
+  /* MOBILE: Bottom Info Section - MAIS ESPAÇO */
   .mobile-bottom-info {
     background: rgba(0, 0, 0, 0.9);
     color: white;
-    padding: 1rem;
+    padding: 0.75rem; /* PADDING MENOR */
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-height: 40vh;
+    min-height: 45vh; /* MAIS ESPAÇO */
+    max-height: 45vh; /* LIMITADO */
+    overflow: hidden;
   }
 
   /* MOBILE: User Section */
   .mobile-user-section {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
+    margin-bottom: 0.75rem; /* MENOR */
+    padding-bottom: 0.75rem; /* MENOR */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
   }
 
   .mobile-user-info {
@@ -1540,8 +1562,8 @@ export default {
   }
 
   .mobile-owner-avatar {
-    width: 40px;
-    height: 40px;
+    width: 35px; /* MENOR */
+    height: 35px; /* MENOR */
     border-radius: 50%;
     overflow: hidden;
     display: flex;
@@ -1560,25 +1582,26 @@ export default {
   .mobile-avatar-placeholder {
     color: white;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem; /* MENOR */
   }
 
   .mobile-owner-name {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9rem; /* MENOR */
     color: white;
   }
 
   /* MOBILE: Pet Details Section */
   .mobile-pet-details-section {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
+    margin-bottom: 0.75rem; /* MENOR */
+    padding-bottom: 0.75rem; /* MENOR */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
   }
 
   .mobile-detail-item {
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
+    font-size: 0.8rem; /* MENOR */
+    margin-bottom: 0.4rem; /* MENOR */
     color: rgba(255, 255, 255, 0.9);
   }
 
@@ -1592,6 +1615,7 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
+    min-height: 0;
   }
 
   /* MOBILE: Comment Input Always Visible */
@@ -1600,9 +1624,10 @@ export default {
     gap: 0.5rem;
     align-items: center;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 25px;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
+    border-radius: 20px; /* MENOR */
+    padding: 0.4rem; /* MENOR */
+    margin-bottom: 0.75rem; /* MENOR */
+    flex-shrink: 0;
   }
 
   .mobile-comment-input {
@@ -1610,8 +1635,8 @@ export default {
     background: transparent;
     border: none;
     color: white;
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem; /* MENOR */
+    font-size: 0.85rem; /* MENOR */
     outline: none;
   }
 
@@ -1624,12 +1649,13 @@ export default {
     color: white;
     border: none;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    width: 32px; /* MENOR */
+    height: 32px; /* MENOR */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    flex-shrink: 0;
   }
 
   .mobile-send-btn:disabled {
@@ -1642,10 +1668,11 @@ export default {
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    padding: 0.75rem;
+    padding: 0.6rem; /* MENOR */
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    border-radius: 10px; /* MENOR */
     transition: background-color 0.2s;
+    flex-shrink: 0;
   }
 
   .mobile-comments-header:hover {
@@ -1653,7 +1680,7 @@ export default {
   }
 
   .mobile-comments-title {
-    font-size: 1rem;
+    font-size: 0.9rem; /* MENOR */
     font-weight: 600;
     color: white;
   }
@@ -1661,6 +1688,7 @@ export default {
   .mobile-comments-header i.fa-chevron-down {
     color: white;
     transition: transform 0.3s ease;
+    font-size: 0.8rem; /* MENOR */
   }
 
   .mobile-comments-header i.fa-chevron-down.rotated-up {
@@ -1689,9 +1717,9 @@ export default {
   .mobile-comments-content {
     background: rgba(0, 0, 0, 0.95);
     width: 100%;
-    max-height: 70vh;
-    border-radius: 20px 20px 0 0;
-    padding: 1rem;
+    max-height: 65vh; /* MENOR PARA CABER MELHOR */
+    border-radius: 15px 15px 0 0; /* MENOR */
+    padding: 0.75rem; /* MENOR */
     display: flex;
     flex-direction: column;
   }
@@ -1700,14 +1728,14 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
+    margin-bottom: 0.75rem; /* MENOR */
+    padding-bottom: 0.75rem; /* MENOR */
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .mobile-comments-header-overlay h4 {
     color: white;
-    font-size: 1.1rem;
+    font-size: 1rem; /* MENOR */
     font-weight: 600;
   }
 
@@ -1716,8 +1744,8 @@ export default {
     color: white;
     border: none;
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    width: 28px; /* MENOR */
+    height: 28px; /* MENOR */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1733,18 +1761,18 @@ export default {
   }
 
   .mobile-comments-list {
-    padding-bottom: 1rem;
+    padding-bottom: 0.75rem; /* MENOR */
   }
 
   .mobile-comment-item {
     display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: 0.6rem; /* MENOR */
+    margin-bottom: 0.75rem; /* MENOR */
   }
 
   .mobile-comment-avatar {
-    width: 32px;
-    height: 32px;
+    width: 28px; /* MENOR */
+    height: 28px; /* MENOR */
     border-radius: 50%;
     flex-shrink: 0;
     overflow: hidden;
@@ -1763,7 +1791,7 @@ export default {
   .mobile-comment-avatar-placeholder {
     color: white;
     font-weight: 600;
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* MENOR */
   }
 
   .mobile-comment-content {
@@ -1772,29 +1800,29 @@ export default {
 
   .mobile-comment-username {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem; /* MENOR */
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem; /* MENOR */
     color: white;
   }
 
   .mobile-comment-text {
-    font-size: 0.85rem;
-    line-height: 1.4;
+    font-size: 0.75rem; /* MENOR */
+    line-height: 1.3; /* MENOR */
     color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem; /* MENOR */
   }
 
   .mobile-comment-time {
-    font-size: 0.75rem;
+    font-size: 0.65rem; /* MENOR */
     color: rgba(255, 255, 255, 0.6);
   }
 
   .mobile-no-comments {
     text-align: center;
     color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-    margin: 2rem 0;
+    font-size: 0.8rem; /* MENOR */
+    margin: 1.5rem 0; /* MENOR */
   }
 
   .filters-container {
