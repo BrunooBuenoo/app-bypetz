@@ -278,7 +278,13 @@
             <!-- Comments Section with Slide Animation -->
             <div class="mobile-comments-container" :class="{ 'open': showComments }">
               <div class="mobile-comments-content">
-                <div class="mobile-comments-scroll" v-if="showComments">
+                <div 
+                  class="mobile-comments-scroll" 
+                  v-if="showComments"
+                  @touchstart="handleCommentsScrollStart"
+                  @touchmove="handleCommentsScrollMove"
+                  @touchend="handleCommentsScrollEnd"
+                >
                   <div v-if="comments.length > 0" class="mobile-comments-list">
                     <div v-for="comment in comments" :key="comment.id" class="mobile-comment-item">
                       <div class="mobile-comment-avatar">
@@ -363,6 +369,7 @@ export default {
     const touchStartX = ref(0)
     const touchEndY = ref(0)
     const touchEndX = ref(0)
+    const isScrollingComments = ref(false)
     
     // Placeholders válidos
     const placeholderImg = 'https://via.placeholder.com/400x300/8C52FF/FFFFFF?text=Sem+Foto'
@@ -419,47 +426,71 @@ export default {
       showComments.value = !showComments.value
     }
 
-    // Touch/Swipe handlers
+    // Touch/Swipe handlers for main modal
     const handleTouchStart = (e) => {
       touchStartY.value = e.touches[0].clientY
       touchStartX.value = e.touches[0].clientX
+      isScrollingComments.value = false
     }
 
     const handleTouchMove = (e) => {
-      // If comments are open, allow scroll in comments area
-      if (showComments.value) {
-        const target = e.target.closest('.mobile-comments-scroll')
-        if (target) {
-          return // Allow normal scroll in comments
-        }
+      // Se os comentários estão abertos e o usuário está fazendo scroll nos comentários, não interferir
+      if (showComments.value && isScrollingComments.value) {
+        return // Permite scroll normal nos comentários
       }
       
-      // Prevent default for pet navigation
-      e.preventDefault()
+      // Se os comentários estão abertos mas não está fazendo scroll nos comentários, prevenir navegação
+      if (showComments.value && !isScrollingComments.value) {
+        e.preventDefault()
+        return
+      }
+      
+      // Se comentários estão fechados, prevenir scroll para permitir navegação entre pets
+      if (!showComments.value) {
+        e.preventDefault()
+      }
     }
 
     const handleTouchEnd = (e) => {
       touchEndY.value = e.changedTouches[0].clientY
       touchEndX.value = e.changedTouches[0].clientX
       
-      // Only handle swipe if comments are closed
-      if (!showComments.value) {
+      // Só processar swipe se comentários estão fechados ou não está fazendo scroll nos comentários
+      if (!showComments.value && !isScrollingComments.value) {
         handleSwipe()
       }
+    }
+
+    // Touch handlers específicos para área de comentários
+    const handleCommentsScrollStart = (e) => {
+      isScrollingComments.value = true
+      e.stopPropagation()
+    }
+
+    const handleCommentsScrollMove = (e) => {
+      isScrollingComments.value = true
+      e.stopPropagation()
+    }
+
+    const handleCommentsScrollEnd = (e) => {
+      setTimeout(() => {
+        isScrollingComments.value = false
+      }, 100)
+      e.stopPropagation()
     }
 
     const handleSwipe = () => {
       const deltaY = touchStartY.value - touchEndY.value
       const deltaX = Math.abs(touchStartX.value - touchEndX.value)
       
-      // Only handle vertical swipes (ignore horizontal)
+      // Só processar swipes verticais (ignorar horizontais)
       if (Math.abs(deltaY) > 50 && deltaX < 100) {
         if (deltaY > 0) {
-          // Swipe up - previous pet
-          goToPreviousPet()
-        } else {
-          // Swipe down - next pet
+          // Swipe up = próximo pet (CORRIGIDO)
           goToNextPet()
+        } else {
+          // Swipe down = pet anterior (CORRIGIDO)
+          goToPreviousPet()
         }
       }
     }
@@ -762,6 +793,9 @@ export default {
       handleTouchStart,
       handleTouchMove,
       handleTouchEnd,
+      handleCommentsScrollStart,
+      handleCommentsScrollMove,
+      handleCommentsScrollEnd,
       goToNextPet,
       goToPreviousPet
     }
@@ -1293,15 +1327,17 @@ export default {
 /* Mobile Styles */
 @media (max-width: 768px) {
   .modal-overlay-new {
-    padding: 0;
+    padding: 10px; /* ADICIONADO: Margem de 10px */
     background: rgba(0, 0, 0, 1);
   }
 
   .modal-content-new {
     max-width: 100%;
     width: 100%;
-    height: 100vh;
-    max-height: 100vh;
+    height: calc(100vh - 20px); /* AJUSTADO: Altura considerando margem */
+    max-height: calc(100vh - 20px);
+    border-radius: 12px; /* ADICIONADO: Bordas arredondadas */
+    overflow: hidden; /* ADICIONADO: Para manter bordas arredondadas */
   }
 
   .modal-close-new {
@@ -1319,8 +1355,10 @@ export default {
   .modal-body-mobile {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
     width: 100%;
+    border-radius: 12px; /* ADICIONADO: Bordas arredondadas */
+    overflow: hidden;
   }
 
   .mobile-image-section {
@@ -1513,6 +1551,9 @@ export default {
     max-height: 250px;
     overflow-y: auto;
     padding-right: 0.5rem;
+    /* MELHORADO: Scroll específico para comentários */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   .mobile-comments-list {
@@ -1576,12 +1617,13 @@ export default {
   /* Fixed Comment Input at Bottom */
   .mobile-comment-fixed {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 10px; /* AJUSTADO: Considerando margem */
+    left: 10px;   /* AJUSTADO: Considerando margem */
+    right: 10px;  /* AJUSTADO: Considerando margem */
     background: rgba(0, 0, 0, 0.95);
     padding: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0 0 12px 12px; /* ADICIONADO: Bordas arredondadas */
     z-index: 15;
   }
 
