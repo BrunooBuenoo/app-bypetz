@@ -4,31 +4,28 @@
       <!-- Logo -->
       <div class="logo">
         <router-link to="/" class="logo-link">
-          <div class="logo-icon">
-            <span class="logo-symbol">BP</span>
-          </div>
           <span class="logo-text">ByPetz</span>
         </router-link>
       </div>
 
       <!-- Menu Desktop -->
       <nav class="desktop-nav">
-        <router-link to="/" class="nav-link">Inicio</router-link>
+        <router-link to="/" class="nav-link">Início</router-link>
         <router-link to="/feed" class="nav-link">Feed</router-link>
         <router-link to="/cadastrar-pet" class="nav-link" v-if="isAuthenticated">Cadastrar Pet</router-link>
         <router-link to="/sobre" class="nav-link">Sobre</router-link>
         <router-link to="/contato" class="nav-link">Contato</router-link>
       </nav>
 
-      <!-- Area do usuario -->
+      <!-- Área do usuário -->
       <div class="user-area">
-        <!-- Usuario nao logado -->
+        <!-- Usuário não logado -->
         <div v-if="!isAuthenticated && !loading" class="auth-buttons">
           <router-link to="/login" class="btn-login">Entrar</router-link>
           <router-link to="/registro" class="btn-register">Cadastrar</router-link>
         </div>
 
-        <!-- Usuario logado -->
+        <!-- Usuário logado -->
         <div v-if="isAuthenticated" class="user-menu" ref="userMenuRef">
           <div class="user-info" @click="toggleUserMenu">
             <div class="user-avatar">
@@ -42,7 +39,7 @@
             <span class="dropdown-arrow" :class="{ open: showUserMenu }">▼</span>
           </div>
 
-          <!-- Dropdown do usuario -->
+          <!-- Dropdown do usuário -->
           <transition name="dropdown">
             <div v-if="showUserMenu" class="user-dropdown" @click.stop>
               <div class="dropdown-header">
@@ -71,7 +68,7 @@
               </router-link>
               
               <div class="dropdown-item" @click="showUserMenu = false">
-                <span>Configuracoes</span>
+                <span>Configurações</span>
               </div>
               
               <div class="dropdown-divider"></div>
@@ -104,7 +101,7 @@
       <div v-if="showMobileMenu" class="mobile-menu">
         <nav class="mobile-nav">
           <router-link to="/" class="mobile-nav-link" @click="closeMobileMenu">
-            <span>Inicio</span>
+            <span>Início</span>
           </router-link>
           
           <router-link to="/feed" class="mobile-nav-link" @click="closeMobileMenu">
@@ -182,7 +179,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 export default {
-  name: 'CabecalhoSite',
+  name: 'NavbarWithAuth',
   setup() {
     const router = useRouter()
     const { user, isAuthenticated, userDisplayName, loading, logout } = useAuth()
@@ -263,34 +260,34 @@ export default {
 
 <style scoped>
 .header {
-  background: linear-gradient(135deg, #8C52FF 0%, #a071ff 50%, #b794ff 100%);
-  box-shadow: 0 4px 20px rgba(140, 82, 255, 0.3);
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
 }
 
 .header-container {
-  max-width: 1400px;
+  max-width: 1200px; /* Limita a largura máxima para centralizar o conteúdo */
   margin: 0 auto;
-  padding: 1rem 2rem;
+  padding: 1rem 3rem; /* Aumenta o padding lateral */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 70px;
+  min-height: 80px;
+  position: relative;
 }
 
 .logo {
   flex-shrink: 0;
+  min-width: 200px; /* Garante espaço mínimo para o logo */
 }
 
 .logo-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   text-decoration: none;
-  color: #FFD700;
+  color: white;
   font-size: 1.8rem;
   font-weight: 800;
   transition: all 0.3s ease;
@@ -300,47 +297,35 @@ export default {
   transform: scale(1.05);
 }
 
-.logo-icon {
-  background: rgba(255, 215, 0, 0.2);
-  padding: 0.5rem;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .desktop-nav {
   display: flex;
-  gap: 0.5rem;
+  gap: 2rem;
   flex: 1;
   justify-content: center;
   max-width: 600px;
+  margin: 0 2rem; /* Adiciona margem lateral ao menu */
 }
 
 .nav-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: white;
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-  font-weight: 600;
-  padding: 0.75rem 1.25rem;
-  border-radius: 12px;
+  font-weight: 500;
+  padding: 0.5rem 0;
   transition: all 0.3s ease;
   position: relative;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  border-bottom: 2px solid transparent;
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  color: #FFD700;
+  border-bottom-color: #FFD700;
 }
 
 .nav-link.router-link-active {
-  background: rgba(255, 215, 0, 0.2);
-  color: #FFD700;
-  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+  color: white;
+  border-bottom-color: #FFD700;
 }
 
 .user-area {
@@ -348,6 +333,8 @@ export default {
   align-items: center;
   gap: 1rem;
   flex-shrink: 0;
+  min-width: 200px; /* Garante espaço mínimo para área do usuário */
+  justify-content: flex-end;
 }
 
 .auth-buttons {
@@ -356,44 +343,40 @@ export default {
 }
 
 .btn-login {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   color: white;
   text-decoration: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
   font-weight: 600;
   font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .btn-login:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
 }
 
 .btn-register {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: #FFD700;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #8C52FF;
   text-decoration: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
   font-weight: 700;
   transition: all 0.3s ease;
   font-size: 0.9rem;
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
 }
 
 .btn-register:hover {
-  background: #FFA500;
+  background: linear-gradient(135deg, #FFA500, #FF8C00);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
 }
 
 .user-menu {
@@ -405,11 +388,12 @@ export default {
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 1rem;
-  border-radius: 16px;
+  border-radius: 25px;
   cursor: pointer;
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .user-info:hover {
@@ -425,7 +409,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FFD700;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #8C52FF;
   font-weight: bold;
   font-size: 1.1rem;
@@ -463,6 +447,7 @@ export default {
 .dropdown-arrow {
   color: rgba(255, 255, 255, 0.7);
   transition: transform 0.3s ease;
+  font-size: 0.8rem;
 }
 
 .dropdown-arrow.open {
@@ -473,14 +458,14 @@ export default {
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  background: rgba(255, 255, 255, 0.98);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 1rem;
-  min-width: 280px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  padding: 1.5rem;
+  min-width: 300px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  z-index: 999; /* Maior que o overlay */
+  z-index: 999;
 }
 
 .dropdown-header {
@@ -491,17 +476,17 @@ export default {
 }
 
 .dropdown-avatar {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FFD700;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #8C52FF;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 }
 
 .dropdown-avatar img {
@@ -519,26 +504,26 @@ export default {
 .dropdown-name {
   color: #333;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .dropdown-email {
   color: #666;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .dropdown-divider {
   height: 1px;
-  background: rgba(0, 0, 0, 0.1);
-  margin: 0.75rem 0;
+  background: linear-gradient(90deg, transparent, rgba(140, 82, 255, 0.3), transparent);
+  margin: 1rem 0;
 }
 
 .dropdown-item {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  border-radius: 15px;
   text-decoration: none;
   color: #333;
   font-weight: 500;
@@ -547,11 +532,11 @@ export default {
   border: none;
   background: none;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .dropdown-item:hover {
-  background: rgba(140, 82, 255, 0.1);
+  background: linear-gradient(135deg, rgba(140, 82, 255, 0.1), rgba(140, 82, 255, 0.05));
   color: #8C52FF;
   transform: translateX(5px);
 }
@@ -561,7 +546,7 @@ export default {
 }
 
 .logout-btn:hover {
-  background: rgba(255, 71, 87, 0.1) !important;
+  background: linear-gradient(135deg, rgba(255, 71, 87, 0.1), rgba(255, 71, 87, 0.05)) !important;
   color: #ff4757 !important;
 }
 
@@ -574,8 +559,8 @@ export default {
 }
 
 .spinner {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border: 3px solid rgba(255, 255, 255, 0.3);
   border-top: 3px solid #FFD700;
   border-radius: 50%;
@@ -589,16 +574,18 @@ export default {
 
 .mobile-menu-btn {
   display: none;
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
+  padding: 0.75rem;
+  border-radius: 15px;
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .mobile-menu-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .hamburger {
@@ -631,16 +618,18 @@ export default {
 }
 
 .mobile-menu {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.98); /* Aumentar opacidade */
+  /* backdrop-filter: blur(20px); - REMOVER esta linha */
   border-top: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 1.5rem;
+  padding: 2rem;
+  position: relative; /* Garantir posicionamento correto */
+  z-index: 1000; /* Z-index alto para ficar acima do overlay */
 }
 
 .mobile-nav {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   margin-bottom: 2rem;
 }
 
@@ -650,16 +639,20 @@ export default {
   gap: 1rem;
   color: #333;
   text-decoration: none;
-  padding: 1rem 1.25rem;
-  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  border-radius: 15px;
   font-weight: 600;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  background: rgba(140, 82, 255, 0.05);
+  border: 1px solid rgba(140, 82, 255, 0.1);
+  position: relative; /* Adicionar */
+  z-index: 1001; /* Z-index alto para garantir clique */
 }
 
 .mobile-nav-link:hover,
 .mobile-nav-link.router-link-active {
-  background: rgba(140, 82, 255, 0.1);
+  background: linear-gradient(135deg, rgba(140, 82, 255, 0.15), rgba(140, 82, 255, 0.1));
   color: #8C52FF;
   transform: translateX(5px);
 }
@@ -675,57 +668,60 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
   text-align: center;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
+  padding: 1.25rem 2rem;
+  border-radius: 25px;
   text-decoration: none;
   font-weight: 700;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 .mobile-btn-login {
   color: #8C52FF;
   border: 2px solid #8C52FF;
-  background: transparent;
+  background: rgba(140, 82, 255, 0.05);
 }
 
 .mobile-btn-login:hover {
   background: rgba(140, 82, 255, 0.1);
+  transform: translateY(-2px);
 }
 
 .mobile-btn-register {
-  background: #8C52FF;
+  background: linear-gradient(135deg, #8C52FF, #6B3DD6);
   color: white;
+  border: 2px solid transparent;
 }
 
 .mobile-btn-register:hover {
-  background: #7a47e6;
+  background: linear-gradient(135deg, #6B3DD6, #4A2B9A);
+  transform: translateY(-2px);
 }
 
 .mobile-user-card {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1.5rem;
-  background: rgba(140, 82, 255, 0.1);
-  border-radius: 16px;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(140, 82, 255, 0.1), rgba(140, 82, 255, 0.05));
+  border-radius: 20px;
   margin-bottom: 1rem;
+  border: 1px solid rgba(140, 82, 255, 0.2);
 }
 
 .mobile-user-avatar {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FFD700;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #8C52FF;
   font-weight: bold;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
 }
 
 .mobile-user-avatar img {
@@ -743,12 +739,12 @@ export default {
 .mobile-user-name {
   color: #333;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .mobile-user-email {
   color: #666;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .mobile-logout-btn {
@@ -756,19 +752,20 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: #ff4757;
+  background: linear-gradient(135deg, #ff4757, #ff3742);
   color: white;
   border: none;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
+  padding: 1.25rem 2rem;
+  border-radius: 25px;
   cursor: pointer;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
 }
 
 .mobile-logout-btn:hover {
-  background: #ff3742;
+  background: linear-gradient(135deg, #ff3742, #ff2d3a);
+  transform: translateY(-2px);
 }
 
 .menu-overlay {
@@ -778,7 +775,8 @@ export default {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 998; /* Menor que o dropdown */
+  z-index: 999; /* Menor que o menu mobile */
+  /* backdrop-filter: blur(5px); - REMOVER esta linha também */
 }
 
 .dropdown-enter-active,
@@ -789,7 +787,7 @@ export default {
 .dropdown-enter-from,
 .dropdown-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-10px) scale(0.95);
 }
 
 .mobile-menu-enter-active,
@@ -805,11 +803,10 @@ export default {
 
 @media (max-width: 1024px) {
   .desktop-nav {
-    gap: 0.25rem;
+    gap: 1.5rem;
   }
   
   .nav-link {
-    padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
   }
   
@@ -850,11 +847,17 @@ export default {
   .logo-text {
     display: none;
   }
+
 }
 
-.logo-symbol {
-  font-weight: 900;
-  font-size: 1.2rem;
-  color: #8C52FF;
+@media (min-width: 1400px) {
+  .header-container {
+    max-width: 1400px;
+    padding: 1rem 4rem; /* Mais padding em telas grandes */
+  }
+  
+  .desktop-nav {
+    margin: 0 3rem;
+  }
 }
 </style>

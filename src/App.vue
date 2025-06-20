@@ -24,8 +24,8 @@ export default {
   flex-direction: column;
   width: 100%;
   height: auto;
-  align-items: center;
-  justify-content: center;
+  /* REMOVER: align-items: center; */
+  /* REMOVER: justify-content: center; */
   overflow-x: hidden;
 }
 
