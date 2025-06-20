@@ -1,8 +1,8 @@
 <template>
   <div>
     <HeroComponent/>
-    <SecaoInfo/>
     <CardsComponent/>
+    <SecaoInfo/>
     <RodapeSite/>
   </div>
 </template>
@@ -17,8 +17,8 @@ export default {
   name: 'PaginaInicial',
   components: {
     HeroComponent,
-    SecaoInfo,
     CardsComponent,
+    SecaoInfo,
     RodapeSite,
   },
 }
