@@ -229,11 +229,11 @@
               ></button>
             </div>
 
-            <!-- Social Buttons - Bottom Right -->
-            <div class="mobile-social-buttons-bottom-right">
+            <!-- Social Buttons - Positioned like in reference image -->
+            <div class="mobile-social-buttons-right">
               <button 
                 v-if="selectedPet.phone" 
-                class="mobile-whatsapp-btn-bottom" 
+                class="mobile-whatsapp-btn" 
                 @click="contactWhatsApp"
               >
                 <i class="fab fa-whatsapp"></i>
@@ -241,7 +241,7 @@
               
               <button 
                 v-if="selectedPet.instagram" 
-                class="mobile-instagram-btn-bottom" 
+                class="mobile-instagram-btn" 
                 @click="openInstagram"
               >
                 <i class="fab fa-instagram"></i>
@@ -271,7 +271,7 @@
               <div class="mobile-detail-item">Nome do Pet: {{ selectedPet.name }}</div>
             </div>
 
-            <!-- Comments Section - SLIDE UP FROM BOTTOM -->
+            <!-- Comments Section -->
             <div class="mobile-comments-section">
               <!-- Comment Input Always Visible -->
               <div class="mobile-comment-input-container">
@@ -287,12 +287,14 @@
                 </button>
               </div>
 
-              <!-- Comments Header - Toggle -->
-              <div class="mobile-comments-header" @click="toggleComments">
-                <h4 class="mobile-comments-title">
-                  comentários {{ comments.length > 0 ? `(${comments.length})` : '' }}
-                </h4>
-                <i class="fas fa-chevron-down" :class="{ 'rotated-up': showComments }"></i>
+              <!-- Comments Header - Toggle (with proper spacing) -->
+              <div class="mobile-comments-header-container">
+                <div class="mobile-comments-header" @click="toggleComments">
+                  <h4 class="mobile-comments-title">
+                    comentários {{ comments.length > 0 ? `(${comments.length})` : '' }}
+                  </h4>
+                  <i class="fas fa-chevron-down" :class="{ 'rotated-up': showComments }"></i>
+                </div>
               </div>
 
               <!-- Comments Overlay - SLIDES UP FROM BOTTOM -->
@@ -435,6 +437,7 @@ export default {
       document.body.style.overflow = 'hidden'
       document.body.style.position = 'fixed'
       document.body.style.width = '100%'
+      document.body.style.height = '100%'
       
       await loadPetOwner(pet.userId || pet.ownerId)
       await loadComments(pet.id)
@@ -597,6 +600,7 @@ export default {
       document.body.style.overflow = 'auto'
       document.body.style.position = 'static'
       document.body.style.width = 'auto'
+      document.body.style.height = 'auto'
     }
 
     const loadComments = async (petId) => {
@@ -1024,14 +1028,14 @@ export default {
   font-weight: 600;
 }
 
-/* Modal Overlay - COMPLETELY BLOCK SCROLL */
+/* Modal Overlay - COMPLETELY BLOCK SCROLL + 50% TRANSPARENCY */
 .modal-overlay-new {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5); /* 50% TRANSPARENCY */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1409,7 +1413,14 @@ export default {
 @media (max-width: 768px) {
   .modal-overlay-new {
     padding: 0; /* REMOVIDO PADDING PARA OCUPAR TELA TODA */
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5); /* 50% TRANSPARENCY MANTIDO */
+    /* IMPORTANTE: Cobrir TODA a tela incluindo navbar */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999; /* Z-INDEX ALTO PARA FICAR ACIMA DA NAVBAR */
   }
 
   .modal-content-new {
@@ -1417,18 +1428,24 @@ export default {
     width: 100%;
     height: 100vh; /* ALTURA TOTAL DA TELA */
     max-height: 100vh; /* ALTURA MÁXIMA TOTAL */
-    border-radius: 0; /* SEM BORDER RADIUS PARA OCUPAR TELA TODA */
+    border-radius: 20px; /* BORDAS ARREDONDADAS RESTAURADAS */
     overflow: hidden;
+    margin: 10px; /* PEQUENA MARGEM PARA MOSTRAR AS BORDAS */
+    background: rgba(0, 0, 0, 0.95); /* BACKGROUND ESCURO PARA O MODAL */
   }
 
   .modal-close-new {
-    position: fixed;
+    position: absolute;
     top: 15px; /* MAIS PRÓXIMO DO TOPO */
     right: 15px; /* MAIS PRÓXIMO DA LATERAL */
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
     z-index: 20;
     width: 35px; /* MENOR */
     height: 35px; /* MENOR */
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   .modal-body-desktop {
@@ -1441,6 +1458,7 @@ export default {
     height: 100%;
     width: 100%;
     overflow: hidden;
+    border-radius: 20px; /* BORDAS ARREDONDADAS */
   }
 
   /* MOBILE: Centralized Pet Image Section */
@@ -1452,12 +1470,14 @@ export default {
     justify-content: center;
     background: #000;
     max-height: 55vh; /* REDUZIDO PARA DAR MAIS ESPAÇO PARA INFO */
+    border-radius: 20px 20px 0 0; /* BORDAS ARREDONDADAS APENAS NO TOPO */
   }
 
   .mobile-image-centered {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 20px 20px 0 0; /* BORDAS ARREDONDADAS APENAS NO TOPO */
   }
 
   .mobile-image-nav {
@@ -1483,74 +1503,76 @@ export default {
     background: white;
   }
 
-  /* MOBILE: Social Buttons - Bottom Right (like Instagram) */
-  .mobile-social-buttons-bottom-right {
+  /* MOBILE: Social Buttons - Positioned like in reference image */
+  .mobile-social-buttons-right {
     position: absolute;
-    bottom: 60px; /* AJUSTADO */
-    right: 15px; /* MAIS PRÓXIMO DA LATERAL */
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 0.75rem; /* MENOR GAP */
-    z-index: 5;
+    gap: 15px;
+    z-index: 6;
   }
 
-  .mobile-whatsapp-btn-bottom {
+  .mobile-whatsapp-btn {
     background: #25D366;
     color: white;
     border: none;
     border-radius: 50%;
-    width: 50px; /* MENOR */
-    height: 50px; /* MENOR */
+    width: 56px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.3rem; /* MENOR */
+    font-size: 1.5rem;
     box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
     transition: transform 0.2s;
   }
 
-  .mobile-whatsapp-btn-bottom:active {
+  .mobile-whatsapp-btn:active {
     transform: scale(0.95);
   }
 
-  .mobile-instagram-btn-bottom {
+  .mobile-instagram-btn {
     background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     color: white;
     border: none;
     border-radius: 50%;
-    width: 50px; /* MENOR */
-    height: 50px; /* MENOR */
+    width: 56px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.3rem; /* MENOR */
+    font-size: 1.5rem;
     box-shadow: 0 4px 15px rgba(188, 24, 136, 0.4);
     transition: transform 0.2s;
   }
 
-  .mobile-instagram-btn-bottom:active {
+  .mobile-instagram-btn:active {
     transform: scale(0.95);
   }
 
   /* MOBILE: Bottom Info Section - MAIS ESPAÇO */
   .mobile-bottom-info {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.95); /* BACKGROUND MAIS ESCURO */
     color: white;
-    padding: 0.75rem; /* PADDING MENOR */
+    padding: 1rem; /* PADDING RESTAURADO */
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 45vh; /* MAIS ESPAÇO */
     max-height: 45vh; /* LIMITADO */
     overflow: hidden;
+    border-radius: 0 0 20px 20px; /* BORDAS ARREDONDADAS APENAS EMBAIXO */
   }
 
   /* MOBILE: User Section */
   .mobile-user-section {
-    margin-bottom: 0.75rem; /* MENOR */
-    padding-bottom: 0.75rem; /* MENOR */
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
   }
@@ -1562,8 +1584,8 @@ export default {
   }
 
   .mobile-owner-avatar {
-    width: 35px; /* MENOR */
-    height: 35px; /* MENOR */
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
@@ -1582,26 +1604,26 @@ export default {
   .mobile-avatar-placeholder {
     color: white;
     font-weight: 600;
-    font-size: 0.8rem; /* MENOR */
+    font-size: 0.9rem;
   }
 
   .mobile-owner-name {
     font-weight: 600;
-    font-size: 0.9rem; /* MENOR */
+    font-size: 1rem;
     color: white;
   }
 
   /* MOBILE: Pet Details Section */
   .mobile-pet-details-section {
-    margin-bottom: 0.75rem; /* MENOR */
-    padding-bottom: 0.75rem; /* MENOR */
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     flex-shrink: 0;
   }
 
   .mobile-detail-item {
-    font-size: 0.8rem; /* MENOR */
-    margin-bottom: 0.4rem; /* MENOR */
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
     color: rgba(255, 255, 255, 0.9);
   }
 
@@ -1624,9 +1646,9 @@ export default {
     gap: 0.5rem;
     align-items: center;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px; /* MENOR */
-    padding: 0.4rem; /* MENOR */
-    margin-bottom: 0.75rem; /* MENOR */
+    border-radius: 25px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
     flex-shrink: 0;
   }
 
@@ -1635,8 +1657,8 @@ export default {
     background: transparent;
     border: none;
     color: white;
-    padding: 0.6rem 0.8rem; /* MENOR */
-    font-size: 0.85rem; /* MENOR */
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
     outline: none;
   }
 
@@ -1649,8 +1671,8 @@ export default {
     color: white;
     border: none;
     border-radius: 50%;
-    width: 32px; /* MENOR */
-    height: 32px; /* MENOR */
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1662,17 +1684,24 @@ export default {
     opacity: 0.5;
   }
 
+  /* MOBILE: Comments Header Container - PROPER SPACING */
+  .mobile-comments-header-container {
+    flex-shrink: 0;
+    margin-bottom: 1rem; /* ESPAÇO ADEQUADO */
+    padding: 0 0.5rem; /* PADDING LATERAL PARA NÃO CORTAR */
+  }
+
   /* MOBILE: Comments Header - Toggle */
   .mobile-comments-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    padding: 0.6rem; /* MENOR */
+    padding: 1rem;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px; /* MENOR */
+    border-radius: 15px;
     transition: background-color 0.2s;
-    flex-shrink: 0;
+    width: 100%; /* LARGURA TOTAL */
   }
 
   .mobile-comments-header:hover {
@@ -1680,7 +1709,7 @@ export default {
   }
 
   .mobile-comments-title {
-    font-size: 0.9rem; /* MENOR */
+    font-size: 1rem;
     font-weight: 600;
     color: white;
   }
@@ -1688,7 +1717,7 @@ export default {
   .mobile-comments-header i.fa-chevron-down {
     color: white;
     transition: transform 0.3s ease;
-    font-size: 0.8rem; /* MENOR */
+    font-size: 0.9rem;
   }
 
   .mobile-comments-header i.fa-chevron-down.rotated-up {
@@ -1717,9 +1746,9 @@ export default {
   .mobile-comments-content {
     background: rgba(0, 0, 0, 0.95);
     width: 100%;
-    max-height: 65vh; /* MENOR PARA CABER MELHOR */
-    border-radius: 15px 15px 0 0; /* MENOR */
-    padding: 0.75rem; /* MENOR */
+    max-height: 70vh;
+    border-radius: 20px 20px 0 0;
+    padding: 1rem;
     display: flex;
     flex-direction: column;
   }
@@ -1728,14 +1757,14 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 0.75rem; /* MENOR */
-    padding-bottom: 0.75rem; /* MENOR */
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .mobile-comments-header-overlay h4 {
     color: white;
-    font-size: 1rem; /* MENOR */
+    font-size: 1.1rem;
     font-weight: 600;
   }
 
@@ -1744,8 +1773,8 @@ export default {
     color: white;
     border: none;
     border-radius: 50%;
-    width: 28px; /* MENOR */
-    height: 28px; /* MENOR */
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1761,18 +1790,18 @@ export default {
   }
 
   .mobile-comments-list {
-    padding-bottom: 0.75rem; /* MENOR */
+    padding-bottom: 1rem;
   }
 
   .mobile-comment-item {
     display: flex;
-    gap: 0.6rem; /* MENOR */
-    margin-bottom: 0.75rem; /* MENOR */
+    gap: 0.75rem;
+    margin-bottom: 1rem;
   }
 
   .mobile-comment-avatar {
-    width: 28px; /* MENOR */
-    height: 28px; /* MENOR */
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     flex-shrink: 0;
     overflow: hidden;
@@ -1791,7 +1820,7 @@ export default {
   .mobile-comment-avatar-placeholder {
     color: white;
     font-weight: 600;
-    font-size: 0.7rem; /* MENOR */
+    font-size: 0.75rem;
   }
 
   .mobile-comment-content {
@@ -1800,29 +1829,29 @@ export default {
 
   .mobile-comment-username {
     font-weight: 600;
-    font-size: 0.8rem; /* MENOR */
+    font-size: 0.9rem;
     display: block;
-    margin-bottom: 0.2rem; /* MENOR */
+    margin-bottom: 0.25rem;
     color: white;
   }
 
   .mobile-comment-text {
-    font-size: 0.75rem; /* MENOR */
-    line-height: 1.3; /* MENOR */
+    font-size: 0.85rem;
+    line-height: 1.4;
     color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 0.2rem; /* MENOR */
+    margin-bottom: 0.25rem;
   }
 
   .mobile-comment-time {
-    font-size: 0.65rem; /* MENOR */
+    font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.6);
   }
 
   .mobile-no-comments {
     text-align: center;
     color: rgba(255, 255, 255, 0.6);
-    font-size: 0.8rem; /* MENOR */
-    margin: 1.5rem 0; /* MENOR */
+    font-size: 0.9rem;
+    margin: 2rem 0;
   }
 
   .filters-container {
