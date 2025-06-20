@@ -235,7 +235,7 @@ export default {
 
 .about-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
