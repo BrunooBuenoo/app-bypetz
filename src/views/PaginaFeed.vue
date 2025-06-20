@@ -80,6 +80,7 @@
         @touchstart="handleTouchStart"
         @touchmove="handleTouchMove"
         @touchend="handleTouchEnd"
+        :class="{ 'transitioning': isTransitioning }"
       >
         <button class="modal-close-new" @click="closePopup">
           <i class="fas fa-times"></i>
@@ -227,7 +228,7 @@
           </div>
 
           <!-- Info Section -->
-          <div class="mobile-info-section">
+          <div class="mobile-info-section" :class="{ 'comments-open': showComments }">
             <!-- User Header -->
             <div class="mobile-user-header">
               <div class="mobile-user-info">
@@ -267,27 +268,33 @@
               <div class="mobile-detail-item">Nome do Pet: {{ selectedPet.name }}</div>
             </div>
 
-            <!-- Comments Section with Scrollable Area -->
-            <div class="mobile-comments-container">
-              <h4 class="mobile-comments-title">comentários</h4>
-              
-              <!-- Scrollable Comments List -->
-              <div class="mobile-comments-scroll">
-                <div v-if="comments.length > 0" class="mobile-comments-list">
-                  <div v-for="comment in comments" :key="comment.id" class="mobile-comment-item">
-                    <div class="mobile-comment-avatar">
-                      <img v-if="comment.userPhotoURL" :src="comment.userPhotoURL" :alt="comment.userName" />
-                      <span v-else class="mobile-comment-avatar-placeholder">{{ getCommentUserInitials(comment) }}</span>
-                    </div>
-                    <div class="mobile-comment-content">
-                      <span class="mobile-comment-username">{{ comment.userName || comment.userDisplayName }}</span>
-                      <p class="mobile-comment-text">{{ comment.text }}</p>
+            <!-- Comments Toggle Button -->
+            <button class="mobile-comments-toggle" @click="toggleComments">
+              <i class="fas fa-comment"></i>
+              <span>{{ showComments ? 'Ocultar comentários' : `Ver comentários ${comments.length > 0 ? `(${comments.length})` : ''}` }}</span>
+              <i class="fas fa-chevron-up" :class="{ 'rotated': !showComments }"></i>
+            </button>
+
+            <!-- Comments Section with Slide Animation -->
+            <div class="mobile-comments-container" :class="{ 'open': showComments }">
+              <div class="mobile-comments-content">
+                <div class="mobile-comments-scroll" v-if="showComments">
+                  <div v-if="comments.length > 0" class="mobile-comments-list">
+                    <div v-for="comment in comments" :key="comment.id" class="mobile-comment-item">
+                      <div class="mobile-comment-avatar">
+                        <img v-if="comment.userPhotoURL" :src="comment.userPhotoURL" :alt="comment.userName" />
+                        <span v-else class="mobile-comment-avatar-placeholder">{{ getCommentUserInitials(comment) }}</span>
+                      </div>
+                      <div class="mobile-comment-content">
+                        <span class="mobile-comment-username">{{ comment.userName || comment.userDisplayName }}</span>
+                        <p class="mobile-comment-text">{{ comment.text }}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div v-else class="mobile-no-comments">
-                  <p>Seja o primeiro a comentar!</p>
+                  <div v-else class="mobile-no-comments">
+                    <p>Seja o primeiro a comentar!</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -347,6 +354,10 @@ export default {
     const currentUser = ref(null)
     const auth = getAuth()
     
+    // Mobile comments state
+    const showComments = ref(false)
+    const isTransitioning = ref(false)
+    
     // Touch/Swipe variables
     const touchStartY = ref(0)
     const touchStartX = ref(0)
@@ -399,8 +410,13 @@ export default {
       selectedPet.value = pet
       selectedPetIndex.value = index
       currentPhoto.value = getMainPhoto(pet)
+      showComments.value = false // Reset comments state
       await loadPetOwner(pet.userId || pet.ownerId)
       await loadComments(pet.id)
+    }
+
+    const toggleComments = () => {
+      showComments.value = !showComments.value
     }
 
     // Touch/Swipe handlers
@@ -410,17 +426,26 @@ export default {
     }
 
     const handleTouchMove = (e) => {
-      // Only prevent default on image area, not on scrollable content
-      const target = e.target.closest('.mobile-comments-scroll')
-      if (!target) {
-        e.preventDefault()
+      // If comments are open, allow scroll in comments area
+      if (showComments.value) {
+        const target = e.target.closest('.mobile-comments-scroll')
+        if (target) {
+          return // Allow normal scroll in comments
+        }
       }
+      
+      // Prevent default for pet navigation
+      e.preventDefault()
     }
 
     const handleTouchEnd = (e) => {
       touchEndY.value = e.changedTouches[0].clientY
       touchEndX.value = e.changedTouches[0].clientX
-      handleSwipe()
+      
+      // Only handle swipe if comments are closed
+      if (!showComments.value) {
+        handleSwipe()
+      }
     }
 
     const handleSwipe = () => {
@@ -442,16 +467,28 @@ export default {
     const goToNextPet = async () => {
       const nextIndex = selectedPetIndex.value + 1
       if (nextIndex < sortedAndFilteredPets.value.length) {
+        isTransitioning.value = true
         const nextPet = sortedAndFilteredPets.value[nextIndex]
-        await selectPet(nextPet, nextIndex)
+        
+        // Add slide animation
+        setTimeout(async () => {
+          await selectPet(nextPet, nextIndex)
+          isTransitioning.value = false
+        }, 150)
       }
     }
 
     const goToPreviousPet = async () => {
       const prevIndex = selectedPetIndex.value - 1
       if (prevIndex >= 0) {
+        isTransitioning.value = true
         const prevPet = sortedAndFilteredPets.value[prevIndex]
-        await selectPet(prevPet, prevIndex)
+        
+        // Add slide animation
+        setTimeout(async () => {
+          await selectPet(prevPet, prevIndex)
+          isTransitioning.value = false
+        }, 150)
       }
     }
 
@@ -499,6 +536,7 @@ export default {
       comments.value = []
       newComment.value = ''
       petOwner.value = null
+      showComments.value = false
     }
 
     const loadComments = async (petId) => {
@@ -693,11 +731,14 @@ export default {
       newComment,
       currentUser,
       petOwner,
+      showComments,
+      isTransitioning,
       placeholderImg,
       userAvatarPlaceholder,
       filteredPets,
       sortedAndFilteredPets,
       selectPet,
+      toggleComments,
       closePopup,
       loadPetOwner,
       loadComments,
@@ -922,6 +963,12 @@ export default {
   width: 100%;
   max-height: 90vh;
   position: relative;
+  transition: transform 0.3s ease;
+}
+
+.modal-content-new.transitioning {
+  transform: translateY(10px);
+  opacity: 0.8;
 }
 
 .modal-close-new {
@@ -1322,7 +1369,13 @@ export default {
     display: flex;
     flex-direction: column;
     min-height: 40vh;
-    padding-bottom: 80px; /* Space for fixed comment input */
+    padding-bottom: 80px;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-info-section.comments-open {
+    max-height: 70vh;
+    overflow: hidden;
   }
 
   .mobile-user-header {
@@ -1411,22 +1464,53 @@ export default {
     opacity: 0.9;
   }
 
-  .mobile-comments-container {
-    flex: 1;
+  /* Comments Toggle Button */
+  .mobile-comments-toggle {
     display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 12px;
+    padding: 1rem;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
   }
 
-  .mobile-comments-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    opacity: 0.8;
+  .mobile-comments-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .mobile-comments-toggle i.fa-chevron-up {
+    transition: transform 0.3s ease;
+  }
+
+  .mobile-comments-toggle i.fa-chevron-up.rotated {
+    transform: rotate(180deg);
+  }
+
+  /* Comments Container with Slide Animation */
+  .mobile-comments-container {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    flex: 1;
+  }
+
+  .mobile-comments-container.open {
+    max-height: 300px;
+  }
+
+  .mobile-comments-content {
+    padding-top: 0.5rem;
   }
 
   .mobile-comments-scroll {
-    flex: 1;
+    max-height: 250px;
     overflow-y: auto;
     padding-right: 0.5rem;
   }
