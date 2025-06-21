@@ -1421,10 +1421,10 @@ export default {
   }
 
   .modal-content-new {
-    max-width: 100%;
+    max-width: 90%;
     width: 100%;
     height: 100vh; /* ALTURA TOTAL DA TELA */
-    max-height: 100vh; /* ALTURA MÁXIMA TOTAL */
+    max-height: 98vh; /* ALTURA MÁXIMA TOTAL */
     border-radius: 20px; /* BORDAS ARREDONDADAS RESTAURADAS */
     overflow: hidden;
     margin: 10px; /* PEQUENA MARGEM PARA MOSTRAR AS BORDAS */
