@@ -1433,14 +1433,14 @@ export default {
 
   .modal-close-new {
     position: absolute;
-    top: 15px; /* MAIS PRÓXIMO DO TOPO */
-    right: 15px; /* MAIS PRÓXIMO DA LATERAL */
+    top: 50px; /* MAIS PRÓXIMO DO TOPO */
+    right: 35px; /* MAIS PRÓXIMO DA LATERAL */
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     color: white;
     z-index: 20;
-    width: 35px; /* MENOR */
-    height: 35px; /* MENOR */
+    width: 45px; /* MENOR */
+    height: 45px; /* MENOR */
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.3);
   }
@@ -1899,10 +1899,10 @@ export default {
   }
 
   .modal-close-new {
-    top: 10px;
-    right: 10px;
-    width: 30px;
-    height: 30px;
+    top: 50px;
+    right: 35px;
+    width: 45px;
+    height: 45px;
     font-size: 1rem;
   }
 
