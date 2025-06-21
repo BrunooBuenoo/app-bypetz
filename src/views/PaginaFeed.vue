@@ -1899,10 +1899,10 @@ export default {
   }
 
   .modal-close-new {
-    top: 10px;
-    right: 10px;
-    width: 30px;
-    height: 30px;
+    top: 30px;
+    right: 30px;
+    width: 35px;
+    height: 35px;
     font-size: 1rem;
   }
 
