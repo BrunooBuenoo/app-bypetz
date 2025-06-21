@@ -1410,7 +1410,7 @@ export default {
 @media (max-width: 768px) {
   .modal-overlay-new {
     padding: 0; /* REMOVIDO PADDING PARA OCUPAR TELA TODA */
-    background: rgba(0, 0, 0, 0.5); /* 50% TRANSPARENCY MANTIDO */
+    background: rgba(0, 0, 0, 0.7); /* 50% TRANSPARENCY MANTIDO */
     /* IMPORTANTE: Cobrir TODA a tela incluindo navbar */
     position: fixed;
     top: 0;
@@ -1466,7 +1466,7 @@ export default {
     align-items: center;
     justify-content: center;
     background: #000;
-    max-height: 55vh; /* REDUZIDO PARA DAR MAIS ESPAÇO PARA INFO */
+    max-height: 55vh; /* REDUZIDO PARA DAR MAIS ESPAÇO PARA INFO AQUIII */
     border-radius: 20px 20px 0 0; /* BORDAS ARREDONDADAS APENAS NO TOPO */
   }
 
@@ -1859,9 +1859,270 @@ export default {
   }
 }
 
+/* RESPONSIVIDADE PARA TELAS ABAIXO DE 480PX */
 @media (max-width: 480px) {
+  /* Grid com apenas 1 coluna */
   .pet-grid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 0 0.75rem 2rem;
+  }
+
+  /* Filtros mais compactos */
+  .filters-container {
+    padding: 0 1rem;
+    gap: 0.5rem;
+  }
+
+  .filter-select {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+    min-width: 100px;
+  }
+
+  .search-button {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* MODAL: Ajustes críticos para telas muito pequenas */
+  .modal-overlay-new {
+    padding: 0;
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .modal-content-new {
+    margin: 5px; /* MARGEM MENOR */
+    height: calc(100vh - 10px); /* ALTURA AJUSTADA */
+    max-height: calc(100vh - 10px);
+    border-radius: 15px; /* BORDAS MENORES */
+  }
+
+  .modal-close-new {
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+
+  /* MOBILE: Seção de imagem mais compacta */
+  .mobile-image-section {
+    max-height: 50vh; /* REDUZIDO AINDA MAIS */
+    border-radius: 15px 15px 0 0;
+  }
+
+  .mobile-image-centered {
+    border-radius: 15px 15px 0 0;
+  }
+
+  .mobile-image-nav {
+    bottom: 10px;
+  }
+
+  .mobile-nav-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* MOBILE: Seção inferior otimizada para telas pequenas */
+  .mobile-bottom-info {
+    min-height: 50vh; /* MAIS ESPAÇO PARA CONTEÚDO */
+    max-height: 50vh;
+    padding: 0.75rem; /* PADDING MENOR */
+    border-radius: 0 0 15px 15px;
+    /* IMPORTANTE: Garantir que fique acima da barra do navegador */
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 20px));
+  }
+
+  /* MOBILE: Botões sociais menores */
+  .mobile-social-buttons-overlay {
+    top: 15px;
+    right: 15px;
+    gap: 10px;
+  }
+
+  .mobile-whatsapp-btn-overlay,
+  .mobile-instagram-btn-overlay {
+    width: 48px;
+    height: 48px;
+    font-size: 1.3rem;
+  }
+
+  /* MOBILE: Seções de usuário e detalhes mais compactas */
+  .mobile-user-section {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-right: 120px; /* ESPAÇO REDUZIDO PARA ÍCONES MENORES */
+  }
+
+  .mobile-owner-avatar {
+    width: 35px;
+    height: 35px;
+  }
+
+  .mobile-owner-name {
+    font-size: 0.95rem;
+  }
+
+  .mobile-pet-details-section {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-right: 120px;
+  }
+
+  .mobile-detail-item {
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+  }
+
+  /* MOBILE: Input de comentário SEMPRE VISÍVEL e ACIMA da barra do navegador */
+  .mobile-comment-input-container {
+    margin-bottom: 0.75rem;
+    padding: 0.4rem;
+    border-radius: 20px;
+    /* IMPORTANTE: Posicionamento que garante visibilidade */
+    position: relative;
+    z-index: 15;
+    /* Garantir que fique acima da área do navegador */
+    margin-bottom: calc(0.75rem + env(safe-area-inset-bottom, 10px));
+  }
+
+  .mobile-comment-input {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .mobile-send-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  /* MOBILE: Botão de comentários SEMPRE VISÍVEL e ACIMA da barra do navegador */
+  .mobile-comments-toggle-section {
+    margin-bottom: 0;
+    /* IMPORTANTE: Posicionamento que garante visibilidade */
+    position: relative;
+    z-index: 15;
+    /* Garantir que fique acima da área do navegador */
+    padding-bottom: env(safe-area-inset-bottom, 15px);
+  }
+
+  .mobile-comments-toggle-btn {
+    padding: 0.75rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+  }
+
+  .mobile-comments-toggle-text {
+    font-size: 0.9rem;
+  }
+
+  .mobile-comments-toggle-btn i.fa-chevron-up {
+    font-size: 0.8rem;
+  }
+
+  /* MOBILE: Overlay de comentários otimizado */
+  .mobile-comments-overlay-popup {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .mobile-comments-content {
+    max-height: 75vh; /* MAIS ESPAÇO */
+    border-radius: 15px 15px 0 0;
+    padding: 0.75rem;
+    /* Garantir que não conflite com a barra do navegador */
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 20px));
+  }
+
+  .mobile-comments-header-overlay {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .mobile-comments-header-overlay h4 {
+    font-size: 1rem;
+  }
+
+  .close-comments-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .mobile-comment-item {
+    margin-bottom: 0.75rem;
+    gap: 0.6rem;
+  }
+
+  .mobile-comment-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .mobile-comment-avatar-placeholder {
+    font-size: 0.7rem;
+  }
+
+  .mobile-comment-username {
+    font-size: 0.85rem;
+  }
+
+  .mobile-comment-text {
+    font-size: 0.8rem;
+  }
+
+  .mobile-comment-time {
+    font-size: 0.7rem;
+  }
+
+  .mobile-no-comments {
+    font-size: 0.85rem;
+    margin: 1.5rem 0;
+  }
+
+  /* IMPORTANTE: Garantir que elementos críticos não sejam cobertos pela barra do navegador */
+  .mobile-bottom-info::after {
+    content: '';
+    display: block;
+    height: env(safe-area-inset-bottom, 20px);
+    width: 100%;
+  }
+}
+
+/* AJUSTES ADICIONAIS PARA TELAS MUITO PEQUENAS (abaixo de 360px) */
+@media (max-width: 360px) {
+  .modal-content-new {
+    margin: 2px;
+    height: calc(100vh - 4px);
+    max-height: calc(100vh - 4px);
+    border-radius: 10px;
+  }
+
+  .mobile-bottom-info {
+    padding: 0.5rem;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 25px));
+  }
+
+  .mobile-social-buttons-overlay {
+    top: 10px;
+    right: 10px;
+  }
+
+  .mobile-whatsapp-btn-overlay,
+  .mobile-instagram-btn-overlay {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+
+  .mobile-comment-input-container {
+    margin-bottom: calc(0.5rem + env(safe-area-inset-bottom, 15px));
+  }
+
+  .mobile-comments-toggle-section {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
   }
 }
 </style>
