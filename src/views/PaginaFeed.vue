@@ -1364,7 +1364,7 @@ export default {
   border-radius: 15px;
   color: white;
   padding: 0.75rem 1rem;
-  font-size: 0.9rem;
+  font-size: 16px; /* ALTERADO DE 0.9rem PARA 16px - CONSISTÊNCIA */
   outline: none;
 }
 
@@ -1518,7 +1518,7 @@ export default {
   /* MOBILE: Social Buttons - OVERLAPPING INFO SECTION */
   .mobile-social-buttons-overlay {
     position: absolute;
-    top: 20px; /* POSICIONADO NO TOPO DA SEÇÃO DE INFO */
+    top: 80px; /* POSICIONADO NO TOPO DA SEÇÃO DE INFO */
     right: 20px;
     display: flex;
     flex-direction: column;
@@ -1648,7 +1648,7 @@ export default {
     border: none;
     color: white;
     padding: 0.75rem 1rem;
-    font-size: 0.9rem;
+    font-size: 16px; /* ALTERADO DE 0.9rem PARA 16px - PREVINE ZOOM */
     outline: none;
   }
 
@@ -1899,10 +1899,10 @@ export default {
   }
 
   .modal-close-new {
-    top: 40px;
-    right: 30px;
-    width: 40px;
-    height: 40px;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
     font-size: 1rem;
   }
 
@@ -1937,7 +1937,7 @@ export default {
 
   /* MOBILE: Botões sociais menores */
   .mobile-social-buttons-overlay {
-    top: 15px;
+    top: 65px;
     right: 15px;
     gap: 10px;
   }
@@ -1990,7 +1990,7 @@ export default {
 
   .mobile-comment-input {
     padding: 0.6rem 0.8rem;
-    font-size: 0.85rem;
+    font-size: 16px; /* ALTERADO DE 0.85rem PARA 16px - PREVINE ZOOM */
   }
 
   .mobile-send-btn {
@@ -2106,7 +2106,7 @@ export default {
   }
 
   .mobile-social-buttons-overlay {
-    top: 10px;
+    top: 70px;
     right: 10px;
   }
 
