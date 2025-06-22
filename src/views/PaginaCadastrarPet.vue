@@ -417,6 +417,7 @@ export default {
 .header {
   text-align: center;
   margin-bottom: 3rem;
+  background: transparent;
 }
 
 .header h1 {

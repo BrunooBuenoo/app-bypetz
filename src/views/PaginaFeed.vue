@@ -4,7 +4,7 @@
     <div class="filters-section">
       <div class="filters-container">
         <select v-model="filter.status" class="filter-select">
-          <option value="">situação</option>
+          <option value="">Situação</option>
           <option value="perdido">Perdido</option>
           <option value="encontrado">Encontrado</option>
           <option value="adocao">Adoção</option>
@@ -128,7 +128,7 @@
             <!-- Pet Details -->
             <div class="pet-details-new">
               <div class="detail-row">
-                <span class="detail-text">{{ getStatusLabel(selectedPet.status) }}</span>
+                <span class="detail-text" :class="getStatusClass(selectedPet.status)">{{ getStatusLabel(selectedPet.status) }}</span>
               </div>
               <div class="detail-row">
                 <span class="detail-text">{{ getTypeLabel(selectedPet.type) }}</span>
@@ -245,7 +245,7 @@
 
             <!-- Pet Details Below User -->
             <div class="mobile-pet-details-section">
-              <div class="mobile-detail-item">{{ getStatusLabel(selectedPet.status) }}</div>
+              <div class="mobile-detail-item" :class="getStatusClass(selectedPet.status)">Status do Pet:{{ getStatusLabel(selectedPet.status) }}</div>
               <div class="mobile-detail-item">{{ getTypeLabel(selectedPet.type) }}</div>
               <div v-if="selectedPet.species" class="mobile-detail-item">Raça do pet: {{ selectedPet.species }}</div>
               <div v-if="selectedPet.gender" class="mobile-detail-item">Gênero: {{ getGenderLabel(selectedPet.gender) }}</div>
@@ -705,11 +705,11 @@ export default {
 
     const getStatusLabel = (status) => {
       const labels = {
-        'perdido': 'Status do pet: Perdido',
-        'encontrado': 'Status do pet: Encontrado',
-        'adocao': 'Status do pet: Para Adoção'
+        'perdido': ' Perdido',
+        'encontrado': ' Encontrado',
+        'adocao': ' Para Adoção'
       }
-      return labels[status] || `Status do pet: ${status}`
+      return labels[status] || `${status}`
     }
 
     const getTypeLabel = (type) => {
@@ -828,7 +828,15 @@ export default {
       handleCommentsScrollMove,
       handleCommentsScrollEnd,
       goToNextPet,
-      goToPreviousPet
+      goToPreviousPet,
+      getStatusClass: (status) => {
+        const statusClasses = {
+          'perdido': 'status-perdido',
+          'encontrado': 'status-encontrado', 
+          'adocao': 'status-adocao'
+        }
+        return statusClasses[status] || ''
+      },
     }
   },
 }
@@ -2124,5 +2132,37 @@ export default {
   .mobile-comments-toggle-section {
     padding-bottom: env(safe-area-inset-bottom, 20px);
   }
+}
+
+/* Status Colors */
+.status-perdido {
+  color: #ef4444 !important; /* Vermelho */
+  font-weight: 600;
+}
+
+.status-encontrado {
+  color: #22c55e !important; /* Verde */
+  font-weight: 600;
+}
+
+.status-adocao {
+  color: #3b82f6 !important; /* Azul */
+  font-weight: 600;
+}
+
+/* Mobile Status Colors */
+.mobile-detail-item.status-perdido {
+  color: #ef4444 !important; /* Vermelho */
+  font-weight: 600;
+}
+
+.mobile-detail-item.status-encontrado {
+  color: #22c55e !important; /* Verde */
+  font-weight: 600;
+}
+
+.mobile-detail-item.status-adocao {
+  color: #3b82f6 !important; /* Azul */
+  font-weight: 600;
 }
 </style>

@@ -107,7 +107,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .hero {
   width: 100%;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #ffffff 100%);

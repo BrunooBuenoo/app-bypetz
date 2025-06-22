@@ -40,7 +40,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .hero-container {
   background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
   min-height: 100vh;

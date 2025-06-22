@@ -258,7 +258,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .header {
   position: sticky;
   top: 0;
