@@ -256,7 +256,7 @@ export default {
 
 .hero-icon {
   width: 80px;
-  height: 80px;
+  height: 55px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;
@@ -694,6 +694,10 @@ export default {
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.5rem;
+  }
+
+  .hero-icon {
+    height: 80px;
   }
   
   .hero-subtitle {
