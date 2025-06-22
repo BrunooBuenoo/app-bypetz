@@ -103,15 +103,28 @@
           </div>
 
           <div class="form-group">
-            <label for="lastSeen">Local *</label>
-            <input
-              v-model="petForm.lastSeen"
-              type="text"
-              id="lastSeen"
-              placeholder="Ex: Parque Central, Rua das Flores"
-              required
-            />
+            
+                <label  for="city"><i class="fas fa-map-marker-alt"></i> Cidade *</label>
+                <CityAutocomplete id="citis"
+                  v-model="petForm.city"
+                  placeholder="Digite o nome da cidade..."
+                  input-class="city-input-cadastro"
+                  @citySelected="handleCitySelected"
+                />
+            
           </div>
+        </div>
+
+        <!-- Local específico (opcional) -->
+        <div class="form-group">
+          <label for="lastSeen">Local específico (opcional)</label>
+          <input
+            v-model="petForm.lastSeen"
+            type="text"
+            id="lastSeen"
+            placeholder="Ex: Parque Central, Rua das Flores, próximo ao shopping"
+          />
+          <small class="field-help">Informe um local mais específico dentro da cidade</small>
         </div>
 
         <!-- Descrição -->
@@ -197,9 +210,13 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import CityAutocomplete from '../components/CityAutocomplete.vue'
 
 export default {
   name: 'PaginaCadastrarPet',
+  components: {
+    CityAutocomplete
+  },
   setup() {
     const router = useRouter()
     const { user } = useAuth()
@@ -215,6 +232,7 @@ export default {
       species: '',
       gender: '',
       status: '',
+      city: '',
       lastSeen: '',
       description: '',
       email: '',
@@ -222,6 +240,16 @@ export default {
       instagram: '',
       photos: [null, null, null] // Array para até 3 fotos
     })
+
+    const handleCitySelected = (city) => {
+      // Armazenar dados da cidade selecionada
+      petForm.value.cityData = {
+        id: city.id,
+        name: city.name,
+        state: city.state,
+        fullName: city.fullName
+      }
+    }
 
     const triggerFileInput = (index) => {
       fileInputs.value[index]?.click()
@@ -318,6 +346,12 @@ export default {
         return
       }
 
+      // Verificar se cidade foi selecionada
+      if (!petForm.value.city) {
+        error.value = 'Selecione uma cidade'
+        return
+      }
+
       try {
         loading.value = true
         error.value = ''
@@ -332,7 +366,9 @@ export default {
           species: petForm.value.species || 'Não informado',
           gender: petForm.value.gender || '',
           status: petForm.value.status,
-          lastSeen: petForm.value.lastSeen,
+          city: petForm.value.city, // Cidade completa "Nome - UF"
+          cityData: petForm.value.cityData || null, // Dados estruturados da cidade
+          lastSeen: petForm.value.lastSeen || '', // Local específico
           description: petForm.value.description || '',
           email: petForm.value.email || user.value.email,
           phone: petForm.value.phone || '',
@@ -358,6 +394,7 @@ export default {
           species: '',
           gender: '',
           status: '',
+          city: '',
           lastSeen: '',
           description: '',
           email: '',
@@ -385,6 +422,7 @@ export default {
       successMessage,
       error,
       fileInputs,
+      handleCitySelected,
       triggerFileInput,
       handlePhotoChange,
       removePhoto,
@@ -396,6 +434,16 @@ export default {
 </script>
 
 <style scoped>
+#citis{
+    padding: 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    background: white;
+    color: #374151;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
 .cadastrar-pet-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
@@ -686,6 +734,33 @@ export default {
   background: rgba(239, 68, 68, 0.95);
   color: white;
   border: 1px solid #EF4444;
+}
+
+/* Estilos específicos para o autocomplete de cidade no cadastro */
+.city-input-cadastro {
+  padding: 1rem;
+  border: none; /* remove a borda */
+  border-radius: 12px;
+  background: white;
+  color: #0f0f0f;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  
+}
+
+::v-deep(.input-container input) {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-size: 16px;
+}
+
+
+.city-input-cadastro:focus {
+  outline: none;
+  border-color: #8B5CF6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
 }
 
 @media (max-width: 768px) {

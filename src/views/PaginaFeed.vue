@@ -22,6 +22,16 @@
               <option value="encontrado">Encontrado</option>
               <option value="adocao">Adoção</option>
             </select>
+
+            <!-- Filtro de Cidade com Autocomplete -->
+            <div class="city-filter-container">
+              <CityAutocomplete  id="citis"
+                v-model="filter.city"
+                placeholder="Filtrar por cidade..."
+                input-class="filter-city-input"
+                @citySelected="handleCityFilterSelected"
+              />
+            </div>
             
             <select v-model="filter.type" class="filter-select">
               <option value="">Tipo</option>
@@ -36,6 +46,8 @@
               <option value="macho">Macho</option>
               <option value="femea">Fêmea</option>
             </select>
+
+            
 
             <select v-model="filter.sortOrder" class="filter-select">
               <option value="desc">Mais recente</option>
@@ -77,6 +89,11 @@
         />
         <div v-if="hasMultiplePhotos(pet)" class="photo-count">
           <span>+{{ pet.photos?.length || 1 }}</span>
+        </div>
+        <!-- Badge da cidade -->
+        <div v-if="pet.city || pet.cityData" class="city-badge">
+          <i class="fas fa-map-marker-alt"></i>
+          {{ getCityName(pet) }}
         </div>
       </div>
     </div>
@@ -160,6 +177,19 @@
               </div>
               <div class="detail-row">
                 <span class="detail-text">Nome do Pet: {{ selectedPet.name }}</span>
+              </div>
+              <!-- Localização -->
+              <div class="detail-row" v-if="selectedPet.city || selectedPet.cityData">
+                <span class="detail-text">
+                  <i class="fas fa-map-marker-alt"></i>
+                  Cidade: {{ getCityName(selectedPet) }}
+                </span>
+              </div>
+              <div class="detail-row" v-if="selectedPet.lastSeen">
+                <span class="detail-text">
+                  <i class="fas fa-location-dot"></i>
+                  Local: {{ selectedPet.lastSeen }}
+                </span>
               </div>
             </div>
 
@@ -269,6 +299,15 @@
               <div v-if="selectedPet.species" class="mobile-detail-item">Raça do pet: {{ selectedPet.species }}</div>
               <div v-if="selectedPet.gender" class="mobile-detail-item">Gênero: {{ getGenderLabel(selectedPet.gender) }}</div>
               <div class="mobile-detail-item">Nome do Pet: {{ selectedPet.name }}</div>
+              <!-- Localização Mobile -->
+              <div class="mobile-detail-item" v-if="selectedPet.city || selectedPet.cityData">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ getCityName(selectedPet) }}
+              </div>
+              <div class="mobile-detail-item" v-if="selectedPet.lastSeen">
+                <i class="fas fa-location-dot"></i>
+                {{ selectedPet.lastSeen }}
+              </div>
             </div>
 
             <!-- Social Buttons - OVERLAPPING INFO SECTION -->
@@ -378,11 +417,13 @@ import { collection, getDocs, query, orderBy, addDoc, onSnapshot, doc, getDoc } 
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { db } from '../firebase/config'
 import RodapeSite from '../components/RodapeSite.vue'
+import CityAutocomplete from '../components/CityAutocomplete.vue'
 
 export default {
   name: "PaginaFeed",
   components: {
-    RodapeSite
+    RodapeSite,
+    CityAutocomplete
   },
   setup() {
     const pets = ref([])
@@ -392,6 +433,7 @@ export default {
       location: '',
       type: '',
       gender: '',
+      city: '',
       sortOrder: 'desc'
     })
     
@@ -436,7 +478,7 @@ export default {
 
     // Computed for active filters
     const hasActiveFilters = computed(() => {
-      return filter.value.status || filter.value.type || filter.value.gender || filter.value.sortOrder !== 'desc'
+      return filter.value.status || filter.value.type || filter.value.gender || filter.value.city || filter.value.sortOrder !== 'desc'
     })
 
     const filteredPets = computed(() => {
@@ -444,9 +486,17 @@ export default {
         const matchesStatus = !filter.value.status || pet.status === filter.value.status
         const matchesType = !filter.value.type || pet.type === filter.value.type
         const matchesGender = !filter.value.gender || pet.gender === filter.value.gender
+        
+        // Filtro de cidade - buscar tanto no campo city quanto cityData
+        const matchesCity = !filter.value.city || 
+          (pet.city && pet.city.toLowerCase().includes(filter.value.city.toLowerCase())) ||
+          (pet.cityData && pet.cityData.fullName && pet.cityData.fullName.toLowerCase().includes(filter.value.city.toLowerCase())) ||
+          (pet.lastSeen && pet.lastSeen.toLowerCase().includes(filter.value.city.toLowerCase()))
+        
         const matchesLocation = !filter.value.location || 
           pet.lastSeen?.toLowerCase().includes(filter.value.location.toLowerCase())
-        return matchesStatus && matchesType && matchesGender && matchesLocation
+        
+        return matchesStatus && matchesType && matchesGender && matchesCity && matchesLocation
       })
     })
 
@@ -475,9 +525,25 @@ export default {
         location: '',
         type: '',
         gender: '',
+        city: '',
         sortOrder: 'desc'
       }
       showFilters.value = false
+    }
+
+    const handleCityFilterSelected = (city) => {
+      // Quando uma cidade é selecionada no filtro, usar o nome completo
+      filter.value.cityData = city
+    }
+
+    const getCityName = (pet) => {
+      if (pet.cityData && pet.cityData.fullName) {
+        return pet.cityData.fullName
+      }
+      if (pet.city) {
+        return pet.city
+      }
+      return 'Localização não informada'
     }
 
     const selectPet = async (pet, index) => {
@@ -859,6 +925,8 @@ export default {
       sortedAndFilteredPets,
       toggleFilters,
       clearFilters,
+      handleCityFilterSelected,
+      getCityName,
       selectPet,
       toggleComments,
       closeCommentsIfClickOutside,
@@ -914,6 +982,23 @@ export default {
   min-height: 100vh;
   background: linear-gradient(135deg, #f0f0f0 0%, #efeff0 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+#citis{
+    padding: 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    background: white;
+    color: #374151;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+::v-deep(.input-container input) {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-size: 16px;
 }
 
 /* Filtros estilo ByPetz com Lupa */
@@ -982,7 +1067,7 @@ export default {
 }
 
 .filters-expanded.show {
-  max-height: 300px;
+  max-height: 400px;
 }
 
 .filters-grid {
@@ -1012,6 +1097,27 @@ export default {
 }
 
 .filter-select:focus {
+  outline: none;
+  border-color: #8B5CF6;
+}
+
+.city-filter-container {
+  width: 100%;
+}
+
+.filter-city-input {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+
+.filter-city-input:focus {
   outline: none;
   border-color: #8B5CF6;
 }
@@ -1169,6 +1275,27 @@ export default {
   border-radius: 15px;
   font-size: 0.8rem;
   font-weight: 600;
+}
+
+/* Badge da cidade */
+.city-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(139, 92, 246, 0.9);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  backdrop-filter: blur(10px);
+}
+
+.city-badge i {
+  font-size: 0.7rem;
 }
 
 /* Modal Overlay - COMPLETELY BLOCK SCROLL + 50% TRANSPARENCY */
@@ -1340,6 +1467,14 @@ export default {
 .detail-text {
   font-size: 0.9rem;
   opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-text i {
+  color: #8B5CF6;
+  font-size: 0.8rem;
 }
 
 /* Social Contact Buttons */
@@ -1771,10 +1906,18 @@ export default {
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
     color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .mobile-detail-item:last-child {
     margin-bottom: 0;
+  }
+
+  .mobile-detail-item i {
+    color: #8B5CF6;
+    font-size: 0.8rem;
   }
 
   /* MOBILE: Comment Input Always Visible */
@@ -2092,7 +2235,7 @@ export default {
     gap: 0.5rem;
   }
 
-  .filter-select {
+  .filter-select, .filter-city-input {
     font-size: 0.85rem;
     padding: 0.6rem 0.8rem;
   }
