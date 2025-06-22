@@ -1728,7 +1728,6 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
     z-index: 1000;
     transform: translateY(100%);
     transition: transform 0.3s ease;
