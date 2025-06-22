@@ -277,6 +277,10 @@
                 @click="currentPhoto = photo"
               ></button>
             </div>
+
+            
+
+            
           </div>
 
           <!-- Bottom Info Section -->
@@ -299,7 +303,7 @@
               <div v-if="selectedPet.species" class="mobile-detail-item">Raça do pet: {{ selectedPet.species }}</div>
               <div v-if="selectedPet.gender" class="mobile-detail-item">Gênero: {{ getGenderLabel(selectedPet.gender) }}</div>
               <div class="mobile-detail-item">Nome do Pet: {{ selectedPet.name }}</div>
-              <!-- Localização Mobile -->
+              <!-- Localização Mobile 
               <div class="mobile-detail-item" v-if="selectedPet.city || selectedPet.cityData">
                 <i class="fas fa-map-marker-alt"></i>
                 {{ getCityName(selectedPet) }}
@@ -308,6 +312,7 @@
                 <i class="fas fa-location-dot"></i>
                 {{ selectedPet.lastSeen }}
               </div>
+              -->
             </div>
 
             <!-- Social Buttons - OVERLAPPING INFO SECTION -->
