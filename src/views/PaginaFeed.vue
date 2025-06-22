@@ -1,37 +1,56 @@
 <template>
   <div class="bypetz-app">
-    <!-- Filtros estilo ByPetz -->
+    <!-- Filtros estilo ByPetz com Lupa -->
     <div class="filters-section">
       <div class="filters-container">
-        <select v-model="filter.status" class="filter-select">
-          <option value="">Situação</option>
-          <option value="perdido">Perdido</option>
-          <option value="encontrado">Encontrado</option>
-          <option value="adocao">Adoção</option>
-        </select>
-        
-        <select v-model="filter.type" class="filter-select">
-          <option value="">Tipo</option>
-          <option value="cachorro">Cachorro</option>
-          <option value="gato">Gato</option>
-          <option value="passaro">Pássaro</option>
-          <option value="outro">Outro</option>
-        </select>
-        
-        <select v-model="filter.gender" class="filter-select">
-          <option value="">Genero</option>
-          <option value="macho">Macho</option>
-          <option value="femea">Fêmea</option>
-        </select>
-
-        <select v-model="filter.sortOrder" class="filter-select">
-          <option value="desc">Mais recente</option>
-          <option value="asc">Mais antigos</option>
-        </select>
-        
-        <button class="search-button" @click="applyFilters">
-          BUSCAR
+        <!-- Botão de Lupa -->
+        <button 
+          class="search-toggle-btn" 
+          @click="toggleFilters"
+          :class="{ 'active': showFilters }"
+        >
+          <i class="fas fa-search"></i>
+          <span v-if="hasActiveFilters" class="filter-indicator"></span>
         </button>
+        
+        <!-- Filtros Expandidos -->
+        <div class="filters-expanded" :class="{ 'show': showFilters }">
+          <div class="filters-grid">
+            <select v-model="filter.status" class="filter-select">
+              <option value="">Situação</option>
+              <option value="perdido">Perdido</option>
+              <option value="encontrado">Encontrado</option>
+              <option value="adocao">Adoção</option>
+            </select>
+            
+            <select v-model="filter.type" class="filter-select">
+              <option value="">Tipo</option>
+              <option value="cachorro">Cachorro</option>
+              <option value="gato">Gato</option>
+              <option value="passaro">Pássaro</option>
+              <option value="outro">Outro</option>
+            </select>
+            
+            <select v-model="filter.gender" class="filter-select">
+              <option value="">Genero</option>
+              <option value="macho">Macho</option>
+              <option value="femea">Fêmea</option>
+            </select>
+
+            <select v-model="filter.sortOrder" class="filter-select">
+              <option value="desc">Mais recente</option>
+              <option value="asc">Mais antigos</option>
+            </select>
+            
+            <button class="search-button" @click="applyFilters">
+              BUSCAR
+            </button>
+            
+            <button class="clear-filters-btn" @click="clearFilters" v-if="hasActiveFilters">
+              LIMPAR
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -329,6 +348,20 @@
                     <p>Seja o primeiro a comentar!</p>
                   </div>
                 </div>
+
+                <!-- INPUT FIXO NO OVERLAY DE COMENTÁRIOS - SEMPRE VISÍVEL -->
+                <div class="mobile-comments-overlay-input-fixed">
+                  <input 
+                    v-model="newComment" 
+                    type="text" 
+                    placeholder="Comentar"
+                    class="mobile-comments-overlay-input"
+                    @keyup.enter="addComment"
+                  >
+                  <button @click="addComment" class="mobile-comments-overlay-send-btn" :disabled="!newComment.trim()">
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -375,6 +408,9 @@ export default {
     const showComments = ref(false)
     const isTransitioning = ref(false)
     
+    // Filters state
+    const showFilters = ref(false)
+    
     // Touch/Swipe variables
     const touchStartY = ref(0)
     const touchStartX = ref(0)
@@ -396,6 +432,11 @@ export default {
     // Monitor auth state
     onAuthStateChanged(auth, (user) => {
       currentUser.value = user
+    })
+
+    // Computed for active filters
+    const hasActiveFilters = computed(() => {
+      return filter.value.status || filter.value.type || filter.value.gender || filter.value.sortOrder !== 'desc'
     })
 
     const filteredPets = computed(() => {
@@ -423,6 +464,21 @@ export default {
         }
       })
     })
+
+    const toggleFilters = () => {
+      showFilters.value = !showFilters.value
+    }
+
+    const clearFilters = () => {
+      filter.value = {
+        status: '',
+        location: '',
+        type: '',
+        gender: '',
+        sortOrder: 'desc'
+      }
+      showFilters.value = false
+    }
 
     const selectPet = async (pet, index) => {
       selectedPet.value = pet
@@ -736,6 +792,7 @@ export default {
 
     const applyFilters = () => {
       console.log('Aplicando filtros:', filter.value)
+      showFilters.value = false
     }
 
     const formatDate = (timestamp) => {
@@ -794,10 +851,14 @@ export default {
       petOwner,
       showComments,
       isTransitioning,
+      showFilters,
+      hasActiveFilters,
       placeholderImg,
       userAvatarPlaceholder,
       filteredPets,
       sortedAndFilteredPets,
+      toggleFilters,
+      clearFilters,
       selectPet,
       toggleComments,
       closeCommentsIfClickOutside,
@@ -855,7 +916,7 @@ export default {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Filtros estilo ByPetz */
+/* Filtros estilo ByPetz com Lupa */
 .filters-section {
   padding: 2rem 0;
 }
@@ -864,22 +925,82 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+/* Botão de Lupa */
+.search-toggle-btn {
+  background: #8B5CF6;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-toggle-btn:hover {
+  background: #7C3AED;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.search-toggle-btn.active {
+  background: #7C3AED;
+  border-radius: 50px 50px 0 0;
+}
+
+.filter-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #FFD700;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+/* Filtros Expandidos */
+.filters-expanded {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease;
+}
+
+.filters-expanded.show {
+  max-height: 300px;
+}
+
+.filters-grid {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1rem;
   align-items: center;
-  justify-content: center;
-  padding: 0 2rem;
-  flex-wrap: wrap;
 }
 
 .filter-select {
   background: white;
-  border: 2px solid #333;
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
   padding: 0.75rem 1rem;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #333;
-  min-width: 120px;
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
@@ -887,6 +1008,7 @@ export default {
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
+  transition: border-color 0.2s;
 }
 
 .filter-select:focus {
@@ -899,8 +1021,8 @@ export default {
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -908,6 +1030,22 @@ export default {
 
 .search-button:hover {
   background: #7C3AED;
+}
+
+.clear-filters-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.clear-filters-btn:hover {
+  background: #dc2626;
 }
 
 /* Loading */
@@ -1521,6 +1659,7 @@ export default {
     overflow: hidden;
     border-radius: 0 0 20px 20px; /* BORDAS ARREDONDADAS APENAS EMBAIXO */
     position: relative; /* IMPORTANTE PARA POSICIONAMENTO DOS ÍCONES */
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 20px));
   }
 
   /* MOBILE: Social Buttons - OVERLAPPING INFO SECTION */
@@ -1747,6 +1886,7 @@ export default {
     padding: 1rem;
     display: flex;
     flex-direction: column;
+    position: relative; /* IMPORTANTE PARA O INPUT FIXO */
   }
 
   .mobile-comments-header-overlay {
@@ -1756,6 +1896,7 @@ export default {
     margin-bottom: 1rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
   }
 
   .mobile-comments-header-overlay h4 {
@@ -1783,6 +1924,8 @@ export default {
     padding-right: 0.5rem;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    padding-bottom: 80px; /* ESPAÇO PARA O INPUT FIXO */
+    min-height: 0;
   }
 
   .mobile-comments-list {
@@ -1850,14 +1993,77 @@ export default {
     margin: 2rem 0;
   }
 
-  .filters-container {
-    flex-direction: column;
+  /* MOBILE: INPUT FIXO NO OVERLAY DE COMENTÁRIOS - SEMPRE VISÍVEL ACIMA DA BARRA DO NAVEGADOR */
+  .mobile-comments-overlay-input-fixed {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.98);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 0 0 20px 20px;
+    z-index: 20;
+    /* GARANTIR QUE FIQUE ACIMA DA BARRA DO NAVEGADOR */
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 20px));
+  }
+
+  .mobile-comments-overlay-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-size: 16px; /* PREVINE ZOOM NO iOS */
+    outline: none;
+  }
+
+  .mobile-comments-overlay-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .mobile-comments-overlay-input:focus {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .mobile-comments-overlay-send-btn {
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .mobile-comments-overlay-send-btn:hover:not(:disabled) {
+    background: #0056b3;
+  }
+
+  .mobile-comments-overlay-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* MOBILE: Filtros responsivos */
+  .filters-grid {
+    grid-template-columns: 1fr;
     gap: 0.75rem;
   }
 
-  .filter-select {
-    width: 100%;
-    max-width: 300px;
+  .search-toggle-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
   }
 
   .pet-grid {
@@ -1876,20 +2082,24 @@ export default {
   }
 
   /* Filtros mais compactos */
-  .filters-container {
-    padding: 0 1rem;
+  .search-toggle-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .filters-grid {
+    padding: 1.5rem;
     gap: 0.5rem;
   }
 
   .filter-select {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     padding: 0.6rem 0.8rem;
-    min-width: 100px;
   }
 
-  .search-button {
-    padding: 0.6rem 1.5rem;
-    font-size: 0.9rem;
+  .search-button, .clear-filters-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
   }
 
   /* MODAL: Ajustes críticos para telas muito pequenas */
@@ -1899,10 +2109,10 @@ export default {
   }
 
   .modal-content-new {
-    margin: 5px; /* MARGEM MENOR */
-    height: calc(100vh - 10px); /* ALTURA AJUSTADA */
+    margin: 5px;
+    height: calc(100vh - 10px);
     max-height: calc(100vh - 10px);
-    border-radius: 15px; /* BORDAS MENORES */
+    border-radius: 15px;
   }
 
   .modal-close-new {
@@ -1915,7 +2125,7 @@ export default {
 
   /* MOBILE: Seção de imagem mais compacta */
   .mobile-image-section {
-    max-height: 50vh; /* REDUZIDO AINDA MAIS */
+    max-height: 50vh;
     border-radius: 15px 15px 0 0;
   }
 
@@ -1934,17 +2144,16 @@ export default {
 
   /* MOBILE: Seção inferior otimizada para telas pequenas */
   .mobile-bottom-info {
-    min-height: 50vh; /* MAIS ESPAÇO PARA CONTEÚDO */
+    min-height: 50vh;
     max-height: 50vh;
-    padding: 0.75rem; /* PADDING MENOR */
+    padding: 0.75rem;
     border-radius: 0 0 15px 15px;
-    /* IMPORTANTE: Garantir que fique acima da barra do navegador */
     padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 20px));
   }
 
   /* MOBILE: Botões sociais menores */
   .mobile-social-buttons-overlay {
-    top: 65px;
+    top: 70px;
     right: 15px;
     gap: 10px;
   }
@@ -1960,7 +2169,7 @@ export default {
   .mobile-user-section {
     margin-bottom: 0.75rem;
     padding-bottom: 0.75rem;
-    padding-right: 120px; /* ESPAÇO REDUZIDO PARA ÍCONES MENORES */
+    padding-right: 120px;
   }
 
   .mobile-owner-avatar {
@@ -1988,16 +2197,14 @@ export default {
     margin-bottom: 0.75rem;
     padding: 0.4rem;
     border-radius: 20px;
-    /* IMPORTANTE: Posicionamento que garante visibilidade */
     position: relative;
     z-index: 15;
-    /* Garantir que fique acima da área do navegador */
     margin-bottom: calc(0.75rem + env(safe-area-inset-bottom, 10px));
   }
 
   .mobile-comment-input {
     padding: 0.6rem 0.8rem;
-    font-size: 16px; /* ALTERADO DE 0.85rem PARA 16px - PREVINE ZOOM */
+    font-size: 16px;
   }
 
   .mobile-send-btn {
@@ -2009,10 +2216,8 @@ export default {
   /* MOBILE: Botão de comentários SEMPRE VISÍVEL e ACIMA da barra do navegador */
   .mobile-comments-toggle-section {
     margin-bottom: 0;
-    /* IMPORTANTE: Posicionamento que garante visibilidade */
     position: relative;
     z-index: 15;
-    /* Garantir que fique acima da área do navegador */
     padding-bottom: env(safe-area-inset-bottom, 15px);
   }
 
@@ -2029,13 +2234,29 @@ export default {
   .mobile-comments-toggle-btn i.fa-chevron-up {
     font-size: 0.8rem;
   }
- 
+
+  /* MOBILE: Overlay de comentários com input fixo otimizado */
   .mobile-comments-content {
-    max-height: 75vh; /* MAIS ESPAÇO */
+    max-height: 75vh;
     border-radius: 15px 15px 0 0;
     padding: 0.75rem;
-    /* Garantir que não conflite com a barra do navegador */
+  }
+
+  .mobile-comments-overlay-input-fixed {
+    padding: 0.75rem;
+    border-radius: 0 0 15px 15px;
     padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 20px));
+  }
+
+  .mobile-comments-overlay-input {
+    padding: 0.6rem 0.8rem;
+    font-size: 16px;
+  }
+
+  .mobile-comments-overlay-send-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
   }
 
   .mobile-comments-header-overlay {
@@ -2125,6 +2346,17 @@ export default {
 
   .mobile-comments-toggle-section {
     padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+
+  .mobile-comments-overlay-input-fixed {
+    padding: 0.5rem;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 25px));
+  }
+
+  .mobile-comments-overlay-send-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
   }
 }
 
