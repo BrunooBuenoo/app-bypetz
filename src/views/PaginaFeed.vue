@@ -2029,12 +2029,7 @@ export default {
   .mobile-comments-toggle-btn i.fa-chevron-up {
     font-size: 0.8rem;
   }
-
-  /* MOBILE: Overlay de comentários otimizado */
-  .mobile-comments-overlay-popup {
-    background: rgba(0, 0, 0, 0.9);
-  }
-
+ 
   .mobile-comments-content {
     max-height: 75vh; /* MAIS ESPAÇO */
     border-radius: 15px 15px 0 0;
