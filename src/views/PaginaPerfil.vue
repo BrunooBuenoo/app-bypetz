@@ -777,12 +777,14 @@ export default {
   margin: 0 auto;
   padding: 2rem;
   min-height: 80vh;
+  
 }
 
 .profile-container {
   display: flex;
   flex-direction: column;
   gap: 3rem;
+  
 }
 
 .profile-header {

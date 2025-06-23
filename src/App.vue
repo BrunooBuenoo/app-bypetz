@@ -30,18 +30,7 @@ export default {
 }
 
 .metallic-bg {
-  background: linear-gradient(
-    135deg,
-    #8C52FF 0%,
-    #9b8fff 25%,
-    #7d6bff 50%,
-    #d3c4ff 75%,
-    #8C52FF 100%
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  color: white;
-  min-height: 100vh;
+  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
 }
 
 @keyframes gradientShift {
