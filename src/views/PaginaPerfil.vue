@@ -8,7 +8,7 @@
             <img v-if="user?.photoURL" :src="user.photoURL" :alt="user.displayName" />
             <span v-else class="avatar-placeholder">{{ userInitials }}</span>
             <button class="avatar-edit-btn" @click="triggerFileInput">
-              Câmera
+              <i class="fas fa-camera"></i>
             </button>
             <input 
               ref="fileInput" 
@@ -133,6 +133,18 @@
               <img :src="getMainPhoto(pet) || placeholderImage" :alt="pet.name" />
               <div v-if="hasMultiplePhotos(pet)" class="photo-count">
                 <span>+{{ pet.photos?.length || 1 }}</span>
+              </div>
+              
+              <!-- Botão Encontrado - só aparece se for perdido -->
+              <div v-if="pet.status === 'perdido'" class="found-button-overlay">
+                <button 
+                  class="btn-found"
+                  @click="markAsFound(pet)"
+                  :disabled="loading"
+                >
+                  <i class="fas fa-check"></i>
+                  {{ loading ? 'Atualizando...' : 'Encontrado!' }}
+                </button>
               </div>
             </div>
             <div class="pet-info">
@@ -620,6 +632,48 @@ export default {
       return pet.photos && pet.photos.length > 1
     }
 
+    const markAsFound = async (pet) => {
+      if (!confirm(`Confirmar que ${pet.name} foi encontrado?`)) {
+        return
+      }
+      
+      try {
+        loading.value = true
+        
+        // Atualizar no Firestore
+        await updateDoc(doc(db, 'pets', pet.id), {
+          status: 'encontrado',
+          foundAt: new Date(),
+          updatedAt: new Date()
+        })
+        
+        // Atualizar na lista local
+        const petIndex = userPets.value.findIndex(p => p.id === pet.id)
+        if (petIndex !== -1) {
+          userPets.value[petIndex].status = 'encontrado'
+          userPets.value[petIndex].foundAt = new Date()
+          userPets.value[petIndex].updatedAt = new Date()
+        }
+        
+        // Atualizar estatísticas
+        userStats.value.petsFound = userPets.value.filter(p => p.status === 'encontrado').length
+        
+        successMessage.value = `${pet.name} foi marcado como encontrado! 🎉`
+        
+        setTimeout(() => {
+          successMessage.value = ''
+        }, 3000)
+        
+      } catch (err) {
+        error.value = 'Erro ao atualizar status: ' + err.message
+        setTimeout(() => {
+          error.value = ''
+        }, 5000)
+      } finally {
+        loading.value = false
+      }
+    }
+
     onMounted(() => {
       loadUserProfile()
       loadUserPets()
@@ -654,7 +708,8 @@ export default {
       handleAvatarChange,
       resizeAndConvertToBase64,
       getMainPhoto,
-      hasMultiplePhotos
+      hasMultiplePhotos,
+      markAsFound
     }
   }
 }
@@ -719,11 +774,11 @@ export default {
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  background: #8C52FF;
+  background: #5a01ff;
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1268,6 +1323,65 @@ export default {
   
   .profile-stats {
     grid-template-columns: 1fr;
+  }
+}
+
+.found-button-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pet-image-container:hover .found-button-overlay {
+  opacity: 1;
+}
+
+.btn-found {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-found:hover:not(:disabled) {
+  background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+}
+
+.btn-found:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-found i {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .found-button-overlay {
+    opacity: 1; /* Sempre visível no mobile */
+  }
+  
+  .btn-found {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
   }
 }
 </style>
