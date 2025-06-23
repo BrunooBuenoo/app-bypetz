@@ -99,6 +99,7 @@
               <option value="perdido">Perdido</option>
               <option value="encontrado">Encontrado</option>
               <option value="adocao">Para Adoção</option>
+              <option value="adotado">Adotado</option>
             </select>
           </div>
 

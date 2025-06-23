@@ -21,6 +21,7 @@
               <option value="perdido">Perdido</option>
               <option value="encontrado">Encontrado</option>
               <option value="adocao">Adoção</option>
+              <option value="adotado">Adotado</option>
             </select>
 
             <!-- Filtro de Cidade com Autocomplete -->
@@ -952,7 +953,8 @@ export default {
       const labels = {
         'perdido': ' Perdido',
         'encontrado': ' Encontrado',
-        'adocao': ' Para Adoção'
+        'adocao': ' Para Adoção',
+        'adotado': ' Adotado',
       }
       return labels[status] || `${status}`
     }
@@ -1088,7 +1090,8 @@ export default {
         const statusClasses = {
           'perdido': 'status-perdido',
           'encontrado': 'status-encontrado', 
-          'adocao': 'status-adocao'
+          'adocao': 'status-adocao',
+          'adotado': 'status-adotado',
         }
         return statusClasses[status] || ''
       },
@@ -2716,6 +2719,10 @@ export default {
 }
 
 .status-adocao {
+    color: #ffc107; /* Amarelo */
+}
+
+.status-adotado {
     color: #007bff; /* Azul */
 }
 

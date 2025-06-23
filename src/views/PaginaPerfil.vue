@@ -8,7 +8,7 @@
             <img v-if="user?.photoURL" :src="user.photoURL" :alt="user.displayName" />
             <span v-else class="avatar-placeholder">{{ userInitials }}</span>
             <button class="avatar-edit-btn" @click="triggerFileInput">
-              <i class="fas fa-camera"></i>
+              Câmera
             </button>
             <input 
               ref="fileInput" 
@@ -144,6 +144,18 @@
                 >
                   <i class="fas fa-check"></i>
                   {{ loading ? 'Atualizando...' : 'Encontrado!' }}
+                </button>
+              </div>
+
+              <!-- Botão Adotado - só aparece se for para adoção -->
+              <div v-if="pet.status === 'adocao'" class="adopted-button-overlay">
+                <button 
+                  class="btn-adopted"
+                  @click="markAsAdopted(pet)"
+                  :disabled="loading"
+                >
+                  <i class="fas fa-heart"></i>
+                  {{ loading ? 'Atualizando...' : 'Adotado!' }}
                 </button>
               </div>
             </div>
@@ -307,7 +319,8 @@ export default {
       const labels = {
         'perdido': 'Perdido',
         'encontrado': 'Encontrado',
-        'adocao': 'Para Adoção'
+        'adocao': 'Para Adoção',
+        'adotado': 'Adotado'
       }
       return labels[status] || status
     }
@@ -674,6 +687,48 @@ export default {
       }
     }
 
+    const markAsAdopted = async (pet) => {
+      if (!confirm(`Confirmar que ${pet.name} foi adotado?`)) {
+        return
+      }
+      
+      try {
+        loading.value = true
+        
+        // Atualizar no Firestore
+        await updateDoc(doc(db, 'pets', pet.id), {
+          status: 'adotado',
+          adoptedAt: new Date(),
+          updatedAt: new Date()
+        })
+        
+        // Atualizar na lista local
+        const petIndex = userPets.value.findIndex(p => p.id === pet.id)
+        if (petIndex !== -1) {
+          userPets.value[petIndex].status = 'adotado'
+          userPets.value[petIndex].adoptedAt = new Date()
+          userPets.value[petIndex].updatedAt = new Date()
+        }
+        
+        // Atualizar estatísticas
+        userStats.value.helpedFamilies = userPets.value.filter(p => p.status === 'adotado').length
+        
+        successMessage.value = `${pet.name} foi marcado como adotado! 🎉`
+        
+        setTimeout(() => {
+          successMessage.value = ''
+        }, 3000)
+        
+      } catch (err) {
+        error.value = 'Erro ao atualizar status: ' + err.message
+        setTimeout(() => {
+          error.value = ''
+        }, 5000)
+      } finally {
+        loading.value = false
+      }
+    }
+
     onMounted(() => {
       loadUserProfile()
       loadUserPets()
@@ -709,7 +764,8 @@ export default {
       resizeAndConvertToBase64,
       getMainPhoto,
       hasMultiplePhotos,
-      markAsFound
+      markAsFound,
+      markAsAdopted
     }
   }
 }
@@ -774,11 +830,11 @@ export default {
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  background: #5a01ff;
+  background: #8C52FF;
   color: white;
   border: none;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1116,6 +1172,11 @@ export default {
   color: #ffa502;
 }
 
+.pet-status.adotado {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+}
+
 .pet-location {
   color: #666;
   margin-bottom: 0.5rem;
@@ -1380,6 +1441,65 @@ export default {
   }
   
   .btn-found {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+.adopted-button-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pet-image-container:hover .adopted-button-overlay {
+  opacity: 1;
+}
+
+.btn-adopted {
+  background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-adopted:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+}
+
+.btn-adopted:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-adopted i {
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .adopted-button-overlay {
+    opacity: 1; /* Sempre visível no mobile */
+  }
+  
+  .btn-adopted {
     padding: 0.6rem 1rem;
     font-size: 0.8rem;
   }
