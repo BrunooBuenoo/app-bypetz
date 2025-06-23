@@ -107,7 +107,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .hero {
   width: 100%;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #ffffff 100%);
@@ -476,6 +476,33 @@ export default {
   justify-content: center;
   font-size: 1.3rem;
   color: white;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 1rem 2rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+  border: 2px solid transparent;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #8C52FF;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #FFA500, #FF8C00);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
 }
 
 .avatar-more {
