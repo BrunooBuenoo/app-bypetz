@@ -8,8 +8,9 @@
             <img v-if="user?.photoURL" :src="user.photoURL" :alt="user.displayName" />
             <span v-else class="avatar-placeholder">{{ userInitials }}</span>
             <button class="avatar-edit-btn" @click="triggerFileInput">
-              Câmera
+              <i class="fas fa-camera"></i>
             </button>
+
             <input 
               ref="fileInput" 
               type="file" 
@@ -832,7 +833,7 @@ export default {
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  background: #8C52FF;
+  background: #555555;
   color: white;
   border: none;
   cursor: pointer;
