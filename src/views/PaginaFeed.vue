@@ -133,6 +133,26 @@
                 class="modal-image-new smart-crop"
                 @error="onImageError"
               />
+              
+              <!-- Desktop Navigation Arrows -->
+              <div v-if="selectedPet.photos && selectedPet.photos.length > 1" class="desktop-image-arrows">
+                <button 
+                  class="desktop-arrow-btn desktop-arrow-left" 
+                  @click="previousImage"
+                  @mouseenter="pauseAutoRotation"
+                  @mouseleave="resumeAutoRotation"
+                >
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <button 
+                  class="desktop-arrow-btn desktop-arrow-right" 
+                  @click="nextImage"
+                  @mouseenter="pauseAutoRotation"
+                  @mouseleave="resumeAutoRotation"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
             </div>
             
             <!-- Image navigation dots -->
@@ -142,7 +162,9 @@
                 :key="index"
                 class="nav-dot-new"
                 :class="{ active: currentPhoto === photo }"
-                @click="currentPhoto = photo"
+                @click="selectImage(photo, index)"
+                @mouseenter="pauseAutoRotation"
+                @mouseleave="resumeAutoRotation"
               ></button>
             </div>
           </div>
@@ -295,6 +317,9 @@
               :alt="selectedPet.name"
               class="mobile-image-centered smart-crop"
               @error="onImageError"
+              @touchstart="handleImageTouchStart"
+              @touchmove="handleImageTouchMove"
+              @touchend="handleImageTouchEnd"
             />
             
             <!-- Image navigation dots -->
@@ -304,7 +329,7 @@
                 :key="index"
                 class="mobile-nav-dot"
                 :class="{ active: currentPhoto === photo }"
-                @click="currentPhoto = photo"
+                @click="selectImage(photo, index)"
               ></button>
             </div>
           </div>
@@ -472,7 +497,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { collection, getDocs, query, orderBy, addDoc, onSnapshot, doc, getDoc } from 'firebase/firestore'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { db } from '../firebase/config'
@@ -500,11 +525,16 @@ export default {
     const selectedPet = ref(null)
     const selectedPetIndex = ref(0)
     const currentPhoto = ref(null)
+    const currentPhotoIndex = ref(0)
     const comments = ref([])
     const newComment = ref('')
     const petOwner = ref(null)
     const currentUser = ref(null)
     const auth = getAuth()
+    
+    // Auto rotation variables
+    const autoRotationTimer = ref(null)
+    const isAutoRotationPaused = ref(false)
     
     // Mobile comments state
     const showComments = ref(false)
@@ -523,6 +553,11 @@ export default {
     const touchEndX = ref(0)
     const isScrollingComments = ref(false)
     
+    // Image touch variables for mobile
+    const imageTouchStartX = ref(0)
+    const imageTouchEndX = ref(0)
+    const isImageSwiping = ref(false)
+    
     // Placeholders válidos
     const placeholderImg = 'https://via.placeholder.com/400x300/8C52FF/FFFFFF?text=Sem+Foto'
     const userAvatarPlaceholder = 'https://via.placeholder.com/32x32/8C52FF/FFFFFF?text=U'
@@ -538,6 +573,96 @@ export default {
     onAuthStateChanged(auth, (user) => {
       currentUser.value = user
     })
+
+    // Auto rotation functions
+    const startAutoRotation = () => {
+      if (!selectedPet.value?.photos || selectedPet.value.photos.length <= 1) return
+      
+      clearAutoRotation()
+      autoRotationTimer.value = setInterval(() => {
+        if (!isAutoRotationPaused.value) {
+          nextImage()
+        }
+      }, 3000)
+    }
+
+    const clearAutoRotation = () => {
+      if (autoRotationTimer.value) {
+        clearInterval(autoRotationTimer.value)
+        autoRotationTimer.value = null
+      }
+    }
+
+    const pauseAutoRotation = () => {
+      isAutoRotationPaused.value = true
+    }
+
+    const resumeAutoRotation = () => {
+      isAutoRotationPaused.value = false
+    }
+
+    // Image navigation functions
+    const nextImage = () => {
+      if (!selectedPet.value?.photos || selectedPet.value.photos.length <= 1) return
+      
+      const nextIndex = (currentPhotoIndex.value + 1) % selectedPet.value.photos.length
+      currentPhotoIndex.value = nextIndex
+      currentPhoto.value = selectedPet.value.photos[nextIndex]
+    }
+
+    const previousImage = () => {
+      if (!selectedPet.value?.photos || selectedPet.value.photos.length <= 1) return
+      
+      const prevIndex = currentPhotoIndex.value === 0 
+        ? selectedPet.value.photos.length - 1 
+        : currentPhotoIndex.value - 1
+      currentPhotoIndex.value = prevIndex
+      currentPhoto.value = selectedPet.value.photos[prevIndex]
+    }
+
+    const selectImage = (photo, index) => {
+      currentPhoto.value = photo
+      currentPhotoIndex.value = index
+      pauseAutoRotation()
+      setTimeout(() => {
+        resumeAutoRotation()
+      }, 1000)
+    }
+
+    // Mobile image touch handlers
+    const handleImageTouchStart = (e) => {
+      imageTouchStartX.value = e.touches[0].clientX
+      isImageSwiping.value = true
+      pauseAutoRotation()
+    }
+
+    const handleImageTouchMove = (e) => {
+      if (!isImageSwiping.value) return
+      e.preventDefault()
+    }
+
+    const handleImageTouchEnd = (e) => {
+      if (!isImageSwiping.value) return
+      
+      imageTouchEndX.value = e.changedTouches[0].clientX
+      const deltaX = imageTouchStartX.value - imageTouchEndX.value
+      
+      // Minimum swipe distance
+      if (Math.abs(deltaX) > 50) {
+        if (deltaX > 0) {
+          // Swipe left = next image
+          nextImage()
+        } else {
+          // Swipe right = previous image
+          previousImage()
+        }
+      }
+      
+      isImageSwiping.value = false
+      setTimeout(() => {
+        resumeAutoRotation()
+      }, 1000)
+    }
 
     // Computed for active filters
     const hasActiveFilters = computed(() => {
@@ -613,6 +738,7 @@ export default {
       selectedPet.value = pet
       selectedPetIndex.value = index
       currentPhoto.value = getMainPhoto(pet)
+      currentPhotoIndex.value = 0
       showComments.value = false // Reset comments state
       replyingTo.value = null // Reset reply state
       
@@ -624,6 +750,9 @@ export default {
       
       await loadPetOwner(pet.userId || pet.ownerId)
       await loadComments(pet.id)
+      
+      // Start auto rotation
+      startAutoRotation()
     }
 
     const toggleComments = () => {
@@ -788,11 +917,16 @@ export default {
       selectedPet.value = null
       selectedPetIndex.value = 0
       currentPhoto.value = null
+      currentPhotoIndex.value = 0
       comments.value = []
       newComment.value = ''
       petOwner.value = null
       showComments.value = false
       replyingTo.value = null
+      
+      // Clear auto rotation
+      clearAutoRotation()
+      isAutoRotationPaused.value = false
       
       // RESTAURAR SCROLL DO BODY COMPLETAMENTE
       document.body.style.overflow = 'auto'
@@ -1025,6 +1159,11 @@ export default {
       }
     }
 
+    // Cleanup on unmount
+    onUnmounted(() => {
+      clearAutoRotation()
+    })
+
     onMounted(() => {
       fetchPets()
     })
@@ -1036,6 +1175,7 @@ export default {
       selectedPet,
       selectedPetIndex,
       currentPhoto,
+      currentPhotoIndex,
       comments,
       newComment,
       currentUser,
@@ -1086,6 +1226,15 @@ export default {
       handleCommentsScrollEnd,
       goToNextPet,
       goToPreviousPet,
+      // New image navigation functions
+      nextImage,
+      previousImage,
+      selectImage,
+      pauseAutoRotation,
+      resumeAutoRotation,
+      handleImageTouchStart,
+      handleImageTouchMove,
+      handleImageTouchEnd,
       getStatusClass: (status) => {
         const statusClasses = {
           'perdido': 'status-perdido',
@@ -1134,8 +1283,6 @@ export default {
 .filters-section {
   padding: 2rem 0;
 }
-
-
 
 .filters-container {
   max-width: 1200px;
@@ -1504,6 +1651,7 @@ export default {
   justify-content: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  position: relative;
 }
 
 .modal-image-new {
@@ -1511,6 +1659,49 @@ export default {
   height: 100%;
   object-fit: cover;
   border-radius: 20px;
+}
+
+/* Desktop Navigation Arrows */
+.desktop-image-arrows {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  pointer-events: none;
+}
+
+.desktop-arrow-btn {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  pointer-events: all;
+  backdrop-filter: blur(10px);
+}
+
+.desktop-arrow-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.desktop-arrow-left {
+  left: 20px;
+}
+
+.desktop-arrow-right {
+  right: 20px;
 }
 
 .image-nav-new {
@@ -1836,65 +2027,8 @@ export default {
   margin: 2rem 0;
 }
 
-/* Indicador de resposta */
-/* Remover estes estilos antigos */
-.replying-indicator,
-.mobile-replying-indicator,
-.mobile-overlay-replying-indicator {
-  display: none;
-}
-
-/* INPUT FIXO NO OVERLAY DE COMENTÁRIOS - SEMPRE VISÍVEL */
-.mobile-comments-overlay-input-fixed {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: flex-end;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 25px;
-  padding: 0.5rem;
-  z-index: 10;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.mobile-comments-overlay-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: white;
-  padding: 0.75rem 1rem;
-  font-size: 16px; /* PREVINE ZOOM NO iOS */
-  outline: none;
-}
-
-.mobile-comments-overlay-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.mobile-comments-overlay-send-btn {
-  background: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.mobile-comments-overlay-send-btn:disabled {
-  opacity: 0.5;
-}
-
 /* DESKTOP: ABSOLUTELY POSITIONED Fixed Add Comment */
 .add-comment-fixed-desktop {
-  position: relative;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -2195,49 +2329,6 @@ export default {
   .mobile-detail-item i {
     color: #8B5CF6;
     font-size: 0.8rem;
-  }
-
-  /* MOBILE: Indicador de resposta */
-  .mobile-replying-indicator {
-    background: rgba(139, 92, 246, 0.15);
-    border: 1px solid rgba(139, 92, 246, 0.4);
-    border-radius: 12px;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.9);
-    min-height: 36px;
-    backdrop-filter: blur(10px);
-  }
-
-  .mobile-replying-indicator span {
-    flex: 1;
-    margin-right: 0.75rem;
-    font-weight: 500;
-    color: #a78bfa;
-  }
-
-  .mobile-cancel-reply-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: rgba(255, 255, 255, 0.8);
-    cursor: pointer;
-    padding: 0.2rem;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-  }
-
-  .mobile-cancel-reply-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
   }
 
   /* MOBILE: Comment Input Always Visible */
@@ -2541,45 +2632,52 @@ export default {
     margin: 2rem 0;
   }
 
-  /* MOBILE: Indicador de resposta no overlay */
-  .mobile-overlay-replying-indicator-floating {
+  /* INPUT FIXO NO OVERLAY DE COMENTÁRIOS - SEMPRE VISÍVEL */
+  .mobile-comments-overlay-input-fixed {
     position: absolute;
-    bottom: 100%;
+    bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(139, 92, 246, 0.9);
-    border: 1px solid rgba(139, 92, 246, 0.6);
-    border-radius: 12px 12px 0 0;
-    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 0.5rem;
+    z-index: 10;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-comments-overlay-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-size: 16px; /* PREVINE ZOOM NO iOS */
+    outline: none;
+  }
+
+  .mobile-comments-overlay-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .mobile-comments-overlay-send-btn {
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: white;
-    min-height: 36px;
-    backdrop-filter: blur(10px);
-    z-index: 100;
-    margin-bottom: 0;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
   }
 
-  .mobile-overlay-replying-indicator-floating span {
-    flex: 1;
-    margin-right: 0.75rem;
-    font-weight: 500;
-    color: white;
-  }
-
-  /* Ajustar containers para position relative */
-  .add-comment-fixed-desktop {
-    position: relative;
-  }
-
-  .mobile-comment-input-container {
-    position: relative;
-  }
-
-  .mobile-comments-overlay-input-fixed {
-    position: relative;
+  .mobile-comments-overlay-send-btn:disabled {
+    opacity: 0.5;
   }
 }
 
