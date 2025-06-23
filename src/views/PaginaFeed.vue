@@ -2794,7 +2794,7 @@ export default {
 
   /* Posicionar botões sociais mais próximos */
   .mobile-social-buttons-overlay {
-    top: 60px; /* Mais próximo do topo */
+    top: 75px; /* Mais próximo do topo */
     gap: 10px; /* Gap menor */
   }
 
