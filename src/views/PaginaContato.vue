@@ -129,7 +129,7 @@ export default {
 <style scoped>
 .contact-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 50%, #7C3AED 100%);
+  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -149,7 +149,7 @@ export default {
 }
 
 .hero-icon {
-  width: 80px;
+  width: 130px;
   height: 80px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
@@ -593,6 +593,10 @@ export default {
 @media (max-width: 768px) {
   .hero-section {
     padding: 6rem 1rem 3rem;
+  }
+
+  .hero-icon{
+    width: 80px;
   }
   
   .hero-section h1 {

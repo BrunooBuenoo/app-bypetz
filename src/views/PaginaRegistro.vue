@@ -360,7 +360,7 @@ export default {
 <style scoped>
 .register-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
   display: flex;
   align-items: center;
   justify-content: center;

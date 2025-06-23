@@ -439,7 +439,7 @@ export default {
     border: 2px solid #E5E7EB;
     border-radius: 12px;
     background: white;
-    color: #374151;
+    color: #9CA3AF;
     font-size: 1rem;
     transition: all 0.3s ease;
 }
@@ -512,7 +512,7 @@ export default {
   border: 2px solid #E5E7EB;
   border-radius: 12px;
   background: white;
-  color: #374151;
+  color: #9CA3AF;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
@@ -754,6 +754,7 @@ export default {
   outline: none !important;
   box-shadow: none !important;
   font-size: 16px;
+  
 }
 
 

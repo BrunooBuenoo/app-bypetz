@@ -27,7 +27,7 @@
             <div class="city-filter-container">
               <CityAutocomplete  id="citis"
                 v-model="filter.city"
-                placeholder="Filtrar por cidade..."
+                placeholder="Cidade..."
                 input-class="filter-city-input"
                 @citySelected="handleCityFilterSelected"
               />
