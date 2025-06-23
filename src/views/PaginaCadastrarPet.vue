@@ -265,15 +265,15 @@ export default {
         return
       }
       
-      // Validar tamanho (máximo 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        error.value = 'A imagem deve ter no máximo 5MB'
+      // Validar tamanho (máximo 10MB para permitir maior qualidade)
+      if (file.size > 10 * 1024 * 1024) {
+        error.value = 'A imagem deve ter no máximo 10MB'
         return
       }
       
       try {
-        // Redimensionar e converter para base64
-        const optimizedBase64 = await resizeAndConvertToBase64(file, 400, 300, 0.8)
+        // Redimensionar e converter para base64 com alta qualidade
+        const optimizedBase64 = await resizeAndConvertToBase64(file, 1200, 900, 0.92)
         petForm.value.photos[index] = optimizedBase64
         
         // Limpar erro se houver
@@ -287,37 +287,72 @@ export default {
       petForm.value.photos[index] = null
     }
 
-    const resizeAndConvertToBase64 = (file, maxWidth = 400, maxHeight = 300, quality = 0.8) => {
+    const resizeAndConvertToBase64 = (file, maxWidth = 1200, maxHeight = 900, quality = 0.92) => {
       return new Promise((resolve, reject) => {
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')
         const img = new Image()
         
         img.onload = () => {
-          // Calcular novas dimensões mantendo proporção
           let { width, height } = img
           
-          if (width > height) {
-            if (width > maxWidth) {
-              height = (height * maxWidth) / width
-              width = maxWidth
-            }
-          } else {
-            if (height > maxHeight) {
-              width = (width * maxHeight) / height
-              height = maxHeight
+          // Calcular novas dimensões mantendo proporção
+          const aspectRatio = width / height
+          
+          // Só redimensionar se a imagem for maior que os limites
+          if (width > maxWidth || height > maxHeight) {
+            if (aspectRatio > 1) {
+              // Paisagem - limitar pela largura
+              if (width > maxWidth) {
+                width = maxWidth
+                height = width / aspectRatio
+              }
+            } else {
+              // Retrato - limitar pela altura
+              if (height > maxHeight) {
+                height = maxHeight
+                width = height * aspectRatio
+              }
             }
           }
           
-          // Configurar canvas
+          // Configurar canvas com as dimensões calculadas
           canvas.width = width
           canvas.height = height
+          
+          // Melhorar qualidade do redimensionamento
+          ctx.imageSmoothingEnabled = true
+          ctx.imageSmoothingQuality = 'high'
           
           // Desenhar imagem redimensionada
           ctx.drawImage(img, 0, 0, width, height)
           
+          // Determinar formato e qualidade baseado no arquivo original
+          let format = 'image/jpeg'
+          let finalQuality = quality
+          
+          // Preservar PNG para imagens com transparência
+          if (file.type === 'image/png') {
+            // Verificar se tem transparência
+            const imageData = ctx.getImageData(0, 0, width, height)
+            const data = imageData.data
+            let hasTransparency = false
+            
+            for (let i = 3; i < data.length; i += 4) {
+              if (data[i] < 255) {
+                hasTransparency = true
+                break
+              }
+            }
+            
+            if (hasTransparency) {
+              format = 'image/png'
+              finalQuality = 1.0 // PNG não usa compressão com perda
+            }
+          }
+          
           // Converter para base64
-          const base64 = canvas.toDataURL('image/jpeg', quality)
+          const base64 = canvas.toDataURL(format, finalQuality)
           resolve(base64)
         }
         

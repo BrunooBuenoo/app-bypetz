@@ -94,6 +94,9 @@ export default {
 </script>
 
 <style>
+
+
+
 .help-page {
   margin: 5vh auto;
   max-width: 1000px;

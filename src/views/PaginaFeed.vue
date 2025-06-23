@@ -47,8 +47,6 @@
               <option value="femea">Fêmea</option>
             </select>
 
-            
-
             <select v-model="filter.sortOrder" class="filter-select">
               <option value="desc">Mais recente</option>
               <option value="asc">Mais antigos</option>
@@ -229,7 +227,30 @@
                     <div class="comment-content">
                       <span class="comment-username">{{ comment.userName || comment.userDisplayName }}</span>
                       <p class="comment-text">{{ comment.text }}</p>
-                      <span class="comment-time">{{ formatCommentTime(comment.createdAt) }}</span>
+                      <div class="comment-actions">
+                        <span class="comment-time">{{ formatCommentTime(comment.createdAt) }}</span>
+                        <button 
+                          class="reply-btn" 
+                          @click="startReply(comment)"
+                        >
+                          Responder
+                        </button>
+                      </div>
+                      
+                      <!-- Respostas aninhadas -->
+                      <div v-if="comment.replies && comment.replies.length > 0" class="replies-container">
+                        <div v-for="reply in comment.replies" :key="reply.id" class="reply-item">
+                          <div class="reply-avatar">
+                            <img v-if="reply.userPhotoURL" :src="reply.userPhotoURL" :alt="reply.userName" />
+                            <span v-else class="avatar-placeholder">{{ getCommentUserInitials(reply) }}</span>
+                          </div>
+                          <div class="reply-content">
+                            <span class="reply-username">{{ reply.userName || reply.userDisplayName }}</span>
+                            <p class="reply-text">{{ reply.text }}</p>
+                            <span class="reply-time">{{ formatCommentTime(reply.createdAt) }}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -241,10 +262,18 @@
               
               <!-- ALWAYS VISIBLE Fixed Add Comment at Bottom -->
               <div class="add-comment-fixed-desktop">
+                <!-- Indicador de resposta FORA e ACIMA do input -->
+                <div v-if="replyingTo" class="replying-indicator-floating">
+                  <span>Respondendo a {{ replyingTo.userName }}</span>
+                  <button @click="cancelReply" class="cancel-reply-btn">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                
                 <input 
                   v-model="newComment" 
                   type="text" 
-                  placeholder="Comentar"
+                  :placeholder="replyingTo ? `Responder a ${replyingTo.userName}...` : 'Comentar'"
                   class="comment-input"
                   @keyup.enter="addComment"
                 >
@@ -277,10 +306,6 @@
                 @click="currentPhoto = photo"
               ></button>
             </div>
-
-            
-
-            
           </div>
 
           <!-- Bottom Info Section -->
@@ -303,16 +328,6 @@
               <div v-if="selectedPet.species" class="mobile-detail-item">Raça do pet: {{ selectedPet.species }}</div>
               <div v-if="selectedPet.gender" class="mobile-detail-item">Gênero: {{ getGenderLabel(selectedPet.gender) }}</div>
               <div class="mobile-detail-item">Nome do Pet: {{ selectedPet.name }}</div>
-              <!-- Localização Mobile 
-              <div class="mobile-detail-item" v-if="selectedPet.city || selectedPet.cityData">
-                <i class="fas fa-map-marker-alt"></i>
-                {{ getCityName(selectedPet) }}
-              </div>
-              <div class="mobile-detail-item" v-if="selectedPet.lastSeen">
-                <i class="fas fa-location-dot"></i>
-                {{ selectedPet.lastSeen }}
-              </div>
-              -->
             </div>
 
             <!-- Social Buttons - OVERLAPPING INFO SECTION -->
@@ -336,10 +351,18 @@
 
             <!-- Comment Input Always Visible -->
             <div class="mobile-comment-input-container">
+              <!-- Indicador de resposta FORA e ACIMA do input -->
+              <div v-if="replyingTo" class="mobile-replying-indicator-floating">
+                <span>Respondendo a {{ replyingTo.userName }}</span>
+                <button @click="cancelReply" class="mobile-cancel-reply-btn">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              
               <input 
                 v-model="newComment" 
                 type="text" 
-                placeholder="Comentar"
+                :placeholder="replyingTo ? `Responder a ${replyingTo.userName}...` : 'Comentar'"
                 class="mobile-comment-input"
                 @keyup.enter="addComment"
               >
@@ -383,7 +406,30 @@
                       <div class="mobile-comment-content">
                         <span class="mobile-comment-username">{{ comment.userName || comment.userDisplayName }}</span>
                         <p class="mobile-comment-text">{{ comment.text }}</p>
-                        <span class="mobile-comment-time">{{ formatCommentTime(comment.createdAt) }}</span>
+                        <div class="mobile-comment-actions">
+                          <span class="mobile-comment-time">{{ formatCommentTime(comment.createdAt) }}</span>
+                          <button 
+                            class="mobile-reply-btn" 
+                            @click="startReply(comment)"
+                          >
+                            Responder
+                          </button>
+                        </div>
+                        
+                        <!-- Respostas aninhadas mobile -->
+                        <div v-if="comment.replies && comment.replies.length > 0" class="mobile-replies-container">
+                          <div v-for="reply in comment.replies" :key="reply.id" class="mobile-reply-item">
+                            <div class="mobile-reply-avatar">
+                              <img v-if="reply.userPhotoURL" :src="reply.userPhotoURL" :alt="reply.userName" />
+                              <span v-else class="mobile-comment-avatar-placeholder">{{ getCommentUserInitials(reply) }}</span>
+                            </div>
+                            <div class="mobile-reply-content">
+                              <span class="mobile-reply-username">{{ reply.userName || reply.userDisplayName }}</span>
+                              <p class="mobile-reply-text">{{ reply.text }}</p>
+                              <span class="mobile-reply-time">{{ formatCommentTime(reply.createdAt) }}</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -395,10 +441,18 @@
 
                 <!-- INPUT FIXO NO OVERLAY DE COMENTÁRIOS - SEMPRE VISÍVEL -->
                 <div class="mobile-comments-overlay-input-fixed">
+                  <!-- Indicador de resposta FORA e ACIMA do input -->
+                  <div v-if="replyingTo" class="mobile-overlay-replying-indicator-floating">
+                    <span>Respondendo a {{ replyingTo.userName }}</span>
+                    <button @click="cancelReply" class="mobile-overlay-cancel-reply-btn">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                  
                   <input 
                     v-model="newComment" 
                     type="text" 
-                    placeholder="Comentar"
+                    :placeholder="replyingTo ? `Responder a ${replyingTo.userName}...` : 'Comentar'"
                     class="mobile-comments-overlay-input"
                     @keyup.enter="addComment"
                   >
@@ -457,6 +511,9 @@ export default {
     
     // Filters state
     const showFilters = ref(false)
+    
+    // Reply state
+    const replyingTo = ref(null)
     
     // Touch/Swipe variables
     const touchStartY = ref(0)
@@ -556,6 +613,7 @@ export default {
       selectedPetIndex.value = index
       currentPhoto.value = getMainPhoto(pet)
       showComments.value = false // Reset comments state
+      replyingTo.value = null // Reset reply state
       
       // BLOQUEAR SCROLL DO BODY COMPLETAMENTE
       document.body.style.overflow = 'hidden'
@@ -575,6 +633,20 @@ export default {
       if (e.target.classList.contains('mobile-comments-overlay-popup')) {
         showComments.value = false
       }
+    }
+
+    // Reply functions
+    const startReply = (comment) => {
+      replyingTo.value = {
+        ...comment,
+        userName: comment.userName || comment.userDisplayName || 'Usuário'
+      }
+      newComment.value = ''
+    }
+
+    const cancelReply = () => {
+      replyingTo.value = null
+      newComment.value = ''
     }
 
     // Touch/Swipe handlers for main modal
@@ -719,6 +791,7 @@ export default {
       newComment.value = ''
       petOwner.value = null
       showComments.value = false
+      replyingTo.value = null
       
       // RESTAURAR SCROLL DO BODY COMPLETAMENTE
       document.body.style.overflow = 'auto'
@@ -735,14 +808,42 @@ export default {
         )
         
         // Real-time listener para comentários
-        onSnapshot(commentsQuery, (snapshot) => {
+        onSnapshot(commentsQuery, async (snapshot) => {
           const loadedComments = []
-          snapshot.forEach((doc) => {
-            loadedComments.push({
-              id: doc.id,
-              ...doc.data()
+          
+          for (const commentDoc of snapshot.docs) {
+            const commentData = {
+              id: commentDoc.id,
+              ...commentDoc.data()
+            }
+            
+            // Listener em tempo real para respostas de cada comentário
+            const repliesQuery = query(
+              collection(db, 'pets', petId, 'comments', commentDoc.id, 'replies'),
+              orderBy('createdAt', 'asc')
+            )
+            
+            // Usar onSnapshot também para as respostas
+            onSnapshot(repliesQuery, (repliesSnapshot) => {
+              const replies = []
+              repliesSnapshot.forEach((replyDoc) => {
+                replies.push({
+                  id: replyDoc.id,
+                  ...replyDoc.data()
+                })
+              })
+              
+              // Atualizar as respostas do comentário específico
+              const commentIndex = comments.value.findIndex(c => c.id === commentDoc.id)
+              if (commentIndex !== -1) {
+                comments.value[commentIndex].replies = replies
+              }
             })
-          })
+            
+            commentData.replies = []
+            loadedComments.push(commentData)
+          }
+          
           comments.value = loadedComments
         })
       } catch (error) {
@@ -754,15 +855,32 @@ export default {
       if (!newComment.value.trim() || !selectedPet.value || !currentUser.value) return
 
       try {
-        await addDoc(collection(db, 'pets', selectedPet.value.id, 'comments'), {
-          text: newComment.value.trim(),
-          userId: currentUser.value.uid,
-          userName: currentUser.value.displayName || currentUser.value.email?.split('@')[0] || 'Usuário',
-          userDisplayName: currentUser.value.displayName,
-          userPhotoURL: currentUser.value.photoURL,
-          createdAt: new Date(),
-          petId: selectedPet.value.id
-        })
+        if (replyingTo.value) {
+          // Adicionar resposta
+          await addDoc(collection(db, 'pets', selectedPet.value.id, 'comments', replyingTo.value.id, 'replies'), {
+            text: newComment.value.trim(),
+            userId: currentUser.value.uid,
+            userName: currentUser.value.displayName || currentUser.value.email?.split('@')[0] || 'Usuário',
+            userDisplayName: currentUser.value.displayName,
+            userPhotoURL: currentUser.value.photoURL,
+            createdAt: new Date(),
+            petId: selectedPet.value.id,
+            parentCommentId: replyingTo.value.id
+          })
+          
+          replyingTo.value = null
+        } else {
+          // Adicionar comentário normal
+          await addDoc(collection(db, 'pets', selectedPet.value.id, 'comments'), {
+            text: newComment.value.trim(),
+            userId: currentUser.value.uid,
+            userName: currentUser.value.displayName || currentUser.value.email?.split('@')[0] || 'Usuário',
+            userDisplayName: currentUser.value.displayName,
+            userPhotoURL: currentUser.value.photoURL,
+            createdAt: new Date(),
+            petId: selectedPet.value.id
+          })
+        }
         
         newComment.value = ''
       } catch (error) {
@@ -928,6 +1046,7 @@ export default {
       userAvatarPlaceholder,
       filteredPets,
       sortedAndFilteredPets,
+      replyingTo,
       toggleFilters,
       clearFilters,
       handleCityFilterSelected,
@@ -939,6 +1058,8 @@ export default {
       loadPetOwner,
       loadComments,
       addComment,
+      startReply,
+      cancelReply,
       contactWhatsApp,
       openInstagram,
       formatCommentTime,
@@ -1010,6 +1131,8 @@ export default {
 .filters-section {
   padding: 2rem 0;
 }
+
+
 
 .filters-container {
   max-width: 1200px;
@@ -1615,8 +1738,91 @@ export default {
   opacity: 0.9;
 }
 
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
 .comment-time {
   font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.reply-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.reply-btn:hover {
+  color: white;
+}
+
+/* Respostas aninhadas */
+.replies-container {
+  margin-left: 1rem;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+}
+
+.reply-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.reply-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #8B5CF6;
+}
+
+.reply-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reply-avatar .avatar-placeholder {
+  color: white;
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+
+.reply-content {
+  flex: 1;
+}
+
+.reply-username {
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.reply-text {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin-bottom: 0.2rem;
+  opacity: 0.9;
+}
+
+.reply-time {
+  font-size: 0.7rem;
   opacity: 0.6;
 }
 
@@ -1627,16 +1833,73 @@ export default {
   margin: 2rem 0;
 }
 
-/* DESKTOP: ABSOLUTELY POSITIONED Fixed Add Comment */
-.add-comment-fixed-desktop {
-  position: absolute; /* POSIÇÃO ABSOLUTA */
-  bottom: 0; /* GRUDADO NO BOTTOM */
+/* Indicador de resposta */
+/* Remover estes estilos antigos */
+.replying-indicator,
+.mobile-replying-indicator,
+.mobile-overlay-replying-indicator {
+  display: none;
+}
+
+/* INPUT FIXO NO OVERLAY DE COMENTÁRIOS - SEMPRE VISÍVEL */
+.mobile-comments-overlay-input-fixed {
+  position: absolute;
+  bottom: 0;
   left: 0;
   right: 0;
   display: flex;
+  align-items: flex-end;
   gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
+  padding: 0.5rem;
+  z-index: 10;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-comments-overlay-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.75rem 1rem;
+  font-size: 16px; /* PREVINE ZOOM NO iOS */
+  outline: none;
+}
+
+.mobile-comments-overlay-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.mobile-comments-overlay-send-btn {
+  background: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.9); /* FUNDO MAIS ESCURO */
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mobile-comments-overlay-send-btn:disabled {
+  opacity: 0.5;
+}
+
+/* DESKTOP: ABSOLUTELY POSITIONED Fixed Add Comment */
+.add-comment-fixed-desktop {
+  position: relative;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.9);
   border-radius: 20px;
   padding: 0.75rem;
   z-index: 10;
@@ -1650,8 +1913,9 @@ export default {
   border-radius: 15px;
   color: white;
   padding: 0.75rem 1rem;
-  font-size: 16px; /* ALTERADO DE 0.9rem PARA 16px - CONSISTÊNCIA */
+  font-size: 16px;
   outline: none;
+  margin-right: 0.5rem;
 }
 
 .comment-input::placeholder {
@@ -1704,6 +1968,11 @@ export default {
     right: 0;
     bottom: 0;
     z-index: 9999; /* Z-INDEX ALTO PARA FICAR ACIMA DA NAVBAR */
+  }
+
+  .pet-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 1rem 2rem;
   }
 
   .modal-content-new {
@@ -1925,16 +2194,60 @@ export default {
     font-size: 0.8rem;
   }
 
+  /* MOBILE: Indicador de resposta */
+  .mobile-replying-indicator {
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 12px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+    min-height: 36px;
+    backdrop-filter: blur(10px);
+  }
+
+  .mobile-replying-indicator span {
+    flex: 1;
+    margin-right: 0.75rem;
+    font-weight: 500;
+    color: #a78bfa;
+  }
+
+  .mobile-cancel-reply-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    padding: 0.2rem;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+  }
+
+  .mobile-cancel-reply-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+
   /* MOBILE: Comment Input Always Visible */
   .mobile-comment-input-container {
     display: flex;
+    align-items: flex-end;
     gap: 0.5rem;
-    align-items: center;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 25px;
     padding: 0.5rem;
     margin-bottom: 1rem;
     flex-shrink: 0;
+    position: relative;
   }
 
   .mobile-comment-input {
@@ -1943,7 +2256,7 @@ export default {
     border: none;
     color: white;
     padding: 0.75rem 1rem;
-    font-size: 16px; /* ALTERADO DE 0.9rem PARA 16px - PREVINE ZOOM */
+    font-size: 16px; /* PREVINE ZOOM NO iOS */
     outline: none;
   }
 
@@ -2125,12 +2438,96 @@ export default {
   .mobile-comment-text {
     font-size: 0.85rem;
     line-height: 1.4;
-    color: rgba(255, 255, 255, 0.9);
     margin-bottom: 0.25rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .mobile-comment-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   .mobile-comment-time {
     font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .mobile-reply-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .mobile-reply-btn:hover {
+    color: white;
+  }
+
+  /* MOBILE: Respostas aninhadas */
+  .mobile-replies-container {
+    margin-left: 1rem;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+    padding-left: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .mobile-reply-item {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .mobile-reply-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #8B5CF6;
+  }
+
+  .mobile-reply-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-reply-avatar-placeholder {
+    color: white;
+    font-weight: 600;
+    font-size: 0.7rem;
+  }
+
+  .mobile-reply-content {
+    flex: 1;
+  }
+
+  .mobile-reply-username {
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 0.2rem;
+    color: white;
+  }
+
+  .mobile-reply-text {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin-bottom: 0.2rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .mobile-reply-time {
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.6);
   }
 
@@ -2141,171 +2538,246 @@ export default {
     margin: 2rem 0;
   }
 
-  /* MOBILE: INPUT FIXO NO OVERLAY DE COMENTÁRIOS - SEMPRE VISÍVEL ACIMA DA BARRA DO NAVEGADOR */
-  .mobile-comments-overlay-input-fixed {
+  /* MOBILE: Indicador de resposta no overlay */
+  .mobile-overlay-replying-indicator-floating {
     position: absolute;
-    bottom: 0;
+    bottom: 100%;
     left: 0;
     right: 0;
+    background: rgba(139, 92, 246, 0.9);
+    border: 1px solid rgba(139, 92, 246, 0.6);
+    border-radius: 12px 12px 0 0;
+    padding: 0.5rem 0.75rem;
     display: flex;
-    gap: 0.5rem;
     align-items: center;
-    background: rgba(0, 0, 0, 0.98);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 1rem;
-    border-radius: 0 0 20px 20px;
-    z-index: 20;
-    /* GARANTIR QUE FIQUE ACIMA DA BARRA DO NAVEGADOR */
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 20px));
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: white;
+    min-height: 36px;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    margin-bottom: 0;
   }
 
-  .mobile-comments-overlay-input {
+  .mobile-overlay-replying-indicator-floating span {
     flex: 1;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
+    margin-right: 0.75rem;
+    font-weight: 500;
     color: white;
-    padding: 0.75rem 1rem;
-    font-size: 16px; /* PREVINE ZOOM NO iOS */
-    outline: none;
   }
 
-  .mobile-comments-overlay-input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+  /* Ajustar containers para position relative */
+  .add-comment-fixed-desktop {
+    position: relative;
   }
 
-  .mobile-comments-overlay-input:focus {
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.15);
+  .mobile-comment-input-container {
+    position: relative;
   }
 
-  .mobile-comments-overlay-send-btn {
-    background: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    flex-shrink: 0;
-  }
-
-  .mobile-comments-overlay-send-btn:hover:not(:disabled) {
-    background: #0056b3;
-  }
-
-  .mobile-comments-overlay-send-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  /* MOBILE: Filtros responsivos */
-  .filters-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .search-toggle-btn {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-  }
-
-  .pet-grid {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0 1rem 2rem;
+  .mobile-comments-overlay-input-fixed {
+    position: relative;
   }
 }
 
-/* RESPONSIVIDADE PARA TELAS ABAIXO DE 480PX */
+/* Indicador de resposta FORA e ACIMA do input */
+.replying-indicator-floating {
+  position: absolute;
+  top: -40px; /* Ajuste a posição conforme necessário */
+  left: 0;
+  background: rgba(139, 92, 246, 0.9);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.replying-indicator-floating span {
+  flex: 1;
+  margin-right: 0.75rem;
+}
+
+.cancel-reply-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.cancel-reply-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Mobile - Indicador de resposta FORA e ACIMA do input */
+.mobile-replying-indicator-floating {
+  position: absolute;
+  top: -40px; /* Ajuste a posição conforme necessário */
+  left: 0;
+  background: rgba(139, 92, 246, 0.9);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mobile-replying-indicator-floating span {
+  flex: 1;
+  margin-right: 0.75rem;
+}
+
+.mobile-cancel-reply-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.mobile-cancel-reply-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Mobile - Indicador de resposta no overlay FORA e ACIMA do input */
+.mobile-overlay-replying-indicator-floating {
+  position: absolute;
+  top: -40px; /* Ajuste a posição conforme necessário */
+  left: 0;
+  background: rgba(139, 92, 246, 0.9);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mobile-overlay-replying-indicator-floating span {
+  flex: 1;
+  margin-right: 0.75rem;
+}
+
+.mobile-overlay-cancel-reply-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  padding: 0.2rem;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.mobile-overlay-cancel-reply-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* Status Classes */
+.status-perdido {
+    color: #dc3545; /* Vermelho */
+}
+
+.status-encontrado {
+    color: #28a745; /* Verde */
+}
+
+.status-adocao {
+    color: #007bff; /* Azul */
+}
+
+/* Mobile Extra Small - Ajustes para telas muito pequenas */
 @media (max-width: 480px) {
-  /* Grid com apenas 1 coluna */
-  .pet-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-    padding: 0 0.75rem 2rem;
-  }
-
-  /* Filtros mais compactos */
-  .search-toggle-btn {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
-  }
-
-  .filters-grid {
-    padding: 1.5rem;
-    gap: 0.5rem;
-  }
-
-  .filter-select, .filter-city-input {
-    font-size: 0.85rem;
-    padding: 0.6rem 0.8rem;
-  }
-
-  .search-button, .clear-filters-btn {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.85rem;
-  }
-
-  /* MODAL: Ajustes críticos para telas muito pequenas */
-  .modal-overlay-new {
-    padding: 0;
-    background: rgba(0, 0, 0, 0.8);
-  }
-
   .modal-content-new {
-    margin: 5px;
-    height: calc(100vh - 10px);
-    max-height: calc(100vh - 10px);
-    border-radius: 15px;
+    height: 95vh; /* Reduzir altura total */
+    max-height: 95vh;
+    margin: 5px; /* Margem menor */
   }
 
-  .modal-close-new {
-    top: 50px;
-    right: 35px;
-    width: 45px;
-    height: 45px;
-    font-size: 1rem;
-  }
-
-  /* MOBILE: Seção de imagem mais compacta */
+  /* Reduzir altura da seção de imagem */
   .mobile-image-section {
-    max-height: 50vh;
-    border-radius: 15px 15px 0 0;
+    max-height: 45vh; /* Reduzido de 55vh para 45vh */
   }
 
-  .mobile-image-centered {
-    border-radius: 15px 15px 0 0;
-  }
-
-  .mobile-image-nav {
-    bottom: 10px;
-  }
-
-  .mobile-nav-dot {
-    width: 6px;
-    height: 6px;
-  }
-
-  /* MOBILE: Seção inferior otimizada para telas pequenas */
+  /* Ajustar seção de informações */
   .mobile-bottom-info {
-    min-height: 50vh;
+    min-height: 50vh; /* Aumentado de 45vh para 50vh */
     max-height: 50vh;
-    padding: 0.75rem;
-    border-radius: 0 0 15px 15px;
-    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 20px));
+    padding: 0.75rem; /* Padding menor */
   }
 
-  /* MOBILE: Botões sociais menores */
-  .mobile-social-buttons-overlay {
-    top: 70px;
-    right: 15px;
-    gap: 10px;
+  /* Reduzir espaçamentos das seções */
+  .mobile-user-section {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
   }
 
+  .mobile-pet-details-section {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  /* Ajustar container do input de comentário */
+  .mobile-comment-input-container {
+    margin-bottom: 0.75rem; /* Reduzido de 1rem */
+    padding: 0.4rem; /* Padding menor */
+  }
+
+  /* Garantir que o botão de comentários seja sempre visível */
+  .mobile-comments-toggle-section {
+    margin-bottom: 0.5rem; /* Reduzido */
+    flex-shrink: 0; /* Nunca encolher */
+  }
+
+  .mobile-comments-toggle-btn {
+    padding: 0.75rem; /* Padding menor */
+    font-size: 0.9rem; /* Fonte menor */
+  }
+
+  .mobile-comments-toggle-text {
+    font-size: 0.9rem; /* Fonte menor */
+  }
+
+  /* Ajustar detalhes do pet para ocupar menos espaço */
+  .mobile-detail-item {
+    font-size: 0.85rem; /* Fonte menor */
+    margin-bottom: 0.4rem; /* Espaçamento menor */
+  }
+
+  /* Reduzir tamanho dos botões sociais */
   .mobile-whatsapp-btn-overlay,
   .mobile-instagram-btn-overlay {
     width: 48px;
@@ -2313,230 +2785,19 @@ export default {
     font-size: 1.3rem;
   }
 
-  /* MOBILE: Seções de usuário e detalhes mais compactas */
+  /* Posicionar botões sociais mais próximos */
+  .mobile-social-buttons-overlay {
+    top: 60px; /* Mais próximo do topo */
+    gap: 10px; /* Gap menor */
+  }
+
+  /* Ajustar padding do usuário para dar espaço aos botões menores */
   .mobile-user-section {
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-    padding-right: 120px;
-  }
-
-  .mobile-owner-avatar {
-    width: 35px;
-    height: 35px;
-  }
-
-  .mobile-owner-name {
-    font-size: 0.95rem;
+    padding-right: 120px; /* Reduzido de 140px */
   }
 
   .mobile-pet-details-section {
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-    padding-right: 120px;
+    padding-right: 120px; /* Reduzido de 140px */
   }
-
-  .mobile-detail-item {
-    font-size: 0.85rem;
-    margin-bottom: 0.4rem;
-  }
-
-  /* MOBILE: Input de comentário SEMPRE VISÍVEL e ACIMA da barra do navegador */
-  .mobile-comment-input-container {
-    margin-bottom: 0.75rem;
-    padding: 0.4rem;
-    border-radius: 20px;
-    position: relative;
-    z-index: 15;
-    margin-bottom: calc(0.75rem + env(safe-area-inset-bottom, 10px));
-  }
-
-  .mobile-comment-input {
-    padding: 0.6rem 0.8rem;
-    font-size: 16px;
-  }
-
-  .mobile-send-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 0.9rem;
-  }
-
-  /* MOBILE: Botão de comentários SEMPRE VISÍVEL e ACIMA da barra do navegador */
-  .mobile-comments-toggle-section {
-    margin-bottom: 0;
-    position: relative;
-    z-index: 15;
-    padding-bottom: env(safe-area-inset-bottom, 15px);
-  }
-
-  .mobile-comments-toggle-btn {
-    padding: 0.75rem;
-    border-radius: 12px;
-    font-size: 0.9rem;
-  }
-
-  .mobile-comments-toggle-text {
-    font-size: 0.9rem;
-  }
-
-  .mobile-comments-toggle-btn i.fa-chevron-up {
-    font-size: 0.8rem;
-  }
-
-  /* MOBILE: Overlay de comentários com input fixo otimizado */
-  .mobile-comments-content {
-    max-height: 75vh;
-    border-radius: 15px 15px 0 0;
-    padding: 0.75rem;
-  }
-
-  .mobile-comments-overlay-input-fixed {
-    padding: 0.75rem;
-    border-radius: 0 0 15px 15px;
-    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 20px));
-  }
-
-  .mobile-comments-overlay-input {
-    padding: 0.6rem 0.8rem;
-    font-size: 16px;
-  }
-
-  .mobile-comments-overlay-send-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 0.9rem;
-  }
-
-  .mobile-comments-header-overlay {
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.75rem;
-  }
-
-  .mobile-comments-header-overlay h4 {
-    font-size: 1rem;
-  }
-
-  .close-comments-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 0.8rem;
-  }
-
-  .mobile-comment-item {
-    margin-bottom: 0.75rem;
-    gap: 0.6rem;
-  }
-
-  .mobile-comment-avatar {
-    width: 28px;
-    height: 28px;
-  }
-
-  .mobile-comment-avatar-placeholder {
-    font-size: 0.7rem;
-  }
-
-  .mobile-comment-username {
-    font-size: 0.85rem;
-  }
-
-  .mobile-comment-text {
-    font-size: 0.8rem;
-  }
-
-  .mobile-comment-time {
-    font-size: 0.7rem;
-  }
-
-  .mobile-no-comments {
-    font-size: 0.85rem;
-    margin: 1.5rem 0;
-  }
-
-  /* IMPORTANTE: Garantir que elementos críticos não sejam cobertos pela barra do navegador */
-  .mobile-bottom-info::after {
-    content: '';
-    display: block;
-    height: env(safe-area-inset-bottom, 20px);
-    width: 100%;
-  }
-}
-
-/* AJUSTES ADICIONAIS PARA TELAS MUITO PEQUENAS (abaixo de 360px) */
-@media (max-width: 360px) {
-  .modal-content-new {
-    margin: 2px;
-    height: calc(100vh - 4px);
-    max-height: calc(100vh - 4px);
-    border-radius: 10px;
-  }
-
-  .mobile-bottom-info {
-    padding: 0.5rem;
-    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 25px));
-  }
-
-  .mobile-social-buttons-overlay {
-    top: 70px;
-    right: 10px;
-  }
-
-  .mobile-whatsapp-btn-overlay,
-  .mobile-instagram-btn-overlay {
-    width: 44px;
-    height: 44px;
-    font-size: 1.2rem;
-  }
-
-  .mobile-comment-input-container {
-    margin-bottom: calc(0.5rem + env(safe-area-inset-bottom, 15px));
-  }
-
-  .mobile-comments-toggle-section {
-    padding-bottom: env(safe-area-inset-bottom, 20px);
-  }
-
-  .mobile-comments-overlay-input-fixed {
-    padding: 0.5rem;
-    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 25px));
-  }
-
-  .mobile-comments-overlay-send-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 0.8rem;
-  }
-}
-
-/* Status Colors */
-.status-perdido {
-  color: #ef4444 !important; /* Vermelho */
-  font-weight: 600;
-}
-
-.status-encontrado {
-  color: #22c55e !important; /* Verde */
-  font-weight: 600;
-}
-
-.status-adocao {
-  color: #3b82f6 !important; /* Azul */
-  font-weight: 600;
-}
-
-/* Mobile Status Colors */
-.mobile-detail-item.status-perdido {
-  color: #ef4444 !important; /* Vermelho */
-  font-weight: 600;
-}
-
-.mobile-detail-item.status-encontrado {
-  color: #22c55e !important; /* Verde */
-  font-weight: 600;
-}
-
-.mobile-detail-item.status-adocao {
-  color: #3b82f6 !important; /* Azul */
-  font-weight: 600;
 }
 </style>
