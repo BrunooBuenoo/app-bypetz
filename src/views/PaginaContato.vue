@@ -126,7 +126,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .contact-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
@@ -149,7 +149,7 @@ export default {
 }
 
 .hero-icon {
-  width: 80px;
+  width: 140px;
   height: 80px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;

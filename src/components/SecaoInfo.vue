@@ -409,29 +409,6 @@ export default {
   display: flex;
 }
 
-.btn-primary {
-  position: relative;
-  background: linear-gradient(135deg, #8C52FF, #6B3DD6);
-  color: white;
-  padding: 1.2rem 2.5rem;
-  border-radius: 50px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  transition: all 0.4s ease;
-  box-shadow: 0 8px 32px rgba(140, 82, 255, 0.2);
-  border: 2px solid transparent;
-  overflow: hidden;
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(140, 82, 255, 0.3);
-  background: linear-gradient(135deg, #6B3DD6, #4A2B9A);
-}
 
 .btn-text {
   position: relative;
@@ -444,9 +421,7 @@ export default {
   transition: transform 0.3s ease;
 }
 
-.btn-primary:hover .btn-arrow {
-  transform: translateX(5px);
-}
+
 
 .btn-shine {
   position: absolute;
