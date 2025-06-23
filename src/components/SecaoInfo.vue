@@ -11,38 +11,41 @@
         <div class="pet-graphic">
           <div class="chart-container">
             <div class="chart-wrapper">
-              <div class="chart-bar" data-height="60">
+              <div class="chart-bar" :data-height="chartData.found">
                 <div class="bar-fill"></div>
                 <div class="bar-glow"></div>
               </div>
-              <div class="chart-bar" data-height="80">
+              <div class="chart-bar" :data-height="chartData.adopted">
                 <div class="bar-fill"></div>
                 <div class="bar-glow"></div>
               </div>
-              <div class="chart-bar" data-height="100">
+              <div class="chart-bar" :data-height="chartData.helping">
                 <div class="bar-fill"></div>
                 <div class="bar-glow"></div>
               </div>
-              <div class="chart-bar" data-height="40">
+              <div class="chart-bar" :data-height="chartData.comments">
                 <div class="bar-fill"></div>
                 <div class="bar-glow"></div>
               </div>
             </div>
             <div class="chart-base"></div>
+            <div class="chart-labels">
+              <span>Encontrados</span>
+              <span>Adotados</span>
+              <span>Ajudando</span>
+              <span>Comentários</span>
+            </div>
           </div>
           
           <div class="social-icons">
             <div class="social-icon mobile-icon">
               <div class="icon-content">📱</div>
-              <div class="icon-ripple"></div>
             </div>
             <div class="social-icon chat-icon">
               <div class="icon-content">💬</div>
-              <div class="icon-ripple"></div>
             </div>
             <div class="social-icon megaphone-icon">
               <div class="icon-content">📢</div>
-              <div class="icon-ripple"></div>
             </div>
           </div>
         </div>
@@ -62,9 +65,15 @@
           Ative uma campanha de impacto nas redes sociais e aumente as chances de reencontro na região.
         </p>
         
-        <div class="stats-card">
-          <div class="stats-number">03</div>
+        <div class="stats-card" v-if="!loading">
+          <div class="stats-number">{{ String(foundPetsCount).padStart(2, '0') }}</div>
           <div class="stats-text">pet(s) encontrados na região</div>
+          <div class="stats-pulse"></div>
+        </div>
+        
+        <div class="stats-card" v-else>
+          <div class="stats-number loading-shimmer">--</div>
+          <div class="stats-text">Carregando dados...</div>
           <div class="stats-pulse"></div>
         </div>
         
@@ -72,27 +81,53 @@
           <a href="/feed" class="btn-primary">
             <span class="btn-text">Ajude a aumentar esse número</span>
             <div class="btn-arrow">→</div>
-            <div class="btn-shine"></div>
           </a>
         </div>
         
-        <div class="perfil-container">
+        <div class="perfil-container" v-if="!loading && helpingUsers.length > 0">
           <div class="perfil-avatars">
-            <div class="avatar avatar-1">
-              <div class="avatar-inner">👤</div>
+            <div 
+              v-for="(user, index) in displayedUsers" 
+              :key="user.id"
+              class="avatar"
+              :class="`avatar-${index + 1}`"
+              :title="user.displayName || user.name || 'Usuário'"
+            >
+              <div class="avatar-inner">
+                <img 
+                  v-if="user.photoURL" 
+                  :src="user.photoURL" 
+                  :alt="user.displayName || user.name || 'Usuário'"
+                  class="avatar-image"
+                />
+                <span v-else class="avatar-placeholder">
+                  {{ getInitials(user.displayName || user.name || 'U') }}
+                </span>
+              </div>
             </div>
-            <div class="avatar avatar-2">
-              <div class="avatar-inner">👤</div>
-            </div>
-            <div class="avatar avatar-3">
-              <div class="avatar-inner">👤</div>
-            </div>
-            <div class="avatar-more">
-              <div class="more-inner">+12</div>
+            <div v-if="remainingUsersCount > 0" class="avatar-more">
+              <div class="more-inner">+{{ remainingUsersCount }}</div>
             </div>
           </div>
           <div class="perfil-text-container">
-            <span class="perfil-text">Pessoas ajudando na região</span>
+            <span class="perfil-text">
+              {{ helpingUsers.length }} pessoa{{ helpingUsers.length !== 1 ? 's' : '' }} ajudando na região
+            </span>
+            <div class="perfil-indicator"></div>
+          </div>
+        </div>
+        
+        <div class="perfil-container" v-else-if="loading">
+          <div class="perfil-avatars">
+            <div class="avatar loading-avatar" v-for="n in 3" :key="n">
+              <div class="avatar-inner loading-shimmer"></div>
+            </div>
+            <div class="avatar-more">
+              <div class="more-inner loading-shimmer">+--</div>
+            </div>
+          </div>
+          <div class="perfil-text-container">
+            <span class="perfil-text loading-shimmer">Carregando usuários...</span>
             <div class="perfil-indicator"></div>
           </div>
         </div>
@@ -102,8 +137,205 @@
 </template>
 
 <script>
+import { ref, computed, onMounted } from 'vue'
+import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore'
+import { db } from '../firebase/config'
+
 export default {
-  name: 'SecaoInfoBranca'
+  name: 'SecaoInfoBranca',
+  setup() {
+    const loading = ref(true)
+    const foundPetsCount = ref(0)
+    const adoptedPetsCount = ref(0)
+    const helpingUsers = ref([])
+    const totalComments = ref(0)
+    const userLocation = ref(null)
+
+    // Computed para usuários exibidos (máximo 3)
+    const displayedUsers = computed(() => {
+      return helpingUsers.value.slice(0, 3)
+    })
+
+    // Computed para contagem de usuários restantes
+    const remainingUsersCount = computed(() => {
+      return Math.max(0, helpingUsers.value.length - 3)
+    })
+
+    // Substituir o computed chartData por valores mais simples e estáveis
+    const chartData = computed(() => {
+      // Usar valores fixos baseados nos dados, mas sem cálculos complexos
+      return {
+        found: foundPetsCount.value > 0 ? Math.min(100, foundPetsCount.value * 20 + 40) : 40,
+        adopted: adoptedPetsCount.value > 0 ? Math.min(100, adoptedPetsCount.value * 15 + 60) : 60,
+        helping: helpingUsers.value.length > 0 ? Math.min(100, helpingUsers.value.length * 10 + 80) : 80,
+        comments: totalComments.value > 0 ? Math.min(100, Math.min(totalComments.value, 20) * 5 + 30) : 30
+      }
+    })
+
+    // Função para obter iniciais do nome
+    const getInitials = (name) => {
+      if (!name) return 'U'
+      return name.split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    }
+
+    // Função para obter localização do usuário (opcional)
+    const getUserLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            userLocation.value = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            }
+          },
+          (error) => {
+            console.log('Localização não disponível:', error)
+          }
+        )
+      }
+    }
+
+    // Função para buscar pets encontrados
+    const fetchFoundPets = async () => {
+      try {
+        const petsQuery = query(
+          collection(db, 'pets'),
+          where('status', '==', 'encontrado')
+        )
+        
+        const querySnapshot = await getDocs(petsQuery)
+        foundPetsCount.value = querySnapshot.size
+        
+        console.log(`Pets encontrados: ${foundPetsCount.value}`)
+      } catch (error) {
+        console.error('Erro ao buscar pets encontrados:', error)
+        foundPetsCount.value = 0
+      }
+    }
+
+    // Função para buscar pets adotados
+    const fetchAdoptedPets = async () => {
+      try {
+        const petsQuery = query(
+          collection(db, 'pets'),
+          where('status', '==', 'adotado')
+        )
+        
+        const querySnapshot = await getDocs(petsQuery)
+        adoptedPetsCount.value = querySnapshot.size
+        
+        console.log(`Pets adotados: ${adoptedPetsCount.value}`)
+      } catch (error) {
+        console.error('Erro ao buscar pets adotados:', error)
+        adoptedPetsCount.value = 0
+      }
+    }
+
+    // Função para buscar usuários únicos que comentaram
+    const fetchHelpingUsers = async () => {
+      try {
+        const usersSet = new Set()
+        const usersData = []
+        
+        // Buscar todos os pets para pegar os donos
+        const petsQuery = query(collection(db, 'pets'))
+        const petsSnapshot = await getDocs(petsQuery)
+        
+        // Adicionar donos de pets únicos
+        petsSnapshot.forEach((petDoc) => {
+          const pet = petDoc.data()
+          if (pet.userId && !usersSet.has(pet.userId)) {
+            usersSet.add(pet.userId)
+            usersData.push({
+              id: pet.userId,
+              displayName: pet.userName || 'Usuário',
+              name: pet.userName || 'Usuário',
+              photoURL: null
+            })
+          }
+        })
+
+        // Buscar comentários de forma mais simples
+        let commentCount = 0
+        for (const petDoc of petsSnapshot.docs) {
+          try {
+            const commentsQuery = query(collection(db, 'pets', petDoc.id, 'comments'))
+            const commentsSnapshot = await getDocs(commentsQuery)
+            commentCount += commentsSnapshot.size
+            
+            // Adicionar usuários que comentaram
+            commentsSnapshot.forEach((commentDoc) => {
+              const comment = commentDoc.data()
+              if (comment.userId && !usersSet.has(comment.userId)) {
+                usersSet.add(comment.userId)
+                usersData.push({
+                  id: comment.userId,
+                  displayName: comment.userName || comment.userDisplayName || 'Usuário',
+                  name: comment.userName || 'Usuário',
+                  photoURL: comment.userPhotoURL
+                })
+              }
+            })
+          } catch (err) {
+            console.log('Erro ao buscar comentários do pet:', petDoc.id, err)
+          }
+        }
+
+        totalComments.value = commentCount
+        helpingUsers.value = usersData.slice(0, 15) // Limitar para performance
+        
+        console.log(`Usuários ajudando: ${helpingUsers.value.length}`)
+        console.log(`Total de comentários: ${totalComments.value}`)
+      } catch (error) {
+        console.error('Erro ao buscar usuários ajudando:', error)
+        helpingUsers.value = []
+        totalComments.value = 0
+      }
+    }
+
+    // Substituir a função loadData por uma versão mais estável
+    const loadData = async () => {
+      loading.value = true
+      
+      try {
+        // Carregar dados de forma sequencial para evitar conflitos
+        await fetchFoundPets()
+        await new Promise(resolve => setTimeout(resolve, 100)) // Pequeno delay
+        await fetchAdoptedPets()
+        await new Promise(resolve => setTimeout(resolve, 100))
+        await fetchHelpingUsers()
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error)
+      } finally {
+        // Delay antes de remover loading para evitar flash
+        setTimeout(() => {
+          loading.value = false
+        }, 200)
+      }
+    }
+
+    // Carregar dados quando o componente for montado
+    onMounted(() => {
+      getUserLocation()
+      loadData()
+    })
+
+    return {
+      loading,
+      foundPetsCount,
+      adoptedPetsCount,
+      helpingUsers,
+      totalComments,
+      displayedUsers,
+      remainingUsersCount,
+      chartData,
+      getInitials
+    }
+  }
 }
 </script>
 
@@ -130,8 +362,8 @@ export default {
   border-radius: 50%;
   background: rgba(140, 82, 255, 0.05);
   backdrop-filter: blur(20px);
-  animation: float 6s ease-in-out infinite;
   border: 1px solid rgba(140, 82, 255, 0.1);
+  /* REMOVIDO: animation que causava tremor */
 }
 
 .orb-1 {
@@ -139,7 +371,6 @@ export default {
   height: 200px;
   top: 10%;
   right: 10%;
-  animation-delay: 0s;
 }
 
 .orb-2 {
@@ -147,7 +378,6 @@ export default {
   height: 150px;
   bottom: 20%;
   left: 5%;
-  animation-delay: 2s;
   background: rgba(255, 215, 0, 0.05);
   border: 1px solid rgba(255, 215, 0, 0.1);
 }
@@ -157,7 +387,6 @@ export default {
   height: 100px;
   top: 60%;
   right: 30%;
-  animation-delay: 4s;
 }
 
 .container-sm {
@@ -222,14 +451,15 @@ export default {
   background: linear-gradient(to top, #8C52FF, #6B3DD6, #4A2B9A);
   border-radius: 8px 8px 0 0;
   position: relative;
-  animation: growUp 2s ease-out forwards;
   box-shadow: 0 4px 20px rgba(140, 82, 255, 0.3);
+  /* ALTURA FIXA - SEM ANIMAÇÃO */
+  height: 60%;
 }
 
-.chart-bar[data-height="60"] .bar-fill { height: 60%; }
-.chart-bar[data-height="80"] .bar-fill { height: 80%; }
-.chart-bar[data-height="100"] .bar-fill { height: 100%; }
-.chart-bar[data-height="40"] .bar-fill { height: 40%; }
+.chart-bar:nth-child(1) .bar-fill { height: 50%; }
+.chart-bar:nth-child(2) .bar-fill { height: 70%; }
+.chart-bar:nth-child(3) .bar-fill { height: 85%; }
+.chart-bar:nth-child(4) .bar-fill { height: 40%; }
 
 .bar-glow {
   position: absolute;
@@ -237,9 +467,9 @@ export default {
   left: 0;
   right: 0;
   height: 20px;
-  background: linear-gradient(to bottom, rgba(140, 82, 255, 0.6), transparent);
+  background: linear-gradient(to bottom, rgba(140, 82, 255, 0.3), transparent);
   border-radius: 8px 8px 0 0;
-  animation: pulse 2s ease-in-out infinite;
+  /* REMOVIDO: animation que causava tremor */
 }
 
 .chart-base {
@@ -248,6 +478,26 @@ export default {
   background: rgba(140, 82, 255, 0.2);
   border-radius: 2px;
   margin-top: 1rem;
+}
+
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 280px;
+  margin: 0.5rem auto 0;
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 500;
+  text-align: center;
+}
+
+.chart-labels span {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.7rem;
 }
 
 .social-icons {
@@ -268,24 +518,22 @@ export default {
   box-shadow: 0 8px 32px rgba(140, 82, 255, 0.2);
   border: 1px solid rgba(140, 82, 255, 0.1);
   cursor: pointer;
-  transition: all 0.4s ease;
-  animation: bounce 3s infinite;
+  transition: transform 0.2s ease;
+  /* REMOVIDO: animation bounce que causava tremor */
 }
 
 .social-icon:nth-child(2) { 
-  animation-delay: 0.3s;
   background: linear-gradient(135deg, #FFD700, #FFA500);
   box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
 }
-.social-icon:nth-child(3) { animation-delay: 0.6s; }
 
 .social-icon:hover {
-  transform: translateY(-10px) scale(1.1);
-  box-shadow: 0 15px 40px rgba(140, 82, 255, 0.3);
+  transform: translateY(-3px) scale(1.02);
+  /* HOVER SIMPLES - SEM ANIMAÇÕES COMPLEXAS */
 }
 
 .social-icon:nth-child(2):hover {
-  box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+  box-shadow: 0 10px 35px rgba(255, 215, 0, 0.3);
 }
 
 .icon-content {
@@ -295,15 +543,8 @@ export default {
 }
 
 .icon-ripple {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  animation: ripple 2s infinite;
+  /* REMOVIDO COMPLETAMENTE - CAUSAVA TREMOR */
+  display: none;
 }
 
 .text-box {
@@ -330,14 +571,10 @@ export default {
 
 .title-word {
   display: inline-block;
-  animation: slideInUp 0.8s ease-out forwards;
-  opacity: 0;
-  transform: translateY(30px);
+  /* REMOVIDO: animation slideInUp */
+  opacity: 1;
+  transform: translateY(0);
 }
-
-.title-word:nth-child(1) { animation-delay: 0.1s; }
-.title-word:nth-child(2) { animation-delay: 0.2s; }
-.title-word:nth-child(3) { animation-delay: 0.3s; }
 
 .highlight {
   background: linear-gradient(135deg, #8C52FF, #6B3DD6);
@@ -353,8 +590,7 @@ export default {
   background: linear-gradient(90deg, #8C52FF, #6B3DD6);
   border-radius: 2px;
   margin-top: 1rem;
-  animation: expandWidth 1s ease-out 0.5s forwards;
-  width: 0;
+  /* REMOVIDO: animation expandWidth */
 }
 
 .description {
@@ -362,9 +598,9 @@ export default {
   color: #666;
   line-height: 1.7;
   margin: 0;
-  animation: fadeInUp 0.8s ease-out 0.4s forwards;
-  opacity: 0;
-  transform: translateY(20px);
+  /* REMOVIDO: animation fadeInUp */
+  opacity: 1;
+  transform: translateY(0);
   font-weight: 500;
 }
 
@@ -402,13 +638,13 @@ export default {
   right: 0;
   bottom: 0;
   background: linear-gradient(45deg, transparent, rgba(0, 191, 119, 0.05), transparent);
-  animation: shimmer 3s infinite;
+  /* REMOVIDO: animation shimmer */
+  
 }
 
 .btn-box {
   display: flex;
 }
-
 
 .btn-text {
   position: relative;
@@ -421,16 +657,9 @@ export default {
   transition: transform 0.3s ease;
 }
 
-
-
 .btn-shine {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: shine 3s infinite;
+  /* REMOVIDO COMPLETAMENTE - CAUSAVA TREMOR */
+  display: none;
 }
 
 .perfil-container {
@@ -452,7 +681,7 @@ export default {
   margin-left: -15px;
   border: 3px solid rgba(140, 82, 255, 0.2);
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease;
   box-shadow: 0 4px 15px rgba(140, 82, 255, 0.1);
 }
 
@@ -461,9 +690,8 @@ export default {
 }
 
 .avatar:hover {
-  transform: translateY(-5px) scale(1.1);
+  transform: translateY(-2px) scale(1.05);
   z-index: 10;
-  box-shadow: 0 8px 25px rgba(140, 82, 255, 0.2);
 }
 
 .avatar-inner {
@@ -476,24 +704,33 @@ export default {
   justify-content: center;
   font-size: 1.3rem;
   color: white;
+  overflow: hidden;
 }
 
-.btn-primary,
-.btn-secondary {
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-primary {
   padding: 1rem 2rem;
   border-radius: 30px;
   text-decoration: none;
   font-weight: 700;
   font-size: 1rem;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 180px;
   border: 2px solid transparent;
-}
-
-.btn-primary {
   background: linear-gradient(135deg, #FFD700, #FFA500);
   color: #8C52FF;
   box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
@@ -501,8 +738,8 @@ export default {
 
 .btn-primary:hover {
   background: linear-gradient(135deg, #FFA500, #FF8C00);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
 }
 
 .avatar-more {
@@ -513,7 +750,7 @@ export default {
   margin-left: -15px;
   border: 3px solid rgba(255, 215, 0, 0.3);
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease;
   box-shadow: 0 4px 15px rgba(255, 215, 0, 0.1);
 }
 
@@ -549,58 +786,23 @@ export default {
   right: -15px;
   top: 50%;
   transform: translateY(-50%);
-  animation: pulse 2s infinite;
+  /* REMOVIDO: animation pulse que causava tremor */
   box-shadow: 0 0 10px rgba(0, 191, 119, 0.5);
 }
 
-/* Animações */
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  /* REMOVIDO: animation shimmer */
+  border-radius: 4px;
 }
 
-@keyframes growUp {
-  from { height: 0; opacity: 0; }
-  to { opacity: 1; }
+.loading-avatar .avatar-inner {
+  background: #f0f0f0;
 }
 
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-15px); }
-  60% { transform: translateY(-8px); }
-}
-
-@keyframes ripple {
-  0% { width: 0; height: 0; opacity: 1; }
-  100% { width: 100px; height: 100px; opacity: 0; }
-}
-
-@keyframes slideInUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes expandWidth {
-  to { width: 100px; }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-@keyframes shine {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.1); }
-}
+/* TODAS AS ANIMAÇÕES REMOVIDAS PARA EVITAR TREMOR */
 
 /* Responsividade */
 @media (max-width: 1024px) {
@@ -667,6 +869,10 @@ export default {
     width: 100%;
     justify-content: center;
   }
+
+  .chart-labels {
+    font-size: 0.7rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -692,6 +898,10 @@ export default {
     width: 50px;
     height: 50px;
     font-size: 1.2rem;
+  }
+
+  .chart-labels {
+    font-size: 0.6rem;
   }
 }
 </style>
