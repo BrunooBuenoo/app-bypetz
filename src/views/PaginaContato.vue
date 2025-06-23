@@ -149,7 +149,7 @@ export default {
 }
 
 .hero-icon {
-  width: 130px;
+  width: 80px;
   height: 80px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
