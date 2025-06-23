@@ -115,7 +115,7 @@
   <RodapeSite/>
 </template>
 
-<script>
+<script scoped>
 import RodapeSite from '../components/RodapeSite.vue'
 
 export default {
@@ -149,7 +149,7 @@ export default {
 }
 
 .hero-icon {
-  width: 140px;
+  width: 80px;
   height: 80px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
