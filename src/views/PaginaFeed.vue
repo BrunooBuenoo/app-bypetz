@@ -1336,9 +1336,9 @@ export default {
 
 .modal-close-new {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  background: rgba(0, 0, 0, 0.7);
+  top: 10px;
+  right: 10px;
+  background: rgba(180, 180, 180, 0.3);
   color: white;
   border: none;
   border-radius: 50%;

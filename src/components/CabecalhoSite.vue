@@ -63,10 +63,6 @@
                 <span>Cadastrar Pet</span>
               </router-link>
               
-              <router-link to="/meus-pets" class="dropdown-item" @click="showUserMenu = false">
-                <span>Meus Pets</span>
-              </router-link>
-              
               <div class="dropdown-item" @click="showUserMenu = false">
                 <span>Configurações</span>
               </div>
