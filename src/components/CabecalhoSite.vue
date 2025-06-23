@@ -264,7 +264,7 @@ export default {
   top: 0;
   z-index: 2000; /* Aumentar o z-index do header */
   width: 100%;
-  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
+  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 0%, #4A2B9A 0%);
 }
 
 .header-container {
