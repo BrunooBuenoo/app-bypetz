@@ -69,7 +69,7 @@
               :disabled="pedido.status !== 'pendente'"
             >
               <i class="fas fa-cog"></i>
-              Processar
+              <span class="btn-text">Processar</span>
             </button>
             <button 
               @click="updateStatus(pedido.id, 'concluido')"
@@ -77,7 +77,7 @@
               :disabled="pedido.status === 'concluido'"
             >
               <i class="fas fa-check"></i>
-              Concluir
+              <span class="btn-text">Concluir</span>
             </button>
             <button 
               @click="openDeleteModal(pedido)"
@@ -85,7 +85,7 @@
               title="Excluir pedido"
             >
               <i class="fas fa-trash"></i>
-              Excluir
+              <span class="btn-text">Excluir</span>
             </button>
           </div>
         </div>
@@ -585,7 +585,8 @@ export default {
 
 .pedido-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .btn-action {
@@ -593,12 +594,15 @@ export default {
   border: none;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
 }
 
 .btn-process {
@@ -619,6 +623,16 @@ export default {
 
 .btn-complete:hover:not(:disabled) {
   background: rgba(76, 175, 80, 0.2);
+}
+
+.btn-delete {
+  background: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: rgba(244, 67, 54, 0.2);
 }
 
 .btn-action:disabled {
@@ -661,46 +675,6 @@ export default {
   background: rgba(34, 197, 94, 0.95);
   color: white;
   border: 1px solid #22C55E;
-}
-
-@media (max-width: 768px) {
-  .section-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .stats {
-    justify-content: center;
-  }
-  
-  .pedido-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .pedido-footer {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .pedido-actions {
-    justify-content: center;
-  }
-  
-  .produto-item {
-    flex-direction: column;
-    text-align: center;
-  }
-}
-
-.btn-delete {
-  background: rgba(244, 67, 54, 0.1);
-  color: #F44336;
-  border: 1px solid rgba(244, 67, 54, 0.3);
-}
-
-.btn-delete:hover:not(:disabled) {
-  background: rgba(244, 67, 54, 0.2);
 }
 
 /* Modal Styles */
@@ -894,6 +868,36 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .stats {
+    justify-content: center;
+  }
+  
+  .pedido-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .pedido-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .pedido-actions {
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  
+  .produto-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
   .modal-overlay {
     padding: 1rem;
   }
@@ -909,6 +913,71 @@ export default {
   .modal-actions {
     padding: 1rem 1.5rem 1.5rem;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .pedido-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .btn-action {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+  
+  .btn-text {
+    display: inline;
+  }
+  
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .modal-content {
+    max-height: 95vh;
+  }
+  
+  .modal-header {
+    padding: 1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+  
+  .modal-actions {
+    padding: 1rem;
+  }
+  
+  .warning-message {
+    padding: 1rem;
+  }
+  
+  .confirmation-input label {
+    font-size: 0.85rem;
+  }
+  
+  .confirm-input {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .btn-text {
+    display: none;
+  }
+  
+  .btn-action {
+    min-width: 44px;
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .pedido-actions {
+    flex-direction: row;
+    justify-content: space-around;
   }
 }
 </style>

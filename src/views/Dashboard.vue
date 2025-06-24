@@ -15,8 +15,41 @@
 
     <!-- Dashboard Admin -->
     <div v-else class="dashboard-container">
-      <!-- Sidebar -->
-      <aside class="sidebar">
+      <!-- Mobile Header -->
+      <div class="mobile-header">
+        <h1>Admin ByPetz</h1>
+        <div class="mobile-nav">
+          <button
+            @click="activeSection = 'pedidos'"
+            class="mobile-nav-item"
+            :class="{ active: activeSection === 'pedidos' }"
+          >
+            <i class="fas fa-shopping-bag"></i>
+            <span>Pedidos</span>
+          </button>
+          
+          <button
+            @click="activeSection = 'produtos'"
+            class="mobile-nav-item"
+            :class="{ active: activeSection === 'produtos' }"
+          >
+            <i class="fas fa-box"></i>
+            <span>Produtos</span>
+          </button>
+          
+          <button
+            @click="activeSection = 'categorias'"
+            class="mobile-nav-item"
+            :class="{ active: activeSection === 'categorias' }"
+          >
+            <i class="fas fa-tags"></i>
+            <span>Categorias</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Desktop Sidebar -->
+      <aside class="desktop-sidebar">
         <div class="sidebar-header">
           <h2>
             <i class="fas fa-cog"></i>
@@ -174,7 +207,68 @@ export default {
   min-height: 100vh;
 }
 
-.sidebar {
+.mobile-header {
+  display: none;
+  background: white;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(140, 82, 255, 0.1);
+  box-shadow: 0 2px 10px rgba(140, 82, 255, 0.05);
+}
+
+.mobile-header h1 {
+  color: #8C52FF;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.mobile-nav {
+  display: flex;
+  justify-content: space-around;
+  gap: 0.5rem;
+}
+
+.mobile-nav-item {
+  background: none;
+  border: none;
+  padding: 0.75rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #666;
+  border-radius: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-nav-item i {
+  font-size: 1.2rem;
+}
+
+.mobile-nav-item span {
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-nav-item:hover {
+  background: rgba(140, 82, 255, 0.05);
+  color: #8C52FF;
+}
+
+.mobile-nav-item.active {
+  background: linear-gradient(135deg, rgba(140, 82, 255, 0.1), rgba(140, 82, 255, 0.05));
+  color: #8C52FF;
+}
+
+.desktop-sidebar {
   background: white;
   border-right: 1px solid rgba(140, 82, 255, 0.1);
   box-shadow: 4px 0 20px rgba(140, 82, 255, 0.05);
@@ -265,8 +359,12 @@ export default {
     grid-template-columns: 1fr;
   }
   
-  .sidebar {
+  .desktop-sidebar {
     display: none;
+  }
+  
+  .mobile-header {
+    display: block;
   }
   
   .main-content {
@@ -279,8 +377,62 @@ export default {
     gap: 1rem;
   }
   
+  .content-header h1 {
+    font-size: 1.5rem;
+  }
+  
   .content-body {
     padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-header {
+    padding: 0.75rem;
+  }
+  
+  .mobile-header h1 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .mobile-nav {
+    gap: 0.25rem;
+  }
+  
+  .mobile-nav-item {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.7rem;
+  }
+  
+  .mobile-nav-item i {
+    font-size: 1rem;
+  }
+  
+  .mobile-nav-item span {
+    font-size: 0.65rem;
+  }
+  
+  .main-content {
+    padding: 0.75rem;
+  }
+  
+  .content-header h1 {
+    font-size: 1.3rem;
+  }
+  
+  .content-body {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-nav-item span {
+    display: none;
+  }
+  
+  .mobile-nav-item {
+    padding: 0.75rem 0.25rem;
   }
 }
 </style>
