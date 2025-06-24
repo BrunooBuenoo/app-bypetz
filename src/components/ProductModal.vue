@@ -498,7 +498,7 @@ export default {
 .sale-price {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #8C52FF;
+  color: #414141;
 }
 
 .discount-info {
@@ -529,7 +529,7 @@ export default {
 .regular-price {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #8C52FF;
+  color: #414141;
 }
 
 .stock-section {
@@ -678,9 +678,8 @@ export default {
 }
 
 .add-to-cart-modal-btn:hover:not(:disabled) {
-  background: #e63946;
+  background: #01037ce5;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
 }
 
 .add-to-cart-modal-btn:disabled {

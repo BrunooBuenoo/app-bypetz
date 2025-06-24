@@ -193,8 +193,8 @@ export default {
 .product-description {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.4;
@@ -229,7 +229,7 @@ export default {
 .sale-price {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #8C52FF;
+  color: #414141;
   line-height: 1.2;
 }
 
@@ -242,7 +242,7 @@ export default {
 .regular-price {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #8C52FF;
+  color: #414141;
   line-height: 1.2;
 }
 
@@ -264,9 +264,8 @@ export default {
 }
 
 .add-to-cart-modal-btn:hover:not(:disabled) {
-  background: #e63946;
+  background: #01037ce5;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
 }
 
 .add-to-cart-modal-btn:disabled {
@@ -288,7 +287,7 @@ export default {
   
   .product-name {
     font-size: 1rem;
-    height: 2.4rem;
+    height: 4rem;
   }
   
   .product-description {
@@ -325,7 +324,7 @@ export default {
   }
   
   .product-description {
-    height: 3.2rem;
+    height: 3rem;
     -webkit-line-clamp: 2;
   }
   

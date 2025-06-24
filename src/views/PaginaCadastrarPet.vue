@@ -203,6 +203,7 @@
       {{ error }}
     </div>
   </div>
+  <RodapeSite/>
 </template>
 
 <script>
@@ -212,11 +213,13 @@ import { useAuth } from '../composables/useAuth'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase/config'
 import CityAutocomplete from '../components/CityAutocomplete.vue'
+import RodapeSite from '../components/RodapeSite.vue'
 
 export default {
   name: 'PaginaCadastrarPet',
   components: {
-    CityAutocomplete
+    CityAutocomplete,
+    RodapeSite
   },
   setup() {
     const router = useRouter()
@@ -482,7 +485,7 @@ export default {
 
 .cadastrar-pet-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
+  background: linear-gradient(135deg, #f1f1f1 0%, #f4ecfc 100%);
   padding: 2rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }

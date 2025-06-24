@@ -44,12 +44,12 @@
                   @click="toggleCategory(categoria.id)"
                   :class="{ active: selectedCategory === categoria.id }"
                 >
-                  <label class="category-checkbox">
+                  <label class="category-checkbox" @click.prevent="handleCategoryClick(categoria.id)">
                     <input 
                       type="radio" 
                       :value="categoria.id" 
-                      v-model="selectedCategory"
-                      @change="handleCategoryChange"
+                      :checked="selectedCategory === categoria.id"
+                      readonly
                     />
                     <span class="checkmark"></span>
                     <span class="category-name">{{ categoria.nome }}</span>
@@ -60,6 +60,7 @@
                     v-if="categoria.subcategorias && categoria.subcategorias.length > 0"
                     class="expand-btn"
                     :class="{ expanded: expandedCategories.includes(categoria.id) }"
+                    @click.stop
                   >
                     <i class="fas fa-chevron-down"></i>
                   </button>
@@ -76,16 +77,19 @@
                     :key="sub.id"
                     class="subcategory-item"
                   >
-                    <label class="subcategory-checkbox">
-                      <input 
-                        type="radio" 
-                        :value="sub.id" 
-                        v-model="selectedSubcategory"
-                        @change="handleSubcategoryChange"
-                      />
-                      <span class="checkmark"></span>
-                      <span class="subcategory-name">{{ sub.nome }}</span>
-                      <span class="product-count">({{ getSubcategoryProductCount(sub.id) }})</span>
+                    <label class="subcategory-checkbox" 
+                          :class="{ active: String(selectedSubcategory) === String(sub.id) }"
+                    >
+                        <input 
+                          type="radio" 
+                          :value="sub.id" 
+                          :checked="String(selectedSubcategory) === String(sub.id)"
+                          @click="handleSubcategoryClick(sub.id)"
+                          readonly
+                        />
+                        <span class="checkmark"></span>
+                        <span class="subcategory-name">{{ sub.nome }}</span>
+                        <span class="product-count">({{ getSubcategoryProductCount(sub.id) }})</span>
                     </label>
                   </div>
                 </div>
@@ -124,12 +128,12 @@
                   class="mobile-category-header"
                   @click="toggleMobileCategory(categoria.id)"
                 >
-                  <label class="mobile-category-checkbox">
+                  <label class="mobile-category-checkbox" @click.stop="handleCategoryClick(categoria.id)">
                     <input 
                       type="radio" 
                       :value="categoria.id" 
-                      v-model="selectedCategory"
-                      @change="handleCategoryChange"
+                      :checked="selectedCategory === categoria.id"
+                      readonly
                     />
                     <span class="mobile-checkmark"></span>
                     <span class="mobile-category-name">{{ categoria.nome }}</span>
@@ -152,21 +156,24 @@
                   :class="{ expanded: expandedMobileCategories.includes(categoria.id) }"
                 >
                   <div 
-                    v-for="sub in categoria.subcategorias" 
-                    :key="sub.id"
-                    class="mobile-subcategory-item"
-                  >
-                    <label class="mobile-subcategory-checkbox">
+                      v-for="sub in categoria.subcategorias" 
+                      :key="sub.id"
+                      class="mobile-subcategory-item"
+                    >
+                    <label class="subcategory-checkbox"
+                          :class="{ active: String(selectedSubcategory) === String(sub.id) }"
+                    >
                       <input 
                         type="radio" 
                         :value="sub.id" 
-                        v-model="selectedSubcategory"
-                        @change="handleSubcategoryChange"
+                        :checked="String(selectedSubcategory) === String(sub.id)"
+                        @click="handleSubcategoryClick(sub.id)"
+                        readonly
                       />
-                      <span class="mobile-checkmark"></span>
-                      <span class="mobile-subcategory-name">{{ sub.nome }}</span>
-                      <span class="mobile-product-count">({{ getSubcategoryProductCount(sub.id) }})</span>
-                    </label>
+                      <span class="checkmark"></span>
+                      <span class="subcategory-name">{{ sub.nome }}</span>
+                      <span class="product-count">({{ getSubcategoryProductCount(sub.id) }})</span>
+                  </label>
                   </div>
                 </div>
               </div>
@@ -238,6 +245,7 @@
       </div>
     </div>
   </div>
+  <RodapeSite />
 </template>
 
 <script>
@@ -247,12 +255,15 @@ import { db } from '../firebase/config'
 import { useCartStore } from '../stores/cartStore'
 import ProductCard from '../components/ProductCard.vue'
 import ProductModal from '../components/ProductModal.vue'
+import RodapeSite from '../components/RodapeSite.vue'
+
 
 export default {
   name: 'LojaView',
   components: {
     ProductCard,
-    ProductModal
+    ProductModal,
+    RodapeSite
   },
   setup() {
     const cartStore = useCartStore()
@@ -271,16 +282,21 @@ export default {
     const selectedProduct = ref(null)
 
     const filteredProducts = computed(() => {
-      let filtered = produtos.value
+        let filtered = produtos.value
 
-      if (selectedSubcategory.value) {
-        filtered = filtered.filter(produto => produto.subcategoriaId === selectedSubcategory.value)
-      } else if (selectedCategory.value) {
-        filtered = filtered.filter(produto => produto.categoriaId === selectedCategory.value)
-      }
+        if (selectedSubcategory.value) {
+          filtered = filtered.filter(produto =>
+            String(produto.subcategoriaId) === String(selectedSubcategory.value)
+          )
+        } else if (selectedCategory.value) {
+          filtered = filtered.filter(produto =>
+            String(produto.categoriaId) === String(selectedCategory.value)
+          )
+        }
 
-      return filtered
-    })
+        return filtered
+      })
+
 
     const sortedProducts = computed(() => {
       const filtered = [...filteredProducts.value]
@@ -308,8 +324,11 @@ export default {
     }
 
     const getSubcategoryProductCount = (subcategoryId) => {
-      return produtos.value.filter(p => p.subcategoriaId === subcategoryId).length
+      return produtos.value.filter(p =>
+        String(p.subcategoriaId) === String(subcategoryId)
+      ).length
     }
+
 
     const toggleCategory = (categoryId) => {
       const index = expandedCategories.value.indexOf(categoryId)
@@ -329,15 +348,33 @@ export default {
       }
     }
 
-    const handleCategoryChange = () => {
-      selectedSubcategory.value = ''
+    // Função para lidar com clique na categoria
+    const handleCategoryClick = (categoryId) => {
+      // Se clicou na categoria já selecionada, desmarca
+      if (selectedCategory.value === categoryId && !selectedSubcategory.value) {
+        selectedCategory.value = ''
+        selectedSubcategory.value = ''
+      } else {
+        // Seleciona nova categoria e limpa subcategoria
+        selectedCategory.value = categoryId
+        selectedSubcategory.value = ''
+      }
     }
 
-    const handleSubcategoryChange = () => {
-      // Encontrar a categoria pai da subcategoria selecionada
-      const subcategoria = subcategorias.value.find(s => s.id === selectedSubcategory.value)
-      if (subcategoria) {
-        selectedCategory.value = subcategoria.categoriaId
+    // Função para lidar com clique na subcategoria
+    const handleSubcategoryClick = (subcategoryId) => {
+      // Se clicou na subcategoria já selecionada, desmarca
+      if (selectedSubcategory.value === subcategoryId) {
+        selectedSubcategory.value = ''
+        selectedCategory.value = ''
+      } else {
+        // Seleciona nova subcategoria
+        selectedSubcategory.value = subcategoryId
+        // Encontrar e selecionar categoria pai (manter visualmente)
+        const subcategoria = subcategorias.value.find(s => s.id === subcategoryId)
+        if (subcategoria) {
+          selectedCategory.value = subcategoria.categoriaId
+        }
       }
     }
 
@@ -522,8 +559,6 @@ export default {
       getSubcategoryProductCount,
       toggleCategory,
       toggleMobileCategory,
-      handleCategoryChange,
-      handleSubcategoryChange,
       clearFilters,
       toggleMobileFilters,
       closeMobileFilters,
@@ -532,7 +567,9 @@ export default {
       selectedProduct,
       openProductModal,
       closeProductModal,
-      handleModalAddToCart
+      handleModalAddToCart,
+      handleCategoryClick,
+      handleSubcategoryClick,
     }
   }
 }
@@ -668,6 +705,31 @@ export default {
   border-radius: 3px;
   position: relative;
   transition: all 0.3s ease;
+}
+
+.subcategory-checkbox.active {
+  font-weight: 600;
+  color: #8C52FF;
+}
+
+.subcategory-checkbox.active .subcategory-name {
+  color: #8C52FF;
+  font-weight: 600;
+}
+
+.subcategory-checkbox.active .checkmark {
+  border-color: #8C52FF;
+  background: #8C52FF;
+}
+
+.subcategory-checkbox.active .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: -2px;
+  left: 3px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .category-checkbox input[type="radio"]:checked + .checkmark {
@@ -1009,7 +1071,7 @@ export default {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: linear-gradient(135deg, #8C52FF, #6B3DD6);
+  background: #0077ff;
   color: white;
   padding: 1rem 1.5rem;
   border-radius: 50px;
@@ -1024,9 +1086,8 @@ export default {
 }
 
 .cart-button-fixed:hover {
-  background: linear-gradient(135deg, #6B3DD6, #4A2B9A);
+  background: #01037ce5;
   transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(140, 82, 255, 0.5);
 }
 
 .cart-count {

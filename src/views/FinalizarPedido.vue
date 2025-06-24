@@ -501,7 +501,6 @@ export default {
 .btn-primary:hover {
   background: linear-gradient(135deg, #6B3DD6, #4A2B9A);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(140, 82, 255, 0.4);
 }
 
 .btn-secondary {

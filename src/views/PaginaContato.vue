@@ -3,16 +3,8 @@
     <!-- Hero Section -->
     <div class="hero-section">
       <div class="hero-content">
-        <div class="hero-icon">
-          <i class="fas fa-heart"></i>
-        </div>
         <h1>Fale com a gente!</h1>
         <p class="hero-subtitle">Estamos aqui para ajudar você e seu pet</p>
-      </div>
-      <div class="floating-elements">
-        <div class="floating-paw paw-1">🐾</div>
-        <div class="floating-paw paw-2">🐾</div>
-        <div class="floating-paw paw-3">🐾</div>
       </div>
     </div>
 
@@ -27,76 +19,52 @@
       <!-- Contact Buttons -->
       <div class="contact-buttons">
         <a href="https://wa.me/5514998886799" target="_blank" class="btn btn-whatsapp">
-          <i class="fab fa-whatsapp"></i>
           <span>WhatsApp</span>
           <small>Resposta rápida</small>
         </a>
         
         <a href="mailto:contato@bypetz.com.br" class="btn btn-email">
-          <i class="fas fa-envelope"></i>
           <span>E-mail</span>
           <small>Suporte detalhado</small>
         </a>
         
         <a href="tel:+5514998886799" class="btn btn-phone">
-          <i class="fas fa-phone"></i>
           <span>Telefone</span>
           <small>Atendimento direto</small>
         </a>
         
         <a href="https://instagram.com/bypetz.com.br" target="_blank" class="btn btn-instagram">
-          <i class="fab fa-instagram"></i>
           <span>Instagram</span>
           <small>Novidades e dicas</small>
         </a>
       </div>
-
 
       <!-- FAQ Section -->
       <div class="faq-section">
         <h2>Perguntas Frequentes</h2>
         <div class="faq-grid">
           <div class="faq-item">
-            <div class="faq-icon">❓</div>
+            <div class="faq-icon"><i class="fas fa-question-circle"></i></div>
             <h4>Como cadastrar um pet?</h4>
             <p>Clique em "Cadastrar Pet" e preencha as informações. É rápido e gratuito!</p>
           </div>
           
           <div class="faq-item">
-            <div class="faq-icon">🔍</div>
+            <div class="faq-icon"><i class="fas fa-search"></i></div>
             <h4>Como buscar pets?</h4>
             <p>Use os filtros no feed para encontrar pets por cidade, tipo e status.</p>
           </div>
           
           <div class="faq-item">
-            <div class="faq-icon">📱</div>
+            <div class="faq-icon"><i class="fas fa-mobile-alt"></i></div>
             <h4>Como entrar em contato?</h4>
             <p>Use WhatsApp, e-mail ou telefone. Estamos sempre disponíveis para ajudar!</p>
           </div>
           
           <div class="faq-item">
-            <div class="faq-icon">🆘</div>
+            <div class="faq-icon"><i class="fas fa-exclamation-triangle"></i></div>
             <h4>Emergência?</h4>
             <p>Para casos urgentes, ligue diretamente ou mande WhatsApp. Priorizamos emergências!</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Hours Section -->
-      <div class="hours-section">
-        <h3>Horário de Atendimento</h3>
-        <div class="hours-grid">
-          <div class="hours-item">
-            <i class="fab fa-whatsapp"></i>
-            <span>WhatsApp: 24h por dia</span>
-          </div>
-          <div class="hours-item">
-            <i class="fas fa-envelope"></i>
-            <span>E-mail: Sempre disponível</span>
-          </div>
-          <div class="hours-item">
-            <i class="fas fa-phone"></i>
-            <span>Telefone: 8h às 18h</span>
           </div>
         </div>
       </div>
@@ -106,7 +74,6 @@
         <h3>Pronto para ajudar mais um pet?</h3>
         <p>Junte-se à nossa comunidade e ajude a reunir famílias!</p>
         <router-link to="/cadastrar-pet" class="cta-button">
-          <i class="fas fa-paw"></i>
           Cadastrar Pet Agora
         </router-link>
       </div>
@@ -148,30 +115,6 @@ export default {
   z-index: 2;
 }
 
-.hero-icon {
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 2rem;
-  backdrop-filter: blur(20px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  animation: pulse 2s infinite;
-}
-
-.hero-icon i {
-  font-size: 2rem;
-  color: #FFD700;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
 .hero-section h1 {
   font-size: 3.5rem;
   color: white;
@@ -185,46 +128,6 @@ export default {
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: 0;
   font-weight: 300;
-}
-
-/* Floating Elements */
-.floating-elements {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-
-.floating-paw {
-  position: absolute;
-  font-size: 2rem;
-  opacity: 0.3;
-  animation: float 6s ease-in-out infinite;
-}
-
-.paw-1 {
-  top: 20%;
-  left: 10%;
-  animation-delay: 0s;
-}
-
-.paw-2 {
-  top: 60%;
-  right: 15%;
-  animation-delay: 2s;
-}
-
-.paw-3 {
-  top: 40%;
-  left: 80%;
-  animation-delay: 4s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(10deg); }
 }
 
 /* Main Container */
@@ -263,7 +166,8 @@ export default {
 
 /* Contact Buttons */
 .contact-buttons {
-  display: grid;
+  display: flex;
+  justify-content: center;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
   margin-bottom: 4rem;
@@ -300,11 +204,6 @@ export default {
 
 .btn:hover::before {
   left: 100%;
-}
-
-.btn i {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
 }
 
 .btn span {
@@ -358,95 +257,6 @@ export default {
   box-shadow: 0 20px 40px rgba(225, 48, 108, 0.4);
 }
 
-/* Contact Info Cards */
-.contact-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-bottom: 4rem;
-}
-
-.info-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 2.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.4s ease;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.info-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #FFD700, #FFA500);
-  transform: scaleX(0);
-  transition: transform 0.4s ease;
-}
-
-.info-card:hover::before {
-  transform: scaleX(1);
-}
-
-.info-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.card-icon {
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 215, 0, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  border: 2px solid #FFD700;
-}
-
-.card-icon i {
-  font-size: 1.8rem;
-  color: #FFD700;
-}
-
-.info-card h3 {
-  color: white;
-  margin-bottom: 1rem;
-  font-size: 1.4rem;
-  font-weight: 700;
-}
-
-.info-card p {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  font-weight: 500;
-}
-
-.status {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.status.online {
-  background: rgba(34, 197, 94, 0.3);
-  color: #22C55E;
-  border: 1px solid #22C55E;
-}
-
 /* FAQ Section */
 .faq-section {
   background: rgba(255, 255, 255, 0.1);
@@ -455,6 +265,7 @@ export default {
   padding: 3rem;
   margin-bottom: 4rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
 .faq-section h2 {
@@ -487,6 +298,7 @@ export default {
 .faq-icon {
   font-size: 2rem;
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 .faq-item h4 {
@@ -537,11 +349,6 @@ export default {
   font-weight: 500;
 }
 
-.hours-item i {
-  font-size: 1.2rem;
-  color: #FFD700;
-}
-
 /* CTA Section */
 .cta-section {
   text-align: center;
@@ -585,18 +392,10 @@ export default {
   background: linear-gradient(135deg, #FFA500, #FF8C00);
 }
 
-.cta-button i {
-  font-size: 1.2rem;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-section {
     padding: 6rem 1rem 3rem;
-  }
-
-  .hero-icon{
-    width: 80px;
   }
   
   .hero-section h1 {
@@ -628,21 +427,8 @@ export default {
     padding: 1.5rem;
   }
   
-  .btn i {
-    font-size: 2rem;
-  }
-  
   .btn span {
     font-size: 1.1rem;
-  }
-  
-  .contact-info {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .info-card {
-    padding: 2rem;
   }
   
   .faq-section {
@@ -691,10 +477,6 @@ export default {
   
   .btn {
     padding: 1.25rem;
-  }
-  
-  .info-card {
-    padding: 1.5rem;
   }
   
   .faq-section {

@@ -1258,7 +1258,7 @@ export default {
 
 .bypetz-app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0f0f0 0%, #efeff0 100%);
+  background: linear-gradient(135deg, #f1f1f1 0%, #f4ecfc 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 

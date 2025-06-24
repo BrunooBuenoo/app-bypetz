@@ -3,16 +3,8 @@
     <!-- Hero Section -->
     <div class="hero-section">
       <div class="hero-content">
-        <div class="hero-icon">
-          <i class="fas fa-heart"></i>
-        </div>
         <h1 class="hero-title">Sobre a ByPetz</h1>
         <p class="hero-subtitle">Conectando corações, reunindo famílias</p>
-      </div>
-      <div class="hero-decoration">
-        <div class="floating-paw paw-1">🐾</div>
-        <div class="floating-paw paw-2">🐾</div>
-        <div class="floating-paw paw-3">🐾</div>
       </div>
     </div>
 
@@ -23,9 +15,6 @@
         <!-- Nossa História -->
         <div class="card card-large">
           <div class="card-header">
-            <div class="card-icon">
-              <i class="fas fa-book-open"></i>
-            </div>
             <h2>Nossa História</h2>
           </div>
           <div class="card-content">
@@ -37,9 +26,6 @@
         <!-- Nossa Missão -->
         <div class="card card-medium">
           <div class="card-header">
-            <div class="card-icon mission-icon">
-              <i class="fas fa-bullseye"></i>
-            </div>
             <h2>Nossa Missão</h2>
           </div>
           <div class="card-content">
@@ -50,9 +36,6 @@
         <!-- Como Ajudamos -->
         <div class="card card-medium">
           <div class="card-header">
-            <div class="card-icon help-icon">
-              <i class="fas fa-hands-helping"></i>
-            </div>
             <h2>Como Ajudamos</h2>
           </div>
           <div class="card-content">
@@ -63,24 +46,18 @@
         <!-- Nossos Valores -->
         <div class="card card-large">
           <div class="card-header">
-            <div class="card-icon values-icon">
-              <i class="fas fa-gem"></i>
-            </div>
             <h2>Nossos Valores</h2>
           </div>
           <div class="card-content">
             <p>Por trás da tela, existe uma equipe apaixonada por animais e comprometida com cada história. Na ByPetz, cada pet importa, e cada usuário é parte essencial dessa rede de cuidado e solidariedade.</p>
             <div class="values-list">
               <div class="value-item">
-                <i class="fas fa-heart"></i>
                 <span>Empatia</span>
               </div>
               <div class="value-item">
-                <i class="fas fa-shield-alt"></i>
                 <span>Confiança</span>
               </div>
               <div class="value-item">
-                <i class="fas fa-users"></i>
                 <span>Comunidade</span>
               </div>
             </div>
@@ -93,33 +70,21 @@
         <h2 class="section-title">O que oferecemos</h2>
         <div class="features-grid">
           <div class="feature-card">
-            <div class="feature-icon lost-icon">
-              <i class="fas fa-search"></i>
-            </div>
             <h3>Pets Perdidos</h3>
             <p>Sistema inteligente de busca e divulgação para reunir famílias</p>
           </div>
           
           <div class="feature-card">
-            <div class="feature-icon found-icon">
-              <i class="fas fa-map-marker-alt"></i>
-            </div>
             <h3>Pets Encontrados</h3>
             <p>Plataforma para reportar animais encontrados com geolocalização</p>
           </div>
           
           <div class="feature-card">
-            <div class="feature-icon adoption-icon">
-              <i class="fas fa-home"></i>
-            </div>
             <h3>Adoção Responsável</h3>
             <p>Conectamos pets que precisam de um lar com famílias amorosas</p>
           </div>
           
           <div class="feature-card">
-            <div class="feature-icon community-icon">
-              <i class="fas fa-comments"></i>
-            </div>
             <h3>Comunidade Ativa</h3>
             <p>Rede de apoio entre tutores e protetores de animais</p>
           </div>
@@ -131,33 +96,21 @@
         <h2 class="section-title">Nosso Impacto</h2>
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="stat-icon">
-              <i class="fas fa-paw"></i>
-            </div>
             <div class="stat-number">1000+</div>
             <div class="stat-label">Pets Cadastrados</div>
           </div>
           
           <div class="stat-card">
-            <div class="stat-icon">
-              <i class="fas fa-heart"></i>
-            </div>
             <div class="stat-number">500+</div>
             <div class="stat-label">Adoções Realizadas</div>
           </div>
           
           <div class="stat-card">
-            <div class="stat-icon">
-              <i class="fas fa-users"></i>
-            </div>
             <div class="stat-number">2000+</div>
             <div class="stat-label">Usuários Ativos</div>
           </div>
           
           <div class="stat-card">
-            <div class="stat-icon">
-              <i class="fas fa-map-marked-alt"></i>
-            </div>
             <div class="stat-number">50+</div>
             <div class="stat-label">Cidades Atendidas</div>
           </div>
@@ -172,22 +125,19 @@
             <p>Somos uma equipe multidisciplinar unida pela paixão por animais e tecnologia. Cada membro contribui com suas habilidades únicas para tornar a ByPetz uma plataforma cada vez melhor.</p>
             <div class="team-values">
               <div class="team-value">
-                <i class="fas fa-lightbulb"></i>
                 <span>Inovação constante</span>
               </div>
               <div class="team-value">
-                <i class="fas fa-handshake"></i>
                 <span>Trabalho em equipe</span>
               </div>
               <div class="team-value">
-                <i class="fas fa-star"></i>
                 <span>Excelência em tudo</span>
               </div>
             </div>
           </div>
           <div class="team-illustration">
             <div class="team-circle">
-              <i class="fas fa-users"></i>
+              <span class="team-emoji">👥</span>
             </div>
           </div>
         </div>
@@ -200,11 +150,9 @@
           <p>Junte-se a milhares de pessoas que já fazem a diferença na vida dos animais</p>
           <div class="cta-buttons">
             <router-link to="/cadastrar-pet" class="cta-button primary">
-              <i class="fas fa-plus"></i>
               Cadastrar Pet
             </router-link>
             <router-link to="/feed" class="cta-button secondary">
-              <i class="fas fa-search"></i>
               Explorar Pets
             </router-link>
           </div>
@@ -254,24 +202,6 @@ export default {
   z-index: 2;
 }
 
-.hero-icon {
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 2rem;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.hero-icon i {
-  font-size: 2rem;
-  color: #FFD700;
-}
-
 .hero-title {
   font-size: 4rem;
   font-weight: 800;
@@ -284,45 +214,6 @@ export default {
   font-size: 1.5rem;
   color: rgba(255, 255, 255, 0.9);
   font-weight: 300;
-}
-
-.hero-decoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-
-.floating-paw {
-  position: absolute;
-  font-size: 2rem;
-  opacity: 0.3;
-  animation: float 6s ease-in-out infinite;
-}
-
-.paw-1 {
-  top: 20%;
-  left: 10%;
-  animation-delay: 0s;
-}
-
-.paw-2 {
-  top: 60%;
-  right: 15%;
-  animation-delay: 2s;
-}
-
-.paw-3 {
-  bottom: 20%;
-  left: 20%;
-  animation-delay: 4s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(10deg); }
 }
 
 /* Main Container */
@@ -377,34 +268,7 @@ export default {
 }
 
 .card-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
   margin-bottom: 1.5rem;
-}
-
-.card-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: white;
-  background: linear-gradient(135deg, #8B5CF6, #A855F7);
-}
-
-.mission-icon {
-  background: linear-gradient(135deg, #EF4444, #F87171);
-}
-
-.help-icon {
-  background: linear-gradient(135deg, #10B981, #34D399);
-}
-
-.values-icon {
-  background: linear-gradient(135deg, #F59E0B, #FBBF24);
 }
 
 .card h2 {
@@ -430,12 +294,11 @@ export default {
 .value-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   color: white;
   font-weight: 600;
 }
 
-.value-item i {
+.value-item span {
   color: #FFD700;
 }
 
@@ -474,34 +337,6 @@ export default {
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
-.feature-icon {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  font-size: 1.75rem;
-  color: white;
-}
-
-.lost-icon {
-  background: linear-gradient(135deg, #EF4444, #F87171);
-}
-
-.found-icon {
-  background: linear-gradient(135deg, #10B981, #34D399);
-}
-
-.adoption-icon {
-  background: linear-gradient(135deg, #8B5CF6, #A855F7);
-}
-
-.community-icon {
-  background: linear-gradient(135deg, #F59E0B, #FBBF24);
-}
-
 .feature-card h3 {
   font-size: 1.5rem;
   font-weight: 700;
@@ -537,19 +372,6 @@ export default {
 
 .stat-card:hover {
   transform: scale(1.05);
-}
-
-.stat-icon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
-  font-size: 1.5rem;
-  color: white;
 }
 
 .stat-number {
@@ -592,14 +414,12 @@ export default {
 .team-value {
   display: flex;
   align-items: center;
-  gap: 1rem;
   color: white;
   font-weight: 600;
 }
 
-.team-value i {
+.team-value span {
   color: #FFD700;
-  font-size: 1.2rem;
 }
 
 .team-illustration {
@@ -619,9 +439,8 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.team-circle i {
+.team-emoji {
   font-size: 4rem;
-  color: #FFD700;
 }
 
 /* CTA Section */
@@ -694,10 +513,6 @@ export default {
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2.5rem;
-  }
-
-  .hero-icon {
-    height: 80px;
   }
   
   .hero-subtitle {
