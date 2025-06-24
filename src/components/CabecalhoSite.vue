@@ -12,6 +12,7 @@
       <nav class="desktop-nav">
         <router-link to="/" class="nav-link">Início</router-link>
         <router-link to="/feed" class="nav-link">Feed</router-link>
+        <router-link to="/loja" class="nav-link">Loja</router-link>
         <router-link to="/cadastrar-pet" class="nav-link" v-if="isAuthenticated">Cadastrar Pet</router-link>
         <router-link to="/sobre" class="nav-link">Sobre</router-link>
         <router-link to="/contato" class="nav-link">Contato</router-link>
@@ -63,6 +64,16 @@
                 <span>Cadastrar Pet</span>
               </router-link>
               
+              <!-- Admin Dashboard - apenas para bruno.buens@gmail.com -->
+              <router-link 
+                v-if="user?.email === 'bruno.buens@gmail.com'" 
+                to="/dashboard" 
+                class="dropdown-item admin-item" 
+                @click="showUserMenu = false"
+              >
+                <span>Dashboard Admin</span>
+              </router-link>
+              
               <div class="dropdown-item" @click="showUserMenu = false">
                 <span>Configurações</span>
               </div>
@@ -104,6 +115,10 @@
             <span>Feed</span>
           </router-link>
           
+          <router-link to="/loja" class="mobile-nav-link" @click="closeMobileMenu">
+            <span>Loja</span>
+          </router-link>
+          
           <router-link 
             v-if="isAuthenticated" 
             to="/cadastrar-pet" 
@@ -128,6 +143,16 @@
             @click="closeMobileMenu"
           >
             <span>Meu Perfil</span>
+          </router-link>
+          
+          <!-- Admin Dashboard Mobile - apenas para bruno.buens@gmail.com -->
+          <router-link 
+            v-if="isAuthenticated && user?.email === 'bruno.buens@gmail.com'" 
+            to="/dashboard" 
+            class="mobile-nav-link admin-mobile-link" 
+            @click="closeMobileMenu"
+          >
+            <span>Dashboard Admin</span>
           </router-link>
         </nav>
 
@@ -258,7 +283,7 @@ export default {
 .header {
   position: sticky;
   top: 0;
-  z-index: 2000; /* Aumentar o z-index do header */
+  z-index: 2000;
   width: 100%;
   background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 0%, #4A2B9A 0%);
 }
@@ -461,7 +486,7 @@ export default {
   min-width: 300px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  z-index: 9999; /* Aumentar para aparecer acima de tudo */
+  z-index: 9999;
 }
 
 .dropdown-header {
@@ -535,6 +560,18 @@ export default {
   background: linear-gradient(135deg, rgba(140, 82, 255, 0.1), rgba(140, 82, 255, 0.05));
   color: #8C52FF;
   transform: translateX(5px);
+}
+
+.admin-item {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  color: #8C52FF !important;
+  font-weight: 600;
+}
+
+.admin-item:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+  border-color: rgba(255, 215, 0, 0.4);
 }
 
 .logout-btn {
@@ -651,6 +688,18 @@ export default {
   background: linear-gradient(135deg, rgba(140, 82, 255, 0.15), rgba(140, 82, 255, 0.1));
   color: #8C52FF;
   transform: translateX(5px);
+}
+
+.admin-mobile-link {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  color: #8C52FF !important;
+  font-weight: 700;
+}
+
+.admin-mobile-link:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+  border-color: rgba(255, 215, 0, 0.4);
 }
 
 .mobile-auth-buttons {
@@ -845,7 +894,7 @@ export default {
   }
   
   .logo-text {
-    display: block; /* Manter o texto visível */
+    display: block;
   }
   
   .mobile-menu-btn {
