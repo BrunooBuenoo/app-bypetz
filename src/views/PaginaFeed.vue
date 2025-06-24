@@ -1576,14 +1576,14 @@ export default {
   font-size: 0.7rem;
 }
 
-/* Modal Overlay - COMPLETELY BLOCK SCROLL + 50% TRANSPARENCY */
+/* Modal Overlay - COMPLETELY BLOCK SCROLL + 70% TRANSPARENCY */
 .modal-overlay-new {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5); /* 50% TRANSPARENCY */
+  background: rgba(0, 0, 0, 0.8); /* 70% TRANSPARENCY */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2097,7 +2097,7 @@ export default {
 @media (max-width: 768px) {
   .modal-overlay-new {
     padding: 0; /* REMOVIDO PADDING PARA OCUPAR TELA TODA */
-    background: rgba(0, 0, 0, 0.7); /* 50% TRANSPARENCY MANTIDO */
+    background: rgba(0, 0, 0, 0.8); /* 70% TRANSPARENCY MANTIDO */
     /* IMPORTANTE: Cobrir TODA a tela incluindo navbar */
     position: fixed;
     top: 0;
