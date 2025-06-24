@@ -333,4 +333,16 @@ export default {
     height: 3rem;
   }
 }
+
+@media (max-width: 390px){
+
+    .product-description {
+    font-size: 0.7rem;
+    height: 3.5rem;
+  }
+
+  .add-to-cart-modal-btn[data-v-a4cce9c2] {
+    font-size: 0.49rem;
+  }
+}
 </style>
