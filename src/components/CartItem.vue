@@ -149,7 +149,7 @@ export default {
 
 .item-price {
   font-size: 0.9rem;
-  color: #8C52FF;
+  color: #1752f1;
   font-weight: 600;
 }
 
@@ -162,9 +162,9 @@ export default {
 .quantity-btn {
   width: 32px;
   height: 32px;
-  border: 1px solid rgba(140, 82, 255, 0.3);
-  background: rgba(140, 82, 255, 0.1);
-  color: #8C52FF;
+  border: 1px solid rgba(82, 128, 255, 0.3);
+  background: rgba(82, 186, 255, 0.1);
+  color: #528fff;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -175,8 +175,8 @@ export default {
 }
 
 .quantity-btn:hover:not(:disabled) {
-  background: rgba(140, 82, 255, 0.2);
-  border-color: rgba(140, 82, 255, 0.5);
+  background: rgba(82, 137, 255, 0.2);
+  border-color: rgba(82, 128, 255, 0.5);
 }
 
 .quantity-btn:disabled {
@@ -213,7 +213,7 @@ export default {
 .subtotal-value {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #8C52FF;
+  color: #1752f1;
 }
 
 .remove-btn {

@@ -588,9 +588,9 @@ export default {
 }
 
 .quantity-btn:hover:not(:disabled) {
-  background: #8C52FF;
+  background: rgba(82, 137, 255, 0.2);
+  border-color: rgba(82, 128, 255, 0.5);
   color: white;
-  border-color: #8C52FF;
 }
 
 .quantity-btn:disabled {

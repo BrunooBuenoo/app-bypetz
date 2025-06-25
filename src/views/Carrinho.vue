@@ -145,7 +145,7 @@ export default {
 }
 
 .carrinho-header h1 {
-  color: #8C52FF;
+  color: #0077ff;
   font-size: 2.2rem;
   font-weight: 800;
   display: flex;
@@ -155,8 +155,8 @@ export default {
 }
 
 .continue-shopping-btn {
-  background: rgba(140, 82, 255, 0.1);
-  color: #8C52FF;
+  background: rgba(82, 151, 255, 0.1);
+  color: #528fff;
   text-decoration: none;
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
@@ -234,7 +234,7 @@ export default {
 
 .checkout-btn {
   width: 100%;
-  background: linear-gradient(135deg, #8C52FF, #6B3DD6);
+  background: #0077ff;
   color: white;
   text-decoration: none;
   padding: 1rem;
@@ -251,7 +251,7 @@ export default {
 }
 
 .checkout-btn:hover {
-  background: linear-gradient(135deg, #6B3DD6, #4A2B9A);
+  background: #01037ce5;
   transform: translateY(-2px);
 }
 

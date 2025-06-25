@@ -5,7 +5,6 @@
       <div class="loja-header">
         <h1>
           <i class="fas fa-store"></i>
-          Loja ByPetz
         </h1>
         
         <!-- Mobile Filter Button -->

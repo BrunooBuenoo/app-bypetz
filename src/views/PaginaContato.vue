@@ -103,7 +103,7 @@ export default {
 /* Hero Section */
 .hero-section {
   position: relative;
-  padding: 8rem 2rem 4rem;
+  padding: 5rem 2rem 4rem;
   text-align: center;
   overflow: hidden;
 }
@@ -145,7 +145,7 @@ export default {
   padding: 3rem;
   margin-bottom: 4rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  text-align: center;
+  
 }
 
 .description-section p {
@@ -363,6 +363,7 @@ export default {
   font-size: 2.2rem;
   margin-bottom: 1rem;
   font-weight: 700;
+  display: block;
 }
 
 .cta-section p {
@@ -395,7 +396,7 @@ export default {
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-section {
-    padding: 6rem 1rem 3rem;
+    padding: 5rem 1rem 3rem;
   }
   
   .hero-section h1 {
