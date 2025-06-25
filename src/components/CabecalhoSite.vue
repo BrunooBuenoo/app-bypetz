@@ -670,14 +670,14 @@ export default {
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: #333;
+  color: white;
   text-decoration: none;
   padding: 1.25rem 1.5rem;
   border-radius: 15px;
   font-weight: 600;
   transition: all 0.3s ease;
   font-size: 1.1rem;
-  background: rgba(140, 82, 255, 0.05);
+  background: rgba(100, 27, 247, 0.603);
   border: 1px solid rgba(140, 82, 255, 0.1);
   position: relative;
   z-index: 1001;
@@ -691,14 +691,14 @@ export default {
 }
 
 .admin-mobile-link {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+  background: linear-gradient(135deg, rgba(0, 60, 255, 0.911), rgba(8, 8, 8, 5));
   border: 1px solid rgba(255, 215, 0, 0.2);
-  color: #8C52FF !important;
+  color: #ffffff !important;
   font-weight: 700;
 }
 
 .admin-mobile-link:hover {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+  background: linear-gradient(135deg, rgba(8, 8, 8, 5), rgba(255, 0, 0, 0.911));
   border-color: rgba(255, 215, 0, 0.4);
 }
 
