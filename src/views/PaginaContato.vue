@@ -421,6 +421,7 @@ export default {
   .contact-buttons {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    display: grid;
   }
   
   .btn {
