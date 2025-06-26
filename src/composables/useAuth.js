@@ -16,9 +16,21 @@ const user = ref(null)
 const loading = ref(true)
 const error = ref(null)
 
+// Lista de e-mails de administradores
+const adminEmails = import.meta.env.VITE_ADMIN_EMAILS?.split(',').map(email => email.trim().toLowerCase()) || []
+
+
 export const useAuth = () => {
   const isAuthenticated = computed(() => !!user.value)
-  const userDisplayName = computed(() => user.value?.displayName || user.value?.email || "Usuario")
+
+  const userDisplayName = computed(() =>
+    user.value?.displayName || user.value?.email || "Usuário"
+  )
+
+  const isAdmin = computed(() => {
+    const email = user.value?.email?.toLowerCase()?.trim()
+    return email && adminEmails.includes(email)
+  })
 
   const createUserProfile = async (userData) => {
     try {
@@ -133,22 +145,21 @@ export const useAuth = () => {
 
   const getErrorMessage = (errorCode) => {
     const errorMessages = {
-      "auth/user-not-found": "Usuario nao encontrado",
+      "auth/user-not-found": "Usuário não encontrado",
       "auth/wrong-password": "Senha incorreta",
-      "auth/email-already-in-use": "Este email ja esta em uso",
+      "auth/email-already-in-use": "Este e-mail já está em uso",
       "auth/weak-password": "A senha deve ter pelo menos 6 caracteres",
-      "auth/invalid-email": "Email invalido",
+      "auth/invalid-email": "E-mail inválido",
       "auth/too-many-requests": "Muitas tentativas. Tente novamente mais tarde",
-      "auth/network-request-failed": "Erro de conexao. Verifique sua internet",
-      "auth/popup-closed-by-user": "Login cancelado pelo usuario",
-      "auth/configuration-not-found": "Configuracao do Firebase nao encontrada",
-      "auth/invalid-api-key": "Chave de API invalida",
+      "auth/network-request-failed": "Erro de conexão. Verifique sua internet",
+      "auth/popup-closed-by-user": "Login cancelado pelo usuário",
+      "auth/configuration-not-found": "Configuração do Firebase não encontrada",
+      "auth/invalid-api-key": "Chave de API inválida",
     }
 
     return errorMessages[errorCode] || `Erro: ${errorCode}`
   }
 
-  // Inicializar listener de autenticacao
   const initAuth = () => {
     onAuthStateChanged(auth, (firebaseUser) => {
       user.value = firebaseUser
@@ -162,6 +173,7 @@ export const useAuth = () => {
     error,
     isAuthenticated,
     userDisplayName,
+    isAdmin,
     login,
     register,
     loginWithGoogle,

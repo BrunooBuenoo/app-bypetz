@@ -363,7 +363,6 @@ export default {
   font-size: 2.2rem;
   margin-bottom: 1rem;
   font-weight: 700;
-  display: block;
 }
 
 .cta-section p {
