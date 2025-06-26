@@ -640,15 +640,16 @@ export default {
 }
 
 .admin-item {
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.2);
-  color: #d97706;
+  background: rgba(159, 11, 245, 0.1);
+  border: 1px solid rgba(112, 11, 245, 0.2);
+  color: #6d05f5;
   font-weight: 600;
 }
 
 .admin-item:hover {
-  background: rgba(245, 158, 11, 0.2);
-  border-color: rgba(245, 158, 11, 0.4);
+  color: white;
+  background: rgba(159, 11, 245, 0.9);
+  border-color: solid rgba(112, 11, 245, 0.3);
 }
 
 .logout-btn {

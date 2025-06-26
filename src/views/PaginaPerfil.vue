@@ -8,7 +8,7 @@
             <img v-if="user?.photoURL" :src="user.photoURL" :alt="user.displayName" />
             <span v-else class="avatar-placeholder">{{ userInitials }}</span>
             <button class="avatar-edit-btn" @click="triggerFileInput">
-              <i class="fas fa-camera"></i>
+              <span class="camera-icon"></span>
             </button>
 
             <input 
@@ -67,13 +67,13 @@
             />
           </div>
 
-          <div class="form-group">
+          <div class="form-group city-autocomplete-container">
             <label for="location">Localização</label>
-            <input
+            <CityAutocomplete
               v-model="profileForm.location"
-              type="text"
-              id="location"
-              placeholder="Cidade, Estado"
+              placeholder="Digite o nome da cidade..."
+              input-class="city-input-profile"
+              @citySelected="handleCitySelected"
             />
           </div>
 
@@ -109,7 +109,7 @@
         <div class="section-header">
           <h2>Meus Pets Cadastrados</h2>
           <router-link to="/cadastrar-pet" class="btn-add-pet">
-            + Cadastrar Pet
+            Cadastrar Pet
           </router-link>
         </div>
 
@@ -120,7 +120,7 @@
         </div>
 
         <div v-else-if="userPets.length === 0" class="empty-pets">
-          <div class="empty-text">Nenhum pet cadastrado</div>
+          <div class="empty-icon">🐾</div>
           <h3>Nenhum pet cadastrado ainda</h3>
           <p>Cadastre seu primeiro pet perdido, encontrado ou para adoção</p>
           <router-link to="/cadastrar-pet" class="btn-first-pet">
@@ -137,25 +137,23 @@
               </div>
               
               <!-- Botão Encontrado - só aparece se for perdido -->
-              <div v-if="pet.status === 'perdido'" class="found-button-overlay">
+              <div v-if="pet.status === 'perdido'" class="action-button-overlay">
                 <button 
                   class="btn-found"
                   @click="markAsFound(pet)"
                   :disabled="loading"
                 >
-                  <i class="fas fa-check"></i>
                   {{ loading ? 'Atualizando...' : 'Encontrado!' }}
                 </button>
               </div>
 
               <!-- Botão Adotado - só aparece se for para adoção -->
-              <div v-if="pet.status === 'adocao'" class="adopted-button-overlay">
+              <div v-if="pet.status === 'adocao'" class="action-button-overlay">
                 <button 
                   class="btn-adopted"
                   @click="markAsAdopted(pet)"
                   :disabled="loading"
                 >
-                  <i class="fas fa-heart"></i>
                   {{ loading ? 'Atualizando...' : 'Adotado!' }}
                 </button>
               </div>
@@ -256,9 +254,13 @@ import { useAuth } from '../composables/useAuth'
 import { updateProfile as firebaseUpdateProfile, updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth'
 import { doc, updateDoc, getDoc, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import CityAutocomplete from '../components/CityAutocomplete.vue'
 
 export default {
   name: 'PaginaPerfil',
+  components: {
+    CityAutocomplete
+  },
   setup() {
     const { user, loading } = useAuth()
     
@@ -292,7 +294,7 @@ export default {
       helpedFamilies: 0
     })
     
-    const placeholderImage = 'https://via.placeholder.com/300x200/8C52FF/FFFFFF?text=Sem+Foto'
+    const placeholderImage = 'https://via.placeholder.com/300x200/9333ea/FFFFFF?text=Sem+Foto'
 
     const userInitials = computed(() => {
       if (!user.value?.displayName) return '?'
@@ -307,12 +309,10 @@ export default {
     const formatDate = (timestamp) => {
       if (!timestamp) return 'Data não disponível'
       
-      // Se for um timestamp do Firestore
       if (timestamp.toDate) {
         return timestamp.toDate().toLocaleDateString('pt-BR')
       }
       
-      // Se for uma string ou Date
       return new Date(timestamp).toLocaleDateString('pt-BR')
     }
 
@@ -351,7 +351,6 @@ export default {
       try {
         loadingPets.value = true
         
-        // Buscar pets do usuário atual
         const petsQuery = query(
           collection(db, 'pets'),
           where('userId', '==', user.value.uid)
@@ -369,14 +368,11 @@ export default {
         
         userPets.value = fetchedPets
         
-        // Calcular estatísticas
         userStats.value = {
           petsRegistered: fetchedPets.length,
           petsFound: fetchedPets.filter(pet => pet.status === 'encontrado').length,
-          helpedFamilies: Math.floor(fetchedPets.length / 2) // Simulação
+          helpedFamilies: Math.floor(fetchedPets.length / 2)
         }
-        
-        console.log('Pets do usuário carregados:', fetchedPets.length)
         
       } catch (err) {
         console.error('Erro ao carregar pets:', err)
@@ -391,12 +387,10 @@ export default {
       try {
         loading.value = true
         
-        // Atualizar perfil do Firebase Auth usando o nome importado
         await firebaseUpdateProfile(user.value, {
           displayName: profileForm.value.displayName
         })
         
-        // Atualizar documento do usuário no Firestore
         await updateDoc(doc(db, 'users', user.value.uid), {
           displayName: profileForm.value.displayName,
           bio: profileForm.value.bio,
@@ -436,14 +430,12 @@ export default {
       try {
         loading.value = true
         
-        // Reautenticar usuário
         const credential = EmailAuthProvider.credential(
           user.value.email,
           passwordForm.value.current
         )
         await reauthenticateWithCredential(user.value, credential)
         
-        // Atualizar senha
         await updatePassword(user.value, passwordForm.value.new)
         
         successMessage.value = 'Senha alterada com sucesso!'
@@ -465,9 +457,7 @@ export default {
     }
 
     const editPet = (pet) => {
-      // Implementar edição de pet
       console.log('Editar pet:', pet)
-      // Aqui você pode redirecionar para uma página de edição ou abrir um modal
     }
 
     const deletePet = async (pet) => {
@@ -478,13 +468,10 @@ export default {
       try {
         loading.value = true
         
-        // Deletar pet do Firestore
         await deleteDoc(doc(db, 'pets', pet.id))
         
-        // Remover da lista local
         userPets.value = userPets.value.filter(p => p.id !== pet.id)
         
-        // Atualizar estatísticas
         userStats.value.petsRegistered = userPets.value.length
         userStats.value.petsFound = userPets.value.filter(p => p.status === 'encontrado').length
         userStats.value.helpedFamilies = Math.floor(userPets.value.length / 2)
@@ -515,13 +502,11 @@ export default {
       const file = event.target.files[0]
       if (!file) return
       
-      // Validar tipo de arquivo
       if (!file.type.startsWith('image/')) {
         error.value = 'Por favor, selecione apenas arquivos de imagem'
         return
       }
       
-      // Validar tamanho (máximo 5MB)
       if (file.size > 5 * 1024 * 1024) {
         error.value = 'A imagem deve ter no máximo 5MB'
         return
@@ -530,16 +515,13 @@ export default {
       try {
         loading.value = true
         
-        // Redimensionar e converter para base64 otimizado
         const optimizedBase64 = await resizeAndConvertToBase64(file, 150, 150, 0.8)
         
-        // Salvar apenas no Firestore (não no Firebase Auth devido ao limite de tamanho)
         await updateDoc(doc(db, 'users', user.value.uid), {
           photoURL: optimizedBase64,
           updatedAt: new Date().toISOString()
         })
         
-        // Atualizar o estado local para refletir a mudança imediatamente
         if (user.value) {
           user.value.photoURL = optimizedBase64
         }
@@ -557,12 +539,10 @@ export default {
         }, 5000)
       } finally {
         loading.value = false
-        // Limpar input
         event.target.value = ''
       }
     }
 
-    // Função para redimensionar e converter imagem para base64 otimizado
     const resizeAndConvertToBase64 = (file, maxWidth = 150, maxHeight = 150, quality = 0.8) => {
       return new Promise((resolve, reject) => {
         const canvas = document.createElement('canvas')
@@ -570,7 +550,6 @@ export default {
         const img = new Image()
         
         img.onload = () => {
-          // Calcular novas dimensões mantendo proporção
           let { width, height } = img
           
           if (width > height) {
@@ -585,19 +564,14 @@ export default {
             }
           }
           
-          // Configurar canvas
           canvas.width = width
           canvas.height = height
           
-          // Desenhar imagem redimensionada
           ctx.drawImage(img, 0, 0, width, height)
           
-          // Converter para base64 com qualidade otimizada
           const base64 = canvas.toDataURL('image/jpeg', quality)
           
-          // Verificar se o base64 não é muito longo (limite do Firebase Auth é ~2000 caracteres)
           if (base64.length > 50000) {
-            // Se ainda for muito grande, reduzir mais a qualidade
             const smallerBase64 = canvas.toDataURL('image/jpeg', 0.5)
             resolve(smallerBase64)
           } else {
@@ -607,7 +581,6 @@ export default {
         
         img.onerror = () => reject(new Error('Erro ao carregar imagem'))
         
-        // Carregar arquivo como URL
         const reader = new FileReader()
         reader.onload = (e) => {
           img.src = e.target.result
@@ -617,7 +590,6 @@ export default {
       })
     }
 
-    // Função para carregar foto do perfil do Firestore
     const loadUserPhoto = async () => {
       if (!user.value) return
       
@@ -635,7 +607,6 @@ export default {
     }
 
     const getMainPhoto = (pet) => {
-      // Priorizar o array photos, depois photo (compatibilidade)
       if (pet.photos && pet.photos.length > 0) {
         return pet.photos[0]
       }
@@ -654,14 +625,12 @@ export default {
       try {
         loading.value = true
         
-        // Atualizar no Firestore
         await updateDoc(doc(db, 'pets', pet.id), {
           status: 'encontrado',
           foundAt: new Date(),
           updatedAt: new Date()
         })
         
-        // Atualizar na lista local
         const petIndex = userPets.value.findIndex(p => p.id === pet.id)
         if (petIndex !== -1) {
           userPets.value[petIndex].status = 'encontrado'
@@ -669,10 +638,9 @@ export default {
           userPets.value[petIndex].updatedAt = new Date()
         }
         
-        // Atualizar estatísticas
         userStats.value.petsFound = userPets.value.filter(p => p.status === 'encontrado').length
         
-        successMessage.value = `${pet.name} foi marcado como encontrado! 🎉`
+        successMessage.value = `${pet.name} foi marcado como encontrado!`
         
         setTimeout(() => {
           successMessage.value = ''
@@ -696,14 +664,12 @@ export default {
       try {
         loading.value = true
         
-        // Atualizar no Firestore
         await updateDoc(doc(db, 'pets', pet.id), {
           status: 'adotado',
           adoptedAt: new Date(),
           updatedAt: new Date()
         })
         
-        // Atualizar na lista local
         const petIndex = userPets.value.findIndex(p => p.id === pet.id)
         if (petIndex !== -1) {
           userPets.value[petIndex].status = 'adotado'
@@ -711,10 +677,9 @@ export default {
           userPets.value[petIndex].updatedAt = new Date()
         }
         
-        // Atualizar estatísticas
         userStats.value.helpedFamilies = userPets.value.filter(p => p.status === 'adotado').length
         
-        successMessage.value = `${pet.name} foi marcado como adotado! 🎉`
+        successMessage.value = `${pet.name} foi marcado como adotado!`
         
         setTimeout(() => {
           successMessage.value = ''
@@ -727,6 +692,15 @@ export default {
         }, 5000)
       } finally {
         loading.value = false
+      }
+    }
+
+    const handleCitySelected = (city) => {
+      profileForm.value.locationData = {
+        id: city.id,
+        name: city.name,
+        state: city.state,
+        fullName: city.fullName
       }
     }
 
@@ -766,78 +740,100 @@ export default {
       getMainPhoto,
       hasMultiplePhotos,
       markAsFound,
-      markAsAdopted
+      markAsAdopted,
+      handleCitySelected
     }
   }
 }
 </script>
 
 <style scoped>
+/* Reset e base */
+* {
+  box-sizing: border-box;
+}
+
 .profile-page {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 2rem;
-  min-height: 80vh;
-  
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 2rem 1rem;
 }
 
 .profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 3rem;
-  
+  gap: 2rem;
 }
 
+/* Header do Perfil */
 .profile-header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 1.5rem;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .profile-avatar-section {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .profile-avatar {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 5rem;
+  height: 5rem;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FFD700;
-  color: #8C52FF;
-  font-size: 2rem;
-  font-weight: bold;
+  background: linear-gradient(to right, #9333ea, #2563eb);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.profile-avatar::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  padding: 3px;
+  background: linear-gradient(45deg, #9333ea, #2563eb, #9333ea);
+  border-radius: 50%;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
 }
 
 .profile-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
 .avatar-edit-btn {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
-  width: 35px;
-  height: 35px;
+  bottom: 0;
+  right: 0;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 50%;
-  background: #555555;
+  background: #374151;
   color: white;
-  border: none;
+  border: 2px solid white;
   cursor: pointer;
-  font-size: 0.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -845,55 +841,69 @@ export default {
 }
 
 .avatar-edit-btn:hover {
-  background: #7a47e6;
+  background: #9333ea;
   transform: scale(1.1);
 }
 
+.camera-icon {
+  width: 0.75rem;
+  height: 0.75rem;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z'/%3E%3C/svg%3E") no-repeat center;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9zM15 13a3 3 0 11-6 0 3 3 0 016 0z'/%3E%3C/svg%3E") no-repeat center;
+}
+
 .profile-info h1 {
-  color: #FFD700;
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+  color: #111827;
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
 }
 
 .profile-info p {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0 0 0.25rem 0;
 }
 
 .member-since {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
+  color: #9ca3af;
+  font-size: 0.875rem;
 }
 
 .btn-edit-profile {
-  background: #FFD700;
-  color: #8C52FF;
+  background: linear-gradient(to right, #9333ea, #2563eb);
+  color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .btn-edit-profile:hover {
-  background: #FFA500;
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
   transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
+/* Formulário de Edição */
 .edit-form {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 1.5rem;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .edit-form h2 {
-  color: #FFD700;
-  margin-bottom: 2rem;
+  color: #111827;
   font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
 }
 
 .form-group {
@@ -902,32 +912,57 @@ export default {
 
 .form-group label {
   display: block;
-  color: #FFD700;
+  color: #374151;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  font-size: 1rem;
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: white;
+  color: #111827;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #FFD700;
-  background: rgba(255, 255, 255, 0.15);
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* Container especial para o CityAutocomplete com z-index alto */
+.city-autocomplete-container {
+  position: relative;
+  z-index: 9999; /* Z-INDEX ALTO PARA APARECER POR CIMA */
+}
+
+.city-input-profile {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: white;
+  color: #111827;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.city-input-profile:focus {
+  outline: none;
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
 }
 
 .form-buttons {
@@ -937,96 +972,123 @@ export default {
 }
 
 .btn-save {
-  background: linear-gradient(135deg, #00b894, #00a085);
+  background: linear-gradient(to right, #10b981, #059669);
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .btn-save:hover:not(:disabled) {
-  background: linear-gradient(135deg, #00a085, #008f75);
+  background: linear-gradient(to right, #059669, #047857);
   transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-cancel {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #e5e7eb;
+  border-color: #d1d5db;
 }
 
+/* Estatísticas */
 .profile-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 1rem;
+  padding: 1.5rem;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .stat-number {
-  font-size: 3rem;
-  font-weight: bold;
-  color: #FFD700;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #9333ea, #2563eb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
   margin-bottom: 0.5rem;
 }
 
 .stat-label {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.1rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
+/* Seção Meus Pets */
 .my-pets-section {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 1.5rem;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .section-header h2 {
-  color: #FFD700;
+  color: #111827;
   font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 .btn-add-pet {
-  background: #8C52FF;
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
   text-decoration: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 12px;
+  border-radius: 9999px;
   font-weight: 600;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .btn-add-pet:hover {
-  background: #7a47e6;
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
   transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .loading-pets {
@@ -1035,14 +1097,14 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  color: white;
+  color: #6b7280;
 }
 
 .loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top: 3px solid #FFD700;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #9333ea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -1058,87 +1120,146 @@ export default {
   padding: 3rem;
 }
 
-.empty-text {
-  font-size: 3rem;
+.empty-icon {
+  font-size: 4rem;
   margin-bottom: 1rem;
-  opacity: 0.7;
-  color: rgba(255, 255, 255, 0.6);
+  opacity: 0.5;
 }
 
 .empty-pets h3 {
-  color: #FFD700;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
 }
 
 .empty-pets p {
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 2rem;
+  color: #6b7280;
+  margin: 0 0 1.5rem 0;
 }
 
 .btn-first-pet {
-  background: #FFD700;
-  color: #8C52FF;
+  background: linear-gradient(to right, #9333ea, #2563eb);
+  color: white;
   text-decoration: none;
   padding: 1rem 2rem;
-  border-radius: 12px;
+  border-radius: 9999px;
   font-weight: 600;
   transition: all 0.3s ease;
   display: inline-block;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .btn-first-pet:hover {
-  background: #FFA500;
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
   transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
+/* Grid de Pets */
 .pets-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .pet-card {
   background: white;
-  border-radius: 15px;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
   overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .pet-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
 }
 
 .pet-image-container {
   position: relative;
   width: 100%;
   height: 200px;
+  overflow: hidden;
 }
 
 .pet-image-container img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.pet-card:hover .pet-image-container img {
+  transform: scale(1.05);
 }
 
 .photo-count {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0.75rem;
+  right: 0.75rem;
   background: rgba(0, 0, 0, 0.7);
   color: white;
   padding: 0.25rem 0.5rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
-.pet-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+.action-button-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pet-image-container:hover .action-button-overlay {
+  opacity: 1;
+}
+
+.btn-found {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-found:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+.btn-adopted {
+  background: linear-gradient(135deg, #a855f7, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-adopted:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9333ea, #7c3aed);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
 }
 
 .pet-info {
@@ -1146,49 +1267,51 @@ export default {
 }
 
 .pet-info h3 {
-  color: #8C52FF;
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
 }
 
 .pet-status {
   display: inline-block;
   padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .pet-status.perdido {
-  background: rgba(255, 71, 87, 0.2);
-  color: #ff4757;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
 }
 
 .pet-status.encontrado {
-  background: rgba(46, 213, 115, 0.2);
-  color: #2ed573;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
 }
 
 .pet-status.adocao {
-  background: rgba(255, 165, 2, 0.2);
-  color: #ffa502;
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
 }
 
 .pet-status.adotado {
-  background: rgba(168, 85, 247, 0.2);
-  color: #a855f7;
+  background: rgba(168, 85, 247, 0.1);
+  color: #9333ea;
 }
 
 .pet-location {
-  color: #666;
-  margin-bottom: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem 0;
 }
 
 .pet-date {
-  color: #999;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
+  color: #9ca3af;
+  font-size: 0.75rem;
+  margin: 0 0 1rem 0;
 }
 
 .pet-actions {
@@ -1197,47 +1320,56 @@ export default {
 }
 
 .btn-edit-pet {
-  background: #8C52FF;
-  color: white;
-  border: none;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   transition: all 0.3s ease;
+  flex: 1;
 }
 
 .btn-edit-pet:hover {
-  background: #7a47e6;
+  background: #e5e7eb;
+  color: #111827;
 }
 
 .btn-delete-pet {
-  background: #ff4757;
-  color: white;
-  border: none;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   transition: all 0.3s ease;
+  flex: 1;
 }
 
 .btn-delete-pet:hover {
-  background: #ff3742;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
+/* Configurações da Conta */
 .account-settings {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 1.5rem;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .account-settings h2 {
-  color: #FFD700;
+  color: #111827;
   font-size: 1.5rem;
-  margin-bottom: 2rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
 }
 
 .settings-grid {
@@ -1251,260 +1383,229 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(249, 250, 251, 0.8);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.setting-item:hover {
+  background: rgba(243, 244, 246, 0.8);
 }
 
 .setting-item.danger {
-  border-color: rgba(255, 71, 87, 0.3);
-  background: rgba(255, 71, 87, 0.05);
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(254, 242, 242, 0.8);
+}
+
+.setting-item.danger:hover {
+  background: rgba(254, 226, 226, 0.8);
 }
 
 .setting-info h3 {
-  color: white;
-  font-size: 1.1rem;
-  margin-bottom: 0.25rem;
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
 }
 
 .setting-info p {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
 }
 
 .btn-setting {
-  background: #8C52FF;
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 0.875rem;
   transition: all 0.3s ease;
 }
 
 .btn-setting:hover {
-  background: #7a47e6;
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
 }
 
 .btn-danger {
-  background: #ff4757;
+  background: #dc2626;
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 0.875rem;
   transition: all 0.3s ease;
 }
 
 .btn-danger:hover {
-  background: #ff3742;
+  background: #b91c1c;
 }
 
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  padding: 1rem;
 }
 
 .modal-content {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: white;
+  border-radius: 1rem;
   padding: 2rem;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
-  color: #333;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .modal-content h3 {
-  color: #8C52FF;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
 }
 
 .modal-buttons {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
+/* Alertas */
 .alert {
   position: fixed;
   top: 2rem;
   right: 2rem;
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
   font-weight: 600;
   z-index: 10000;
   max-width: 400px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .alert-success {
-  background: rgba(46, 213, 115, 0.9);
-  color: white;
-  border: 1px solid #2ed573;
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
 }
 
 .alert-error {
-  background: rgba(255, 71, 87, 0.9);
-  color: white;
-  border: 1px solid #ff4757;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
 }
 
+/* Responsividade */
 @media (max-width: 768px) {
   .profile-page {
-    padding: 1rem;
+    padding: 1rem 0.5rem;
   }
-  
+
   .profile-header {
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
     text-align: center;
   }
-  
+
   .profile-avatar-section {
     flex-direction: column;
     text-align: center;
+    gap: 1rem;
   }
-  
+
   .form-buttons {
     flex-direction: column;
   }
-  
+
   .pets-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .profile-stats {
     grid-template-columns: 1fr;
   }
-}
 
-.found-button-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.pet-image-container:hover .found-button-overlay {
-  opacity: 1;
-}
-
-.btn-found {
-  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 0.75rem 1.25rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.btn-found:hover:not(:disabled) {
-  background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
-}
-
-.btn-found:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-found i {
-  font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-  .found-button-overlay {
-    opacity: 1; /* Sempre visível no mobile */
+  .setting-item {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
   }
-  
-  .btn-found {
-    padding: 0.6rem 1rem;
-    font-size: 0.8rem;
+
+  .pet-actions {
+    flex-direction: column;
   }
 }
 
-.adopted-button-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.pet-image-container:hover .adopted-button-overlay {
-  opacity: 1;
-}
-
-.btn-adopted {
-  background: linear-gradient(135deg, #a855f7 0%, #8b5cf6 100%);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  padding: 0.75rem 1.25rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.btn-adopted:hover:not(:disabled) {
-  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
-}
-
-.btn-adopted:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-adopted i {
-  font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-  .adopted-button-overlay {
-    opacity: 1; /* Sempre visível no mobile */
+@media (max-width: 480px) {
+  .profile-page {
+    padding: 0.5rem;
   }
-  
+
+  .profile-container {
+    gap: 1.5rem;
+  }
+
+  .profile-header,
+  .edit-form,
+  .my-pets-section,
+  .account-settings {
+    padding: 1.5rem;
+  }
+
+  .profile-avatar {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.25rem;
+  }
+
+  .profile-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+
+  .action-button-overlay {
+    opacity: 1;
+  }
+
+  .btn-found,
   .btn-adopted {
-    padding: 0.6rem 1rem;
-    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  .modal-content {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .alert {
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
   }
 }
 </style>

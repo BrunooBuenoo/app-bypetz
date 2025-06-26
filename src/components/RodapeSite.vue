@@ -1,99 +1,62 @@
 <template>
-  <footer class="footer" role="contentinfo">
-    <div class="background-effects">
-      <div class="floating-orb orb-1"></div>
-      <div class="floating-orb orb-2"></div>
-      <div class="floating-orb orb-3"></div>
-    </div>
-    
-    <div class="container-footer">
-      <div class="row">
-        <nav class="menu" aria-label="Menu principal">
-          <h3>
-            <i class="fas fa-bars"></i>
-            Menu
-          </h3>
-          <ul>
-            <li><a href="/"><i class="fas fa-home"></i>Home</a></li>
-            <li><a href="/lost-animals"><i class="fas fa-plus-circle"></i>Cadastrar Pet</a></li>
-            <li><a href="/feed"><i class="fas fa-heart"></i>Adoção</a></li>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 class="footer-title">Menu</h3>
+          <ul class="footer-links">
+            <li><router-link to="/">Home</router-link></li>
+            <li><router-link to="/cadastrar-pet">Cadastrar Pet</router-link></li>
+            <li><router-link to="/feed">Feed</router-link></li>
+            <li><router-link to="/loja">Loja</router-link></li>
           </ul>
-        </nav>
+        </div>
 
-        <section class="sobre" aria-labelledby="footer-sobre">
-          <h3 id="footer-sobre">
-            <i class="fas fa-info-circle"></i>
-            Nós
-          </h3>
-          <ul>
-            <li><a href="/about"><i class="fas fa-users"></i>Sobre</a></li>
-            <li><a href="/about#how-it-works"><i class="fas fa-cogs"></i>Como Funciona</a></li>
-            <li><a href="/contact"><i class="fas fa-envelope"></i>Contato</a></li>
+        <div class="footer-section">
+          <h3 class="footer-title">Sobre Nós</h3>
+          <ul class="footer-links">
+            <li><router-link to="/sobre">Sobre</router-link></li>
+            <li><router-link to="/contato">Contato</router-link></li>
+            <li><a href="#como-funciona">Como Funciona</a></li>
           </ul>
-        </section>
+        </div>
 
-        <section class="company" aria-labelledby="footer-company">
-          <h3 id="footer-company">
-            <i class="fas fa-paw"></i>
-            ByPetz
-          </h3>
-          <p>
+        <div class="footer-section company-section">
+          <h3 class="footer-title">ByPetz</h3>
+          <p class="company-description">
             ByPetz é a plataforma que conecta donos e amantes de pets, oferecendo
             ferramentas para cadastro de animais perdidos e facilitação do processo
-            de adoção responsável. Nosso objetivo é unir pessoas e pets de forma
-            segura e transparente, promovendo o bem-estar animal e fortalecendo a
-            comunidade de cuidados entre usuários.
+            de adoção responsável.
           </p>
           <div class="company-stats">
             <div class="stat">
-              <i class="fas fa-users"></i>
-              <span>2.5k+ Usuários</span>
+              <span class="stat-number">2.5k+</span>
+              <span class="stat-label">Usuários</span>
             </div>
             <div class="stat">
-              <i class="fas fa-heart"></i>
-              <span>500+ Pets Salvos</span>
+              <span class="stat-number">500+</span>
+              <span class="stat-label">Pets Salvos</span>
             </div>
           </div>
-        </section>
+        </div>
 
-        <div class="social" aria-label="Redes Sociais">
-          <h3>
-            <i class="fas fa-share-alt"></i>
-            Redes Sociais
-          </h3>
-          <ul class="social-list">
-            <li>
-              <a href="https://facebook.com/suaPagina" target="_blank" aria-label="Facebook" class="social-facebook">
-                <i class="fab fa-facebook-f"></i>
-                <div class="social-ripple"></div>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.instagram.com/bypetz.com.br/" target="_blank" aria-label="Instagram" class="social-instagram">
-                <i class="fab fa-instagram"></i>
-                <div class="social-ripple"></div>
-              </a>
-            </li>
-            <li>
-              <a href="https://wa.me/5514998886799" target="_blank" aria-label="WhatsApp" class="social-whatsapp">
-                <i class="fab fa-whatsapp"></i>
-                <div class="social-ripple"></div>
-              </a>
-            </li>
-            <li>
-              <a href="https://www.youtube.com/suaPagina" target="_blank" aria-label="YouTube" class="social-youtube">
-                <i class="fab fa-youtube"></i>
-                <div class="social-ripple"></div>
-              </a>
-            </li>
-          </ul>
+        <div class="footer-section">
+          <h3 class="footer-title">Redes Sociais</h3>
+          <div class="social-links">
+            <a href="https://www.instagram.com/bypetz.com.br/" target="_blank" class="social-link instagram">
+              Instagram
+            </a>
+            <a href="https://wa.me/5514998886799" target="_blank" class="social-link whatsapp">
+              WhatsApp
+            </a>
+          </div>
           
           <div class="newsletter">
-            <h4>Newsletter</h4>
+            <h4 class="newsletter-title">Newsletter</h4>
             <div class="newsletter-form">
-              <input type="email" placeholder="Seu e-mail">
-              <button type="submit">
-                <i class="fas fa-paper-plane"></i>
+              <input type="email" placeholder="Seu e-mail" class="newsletter-input">
+              <button type="submit" class="newsletter-button">
+                Enviar
               </button>
             </div>
           </div>
@@ -101,11 +64,10 @@
       </div>
       
       <div class="footer-bottom">
-        <small class="copyright">
-          <i class="fas fa-copyright"></i>
+        <div class="copyright">
           ByPetz © 2025 - Todos os direitos reservados
-        </small>
-        <div class="footer-links">
+        </div>
+        <div class="footer-bottom-links">
           <a href="/privacy">Privacidade</a>
           <a href="/terms">Termos</a>
         </div>
@@ -116,286 +78,189 @@
 
 <script>
 export default {
-  name: "FooterModerno",
-};
+  name: "RodapeSite"
+}
 </script>
 
-<style>
-/* Importar FontAwesome */
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
-
+<style scoped>
 .footer {
-  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
-  color: #fff;
+  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
+  color: white;
   width: 100%;
-  position: relative;
-  overflow: hidden;
 }
 
-.background-effects {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-
-.floating-orb {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 215, 0, 0.1);
-  backdrop-filter: blur(20px);
-  animation: float 10s ease-in-out infinite;
-  border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-.orb-1 {
-  width: 120px;
-  height: 120px;
-  top: 20%;
-  right: 10%;
-  animation-delay: 0s;
-}
-
-.orb-2 {
-  width: 80px;
-  height: 80px;
-  bottom: 30%;
-  left: 15%;
-  animation-delay: 3s;
-}
-
-.orb-3 {
-  width: 60px;
-  height: 60px;
-  top: 60%;
-  right: 30%;
-  animation-delay: 6s;
-}
-
-.container-footer {
+.container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 4rem 2rem 0;
-  position: relative;
-  z-index: 10;
+  padding: 4rem 3rem 0;
 }
 
-.row {
+.footer-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 3rem;
   margin-bottom: 3rem;
 }
 
-.menu,
-.sobre,
-.company,
-.social {
-  animation: slideInUp 0.8s ease-out forwards;
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.menu { animation-delay: 0.1s; }
-.sobre { animation-delay: 0.2s; }
-.company { animation-delay: 0.3s; }
-.social { animation-delay: 0.4s; }
-
-h3 {
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: #FFD700;
+.footer-section {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-h3 i {
-  font-size: 1.1rem;
+.footer-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
 }
 
-ul {
+.footer-links {
   list-style: none;
   padding: 0;
-}
-
-ul li {
-  margin-bottom: 0.8rem;
-}
-
-ul li a {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  transition: all 0.3s ease;
+  margin: 0;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.3rem 0;
-  border-radius: 5px;
-  font-weight: 500;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-ul li a i {
+.footer-links li a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-weight: 400;
+  transition: all 0.3s ease;
+}
+
+.footer-links li a:hover {
+  color: white;
+  transform: translateX(4px);
+}
+
+.company-section {
+  max-width: 300px;
+}
+
+.company-description {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
   font-size: 0.9rem;
-  width: 16px;
-}
-
-.menu ul li a:hover,
-.sobre ul li a:hover {
-  color: #FFD700;
-  transform: translateX(5px);
-  text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
-}
-
-.company {
-  max-width: 350px;
-}
-
-.company p {
-  line-height: 1.7;
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 1.5rem;
+  margin: 0;
 }
 
 .company-stats {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
 }
 
 .stat {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  background: rgba(255, 215, 0, 0.1);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 215, 0, 0.2);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.stat i {
-  color: #FFD700;
-}
-
-.social-list {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.social-list li a {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  font-size: 1.3rem;
-  transition: all 0.4s ease;
   background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 80px;
 }
 
-.social-facebook:hover {
-  background: #1877F2;
-  border-color: #1877F2;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(24, 119, 242, 0.3);
+.stat-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
 }
 
-.social-instagram:hover {
-  background: linear-gradient(45deg, #E4405F, #C13584, #833AB4);
-  border-color: #E4405F;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(228, 64, 95, 0.3);
+.stat-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
 }
 
-.social-whatsapp:hover {
-  background: #25D366;
-  border-color: #25D366;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.social-youtube:hover {
-  background: #FF0000;
-  border-color: #FF0000;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(255, 0, 0, 0.3);
+.social-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  text-align: center;
+  font-weight: 500;
 }
 
-.social-ripple {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  animation: ripple 2s infinite;
+.social-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.social-link.instagram:hover {
+  background: rgba(228, 64, 95, 0.2);
+  border-color: rgba(228, 64, 95, 0.5);
+}
+
+.social-link.whatsapp:hover {
+  background: rgba(37, 211, 102, 0.2);
+  border-color: rgba(37, 211, 102, 0.5);
 }
 
 .newsletter {
   margin-top: 1rem;
 }
 
-.newsletter h4 {
-  color: #FFD700;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
+.newsletter-title {
+  font-size: 1rem;
   font-weight: 600;
+  color: white;
+  margin: 0 0 1rem 0;
 }
 
 .newsletter-form {
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.newsletter-form input {
-  flex: 1;
-  padding: 0.8rem 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 25px;
+.newsletter-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
   background: rgba(255, 255, 255, 0.1);
   color: white;
   font-size: 0.9rem;
   transition: all 0.3s ease;
 }
 
-.newsletter-form input::placeholder {
+.newsletter-input::placeholder {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.newsletter-form input:focus {
+.newsletter-input:focus {
   outline: none;
-  border-color: #FFD700;
+  border-color: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.15);
 }
 
-.newsletter-form button {
-  padding: 0.8rem 1.2rem;
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  border: none;
-  border-radius: 25px;
+.newsletter-button {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-weight: 600;
 }
 
-.newsletter-form button:hover {
+.newsletter-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
 }
 
 .footer-bottom {
@@ -409,76 +274,54 @@ ul li a i {
 }
 
 .copyright {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
 }
 
-.footer-links {
+.footer-bottom-links {
   display: flex;
   gap: 2rem;
 }
 
-.footer-links a {
+.footer-bottom-links a {
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   transition: all 0.3s ease;
 }
 
-.footer-links a:hover {
-  color: #FFD700;
-}
-
-/* Animações */
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(3deg); }
-}
-
-@keyframes slideInUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes ripple {
-  0% { width: 0; height: 0; opacity: 1; }
-  100% { width: 60px; height: 60px; opacity: 0; }
+.footer-bottom-links a:hover {
+  color: white;
 }
 
 /* Responsividade */
 @media (max-width: 1024px) {
-  .container-footer {
-    padding: 3rem 1.5rem 0;
+  .container {
+    padding: 3rem 2rem 0;
   }
   
-  .row {
+  .footer-content {
     gap: 2.5rem;
   }
 }
 
 @media (max-width: 768px) {
-  .container-footer {
+  .container {
     padding: 3rem 1rem 0;
   }
   
-  .row {
+  .footer-content {
     grid-template-columns: 1fr;
     gap: 2rem;
     text-align: center;
   }
 
-  .company {
+  .company-section {
     max-width: none;
   }
 
   .company-stats {
-    justify-content: center;
-  }
-
-  .social-list {
     justify-content: center;
   }
 
@@ -494,14 +337,12 @@ ul li a i {
 }
 
 @media (max-width: 480px) {
-  .social-list {
-    gap: 0.8rem;
+  .container {
+    padding: 2rem 1rem 0;
   }
-  
-  .social-list li a {
-    width: 45px;
-    height: 45px;
-    font-size: 1.1rem;
+
+  .footer-content {
+    gap: 2rem;
   }
   
   .company-stats {
@@ -509,9 +350,14 @@ ul li a i {
     align-items: center;
   }
   
-  .footer-links {
+  .footer-bottom-links {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .social-links {
+    max-width: 200px;
+    margin: 0 auto;
   }
 }
 </style>

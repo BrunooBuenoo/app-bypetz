@@ -10,8 +10,8 @@
           <router-link to="/cadastrar-pet" class="btn-primary">
             Perdi meu pet
           </router-link>
-          <router-link to="/cadastrar-pet" class="btn-secondary">
-            Achei um pet
+          <router-link to="/feed" class="btn-secondary">
+            Explorar Pets
           </router-link>
         </div>
       </div>
@@ -26,9 +26,6 @@
             />
           </div>
         </div>
-        
-        <div class="decoration decoration-1"></div>
-        <div class="decoration decoration-3"></div>
       </div>
     </div>
   </div>
@@ -36,13 +33,13 @@
 
 <script>
 export default {
-  name: 'HeroSection'
+  name: 'HeroComponent'
 }
 </script>
 
 <style scoped>
 .hero-container {
-  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
+  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
   min-height: 100vh;
   width: 100%;
   display: flex;
@@ -51,6 +48,31 @@ export default {
   overflow: hidden;
   margin: 0;
   padding: 0;
+}
+
+/* Hero Dogs */
+.hero-dog {
+  position: absolute;
+  top: 0;
+  width: 200px;
+  height: 300px;
+  z-index: 2;
+}
+
+.hero-dog-left {
+  left: 2rem;
+}
+
+.hero-dog-right {
+  right: 2rem;
+  transform: scaleX(-1);
+}
+
+.dog-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
 }
 
 .hero-content {
@@ -97,9 +119,9 @@ export default {
 .btn-primary,
 .btn-secondary {
   padding: 1rem 2rem;
-  border-radius: 30px;
+  border-radius: 9999px;
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1rem;
   transition: all 0.3s ease;
   display: inline-flex;
@@ -110,28 +132,28 @@ export default {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #8C52FF;
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #FFA500, #FF8C00);
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
+  background: white;
+  color: #9333ea;
+  border: 2px solid white;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: #f8fafc;
   transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .image-section {
@@ -164,31 +186,7 @@ export default {
   filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
 }
 
-.decoration {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.decoration-1 {
-  width: 300px;
-  height: 300px;
-  right: -10%;
-  bottom: -10%;
-  z-index: 1;
-}
-
-.decoration-3 {
-  width: 200px;
-  height: 200px;
-  right: 15%;
-  top: 10%;
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* RESPONSIVIDADE */
+/* Responsividade */
 @media (max-width: 1024px) {
   .hero-content {
     gap: 2rem;
@@ -208,9 +206,28 @@ export default {
     width: 500px;
     height: 500px;
   }
+
+  .hero-dog {
+    width: 150px;
+    height: 225px;
+  }
+  
+  .hero-dog-left {
+    left: 1rem;
+  }
+  
+  .hero-dog-right {
+    right: 1rem;
+  }
 }
 
 @media (max-width: 768px) {
+  .pets-photo{
+    position: relative;
+    top: 39px;
+    height: 200%;
+  }
+
   .hero-content {
     flex-direction: column;
     gap: 3rem;
@@ -243,14 +260,17 @@ export default {
     height: 350px;
   }
 
-  .decoration-1 {
-    width: 200px;
-    height: 200px;
+  .hero-dog {
+    width: 120px;
+    height: 180px;
   }
   
-  .decoration-3 {
-    width: 150px;
-    height: 150px;
+  .hero-dog-left {
+    left: 0.5rem;
+  }
+  
+  .hero-dog-right {
+    right: 0.5rem;
   }
 }
 
@@ -285,6 +305,10 @@ export default {
 
   .image-section {
     height: 300px;
+  }
+
+  .hero-dog {
+    display: none;
   }
 }
 

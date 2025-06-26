@@ -1295,7 +1295,7 @@ export default {
 
 /* Botão de Lupa */
 .search-toggle-btn {
-  background: #8B5CF6;
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
   border: none;
   border-radius: 50px;
@@ -1401,7 +1401,7 @@ export default {
 }
 
 .search-button {
-  background: #8B5CF6;
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
   border: none;
   border-radius: 8px;
@@ -1560,7 +1560,7 @@ export default {
   position: absolute;
   bottom: 10px;
   left: 10px;
-  background: rgba(139, 92, 246, 0.9);
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
   padding: 0.25rem 0.5rem;
   border-radius: 12px;

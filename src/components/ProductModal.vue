@@ -1,9 +1,8 @@
 <template>
   <div v-if="isOpen" class="modal-overlay" @click="closeModal">
     <div class="modal-content" @click.stop>
-      <!-- Botão Fechar -->
       <button class="close-button" @click="closeModal">
-        <i class="fas fa-times"></i>
+        ✕
       </button>
       
       <div class="modal-body">
@@ -17,31 +16,24 @@
               @error="onImageError"
             />
             
-            <!-- Botão Favorito -->
-            <button class="favorite-button" @click="toggleFavorite">
-              <i class="fas fa-heart" :class="{ active: isFavorite }"></i>
-            </button>
-            
-            <!-- Navegação de Imagens -->
             <div v-if="produto.imagens && produto.imagens.length > 1" class="image-navigation">
               <button 
                 @click="previousImage" 
-                class="nav-button prev"
+                class="nav-button"
                 :disabled="currentImageIndex === 0"
               >
-                <i class="fas fa-chevron-left"></i>
+                ‹
               </button>
               <button 
                 @click="nextImage" 
-                class="nav-button next"
+                class="nav-button"
                 :disabled="currentImageIndex === produto.imagens.length - 1"
               >
-                <i class="fas fa-chevron-right"></i>
+                ›
               </button>
             </div>
           </div>
           
-          <!-- Miniaturas -->
           <div v-if="produto.imagens && produto.imagens.length > 1" class="thumbnails">
             <div 
               v-for="(imagem, index) in produto.imagens" 
@@ -80,7 +72,7 @@
           <!-- Estoque -->
           <div class="stock-section">
             <div class="stock-info" :class="{ 'low-stock': produto.estoque <= 5, 'out-of-stock': produto.estoque === 0 }">
-              <i class="fas fa-box"></i>
+              <span class="stock-indicator"></span>
               <span v-if="produto.estoque > 0">{{ produto.estoque }} unidades em estoque</span>
               <span v-else>Produto esgotado</span>
             </div>
@@ -91,11 +83,11 @@
             <label class="quantity-label">QUANTIDADE</label>
             <div class="quantity-controls">
               <button @click="decreaseQuantity" class="quantity-btn" :disabled="quantity <= 1">
-                <i class="fas fa-minus"></i>
+                −
               </button>
               <span class="quantity-display">{{ quantity }}</span>
               <button @click="increaseQuantity" class="quantity-btn" :disabled="quantity >= produto.estoque">
-                <i class="fas fa-plus"></i>
+                +
               </button>
             </div>
             <span class="quantity-limit" v-if="produto.estoque > 0">Máximo: {{ produto.estoque }} unidades</span>
@@ -110,11 +102,11 @@
             </div>
           </div>
           
-          <!-- Descrição Completa -->
+          <!-- Descrição -->
           <div class="description-section">
             <h3 class="section-title">DESCRIÇÃO</h3>
             <p class="product-description">
-              {{ produto.descricaoCompleta || produto.descricao || 'Produto de alta qualidade para seu pet. Fabricado com materiais duráveis e seguros, ideal para o dia a dia do seu melhor amigo. Proporciona conforto e diversão, garantindo momentos especiais entre você e seu animal de estimação.' }}
+              {{ produto.descricaoCompleta || produto.descricao || 'Produto de alta qualidade para seu pet. Fabricado com materiais duráveis e seguros, ideal para o dia a dia do seu melhor amigo.' }}
             </p>
           </div>
           
@@ -124,7 +116,6 @@
             class="add-to-cart-modal-btn"
             :disabled="loading || produto.estoque === 0 || quantity <= 0"
           >
-            <i class="fas fa-shopping-cart"></i>
             <span v-if="produto.estoque === 0">PRODUTO ESGOTADO</span>
             <span v-else-if="loading">ADICIONANDO...</span>
             <span v-else>ADICIONAR {{ quantity }} {{ quantity === 1 ? 'ITEM' : 'ITENS' }} AO CARRINHO</span>
@@ -150,13 +141,12 @@ export default {
       default: false
     }
   },
-  emits: ['close', 'adicionar'], // Corrigido: mudou de 'add-to-cart' para 'adicionar'
+  emits: ['close', 'adicionar'],
   setup(props, { emit }) {
     const loading = ref(false)
     const quantity = ref(1)
     const currentImageIndex = ref(0)
-    const isFavorite = ref(false)
-    const placeholderImage = 'https://via.placeholder.com/400x300/8C52FF/FFFFFF?text=Produto'
+    const placeholderImage = 'https://via.placeholder.com/400x300/9333ea/FFFFFF?text=Produto'
 
     const currentImage = computed(() => {
       if (props.produto.imagens && props.produto.imagens.length > 0) {
@@ -205,13 +195,7 @@ export default {
       currentImageIndex.value = index
     }
 
-    const toggleFavorite = () => {
-      isFavorite.value = !isFavorite.value
-    }
-
-    // Função corrigida do botão adicionar ao carrinho
     const handleAddToCart = async () => {
-      // Validações
       if (props.produto.estoque === 0 || loading.value || quantity.value <= 0) return
       
       if (quantity.value > props.produto.estoque) {
@@ -222,19 +206,12 @@ export default {
       
       loading.value = true
       try {
-        console.log('Emitindo evento adicionar com:', { produto: props.produto, quantidade: quantity.value }) // Debug
-        
-        // Emite o evento com o produto e a quantidade selecionada
         emit('adicionar', {
           produto: props.produto,
           quantidade: quantity.value
         })
         
-        // Feedback visual
         await new Promise(resolve => setTimeout(resolve, 300))
-        
-        // Opcional: fechar modal após adicionar
-        // emit('close')
       } catch (error) {
         console.error('Erro ao adicionar produto ao carrinho:', error)
       } finally {
@@ -242,16 +219,13 @@ export default {
       }
     }
 
-    // Reset quando o modal abre
     watch(() => props.isOpen, (newValue) => {
       if (newValue) {
         quantity.value = 1
         currentImageIndex.value = 0
-        isFavorite.value = false
       }
     })
 
-    // Validar quantidade quando o estoque muda
     watch(() => props.produto.estoque, (newStock) => {
       if (quantity.value > newStock) {
         quantity.value = Math.max(1, newStock)
@@ -262,7 +236,6 @@ export default {
       loading,
       quantity,
       currentImageIndex,
-      isFavorite,
       currentImage,
       formatPrice,
       onImageError,
@@ -272,7 +245,6 @@ export default {
       nextImage,
       previousImage,
       setCurrentImage,
-      toggleFavorite,
       handleAddToCart
     }
   }
@@ -286,23 +258,24 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
   padding: 1rem;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
   background: white;
-  border-radius: 20px;
-  max-width: 900px;
+  border-radius: 1.25rem;
+  max-width: 1000px;
   width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
+  height: 80vh;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
 .close-button {
@@ -312,77 +285,54 @@ export default {
   background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10001;
   transition: all 0.3s ease;
+  font-size: 1.125rem;
+  color: #6b7280;
+  backdrop-filter: blur(10px);
 }
 
 .close-button:hover {
   background: white;
+  color: #374151;
   transform: scale(1.1);
 }
 
 .modal-body {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  padding: 2rem;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* Seção da Imagem */
 .image-section {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  justify-content: center;
+  gap: 0.75rem;
+  padding: 5rem;
+  background: white;
 }
 
 .main-image-container {
   position: relative;
-  background: linear-gradient(135deg, #8C52FF, #6B3DD6);
-  border-radius: 16px;
+  background: white;
+  border-radius: 1rem;
   overflow: hidden;
   aspect-ratio: 1;
+  flex: 1;
 }
 
 .main-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.favorite-button {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: rgb(204, 204, 204);
-  font-size: 30px;
-}
-
-.favorite-button:hover {
-  background: white;
-  transform: scale(1.1);
-}
-
-.favorite-button i.active {
-  color: #FF4444;
-  font-size: 40px;
-  transition: all 0.2s ease;
 }
 
 .image-navigation {
@@ -392,7 +342,7 @@ export default {
   right: 0;
   display: flex;
   justify-content: space-between;
-  padding: 0 1rem;
+  padding: 0 0.75rem;
   transform: translateY(-50%);
 }
 
@@ -400,17 +350,21 @@ export default {
   background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 1.125rem;
+  color: #6b7280;
+  backdrop-filter: blur(10px);
 }
 
 .nav-button:hover:not(:disabled) {
   background: white;
+  color: #374151;
   transform: scale(1.1);
 }
 
@@ -423,14 +377,14 @@ export default {
   display: flex;
   gap: 0.5rem;
   overflow-x: auto;
-  padding: 0.5rem 0;
+  padding: 0.25rem 0;
 }
 
 .thumbnail {
   flex-shrink: 0;
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
+  width: 50px;
+  height: 50px;
+  border-radius: 0.5rem;
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;
@@ -438,7 +392,11 @@ export default {
 }
 
 .thumbnail.active {
-  border-color: #8C52FF;
+  border-color: #9333ea;
+}
+
+.thumbnail:hover {
+  border-color: #c4b5fd;
 }
 
 .thumbnail img {
@@ -451,35 +409,38 @@ export default {
 .info-section {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  gap: 1rem;
+  background: rgba(229, 231, 235, 0.4);
 }
 
 .product-header {
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid #f3f4f6;
   padding-bottom: 1rem;
 }
 
 .product-title {
-  font-size: 1.8rem;
+  font-size: 1.375rem;
   font-weight: 700;
-  color: #333;
-  margin-bottom: 0.5rem;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
 }
 
 .product-code {
-  color: #666;
-  font-size: 0.9rem;
+  color: #6b7280;
+  font-size: 0.8rem;
   margin: 0;
-  font-family: monospace;
-  background: #f8f9fa;
+  background: #f9fafb;
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  border-radius: 0.375rem;
   display: inline-block;
 }
 
 .pricing-section {
-  padding: 1rem 0;
-  border-bottom: 1px solid #e9ecef;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .price-with-discount {
@@ -489,81 +450,89 @@ export default {
 }
 
 .original-price {
-  font-size: 1rem;
-  color: #999;
+  font-size: 0.875rem;
+  color: #9ca3af;
   text-decoration: line-through;
   font-weight: 400;
 }
 
-.sale-price {
-  font-size: 2.5rem;
+.sale-price,
+.regular-price {
+  font-size: 1.75rem;
   font-weight: 800;
-  color: #414141;
+  color: #111827;
 }
 
 .discount-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .discount-badge {
-  background: #FF4444;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   padding: 0.25rem 0.5rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
 .savings {
-  color: #28a745;
+  color: #059669;
   font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.price-normal {
-  display: flex;
-}
-
-.regular-price {
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: #414141;
+  font-size: 0.8rem;
 }
 
 .stock-section {
-  padding: 0.5rem 0;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .stock-info {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #28a745;
   font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.stock-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
 }
 
 .stock-info.low-stock {
-  color: #ffc107;
+  color: #f59e0b;
+}
+
+.stock-info.low-stock .stock-indicator {
+  background: #f59e0b;
 }
 
 .stock-info.out-of-stock {
-  color: #dc3545;
+  color: #ef4444;
+}
+
+.stock-info.out-of-stock .stock-indicator {
+  background: #ef4444;
 }
 
 .quantity-section {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #e9ecef;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .quantity-label {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #666;
+  color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -571,26 +540,29 @@ export default {
 .quantity-controls {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .quantity-btn {
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  width: 40px;
-  height: 40px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6b7280;
 }
 
 .quantity-btn:hover:not(:disabled) {
-  background: rgba(82, 137, 255, 0.2);
-  border-color: rgba(82, 128, 255, 0.5);
-  color: white;
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #374151;
 }
 
 .quantity-btn:disabled {
@@ -599,35 +571,31 @@ export default {
 }
 
 .quantity-display {
-  font-size: 1.2rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  color: #333;
-  min-width: 30px;
+  color: #111827;
+  min-width: 24px;
   text-align: center;
 }
 
 .quantity-limit {
-  font-size: 0.8rem;
-  color: #666;
+  font-size: 0.75rem;
+  color: #6b7280;
 }
 
 .category-section,
 .description-section {
-  padding: 1rem 0;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.description-section p{
-    font-size: 12px;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .section-title {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #666;
+  color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 0.75rem;
+  margin: 0 0 0.75rem 0;
 }
 
 .category-badges {
@@ -637,143 +605,112 @@ export default {
 }
 
 .category-badge {
-  background: #8C52FF;
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
   padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
   font-weight: 600;
 }
 
 .subcategory-badge {
-  background: #f8f9fa;
-  color: #666;
+  background: #f3f4f6;
+  color: #6b7280;
   padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
 .product-description {
-  color: #555;
-  line-height: 1.6;
+  color: #6b7280;
+  line-height: 1.5;
   margin: 0;
+  font-size: 0.875rem;
 }
 
 .add-to-cart-modal-btn {
-  background: #0077ff;
+  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.75rem;
 }
 
 .add-to-cart-modal-btn:hover:not(:disabled) {
-  background: #01037ce5;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
   transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(147, 51, 234, 0.3);
 }
 
 .add-to-cart-modal-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
-  background: #6c757d;
+  background: #9ca3af;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
   .modal-content {
-    margin: 0.5rem;
-    max-height: 95vh;
+    height: 90vh;
+    max-width: 95vw;
   }
   
   .modal-body {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 1.5rem;
+    overflow-y: auto;
+  }
+  
+  .image-section {
+    padding: 1.25rem;
+  }
+  
+  .info-section {
+    padding: 1.25rem;
+    overflow-y: visible;
   }
   
   .product-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
   
   .sale-price,
   .regular-price {
-    font-size: 2rem;
-  }
-  
-  .thumbnails {
-    justify-content: center;
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .modal-overlay {
-    padding: 0.5rem;
+  .modal-content {
+    height: 95vh;
+    border-radius: 1rem;
   }
   
-  .modal-body {
+  .image-section,
+  .info-section {
     padding: 1rem;
-    gap: 1rem;
   }
   
   .product-title {
-    font-size: 1.3rem;
+    font-size: 1.125rem;
   }
   
   .sale-price,
   .regular-price {
-    font-size: 1.8rem;
-  }
-  
-  .close-button {
-    width: 35px;
-    height: 35px;
+    font-size: 1.375rem;
   }
   
   .add-to-cart-modal-btn {
-    padding: 0.75rem 1.5rem;
-    font-size: 0.9rem;
-  }
-
-  .favorite-button{
-    top: 1rem;
-    right: 22rem;
-    width: 35px;
-    height: 35px;
-  }
-}
-
-@media (max-width: 360px) {
-  .modal-body {
-    padding: 0.75rem;
-  }
-  
-  .product-title {
-    font-size: 1.2rem;
-  }
-  
-  .sale-price,
-  .regular-price {
-    font-size: 1.6rem;
-  }
-  
-  .quantity-controls {
-    gap: 0.75rem;
-  }
-  
-  .quantity-btn {
-    width: 35px;
-    height: 35px;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.8rem;
   }
 }
 </style>

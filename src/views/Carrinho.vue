@@ -145,13 +145,14 @@ export default {
 }
 
 .carrinho-header h1 {
-  color: #0077ff;
-  font-size: 2.2rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0;
+  color: #111827;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  background: linear-gradient(to right, #9333ea, #2563eb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .continue-shopping-btn {
@@ -234,7 +235,7 @@ export default {
 
 .checkout-btn {
   width: 100%;
-  background: #0077ff;
+  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
   color: white;
   text-decoration: none;
   padding: 1rem;
@@ -251,7 +252,7 @@ export default {
 }
 
 .checkout-btn:hover {
-  background: #01037ce5;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
   transform: translateY(-2px);
 }
 

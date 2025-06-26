@@ -1,334 +1,344 @@
 <template>
-  <div class="contact-page">
+  <div class="contato-page">
     <!-- Hero Section -->
-    <div class="hero-section">
-      <div class="hero-content">
-        <h1>Fale com a gente!</h1>
-        <p class="hero-subtitle">Estamos aqui para ajudar você e seu pet</p>
-      </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="contact-container">
-      <!-- Description -->
-      <div class="description-section">
-        <p>Se você precisa de ajuda, quer relatar um animal perdido ou encontrado, ou tem alguma dúvida sobre o funcionamento do nosso site, estamos aqui para te ouvir!</p>
-        <p>Na <strong>ByPetz</strong>, acreditamos que cada mensagem pode fazer a diferença na vida de um pet e de uma família. Nossa equipe está pronta para te apoiar da melhor forma possível.</p>
-      </div>
-
-      <!-- Contact Buttons -->
-      <div class="contact-buttons">
-        <a href="https://wa.me/5514998886799" target="_blank" class="btn btn-whatsapp">
-          <span>WhatsApp</span>
-          <small>Resposta rápida</small>
-        </a>
-        
-        <a href="mailto:contato@bypetz.com.br" class="btn btn-email">
-          <span>E-mail</span>
-          <small>Suporte detalhado</small>
-        </a>
-        
-        <a href="tel:+5514998886799" class="btn btn-phone">
-          <span>Telefone</span>
-          <small>Atendimento direto</small>
-        </a>
-        
-        <a href="https://instagram.com/bypetz.com.br" target="_blank" class="btn btn-instagram">
-          <span>Instagram</span>
-          <small>Novidades e dicas</small>
-        </a>
-      </div>
-
-      <!-- FAQ Section -->
-      <div class="faq-section">
-        <h2>Perguntas Frequentes</h2>
-        <div class="faq-grid">
-          <div class="faq-item">
-            <div class="faq-icon"><i class="fas fa-question-circle"></i></div>
-            <h4>Como cadastrar um pet?</h4>
-            <p>Clique em "Cadastrar Pet" e preencha as informações. É rápido e gratuito!</p>
-          </div>
-          
-          <div class="faq-item">
-            <div class="faq-icon"><i class="fas fa-search"></i></div>
-            <h4>Como buscar pets?</h4>
-            <p>Use os filtros no feed para encontrar pets por cidade, tipo e status.</p>
-          </div>
-          
-          <div class="faq-item">
-            <div class="faq-icon"><i class="fas fa-mobile-alt"></i></div>
-            <h4>Como entrar em contato?</h4>
-            <p>Use WhatsApp, e-mail ou telefone. Estamos sempre disponíveis para ajudar!</p>
-          </div>
-          
-          <div class="faq-item">
-            <div class="faq-icon"><i class="fas fa-exclamation-triangle"></i></div>
-            <h4>Emergência?</h4>
-            <p>Para casos urgentes, ligue diretamente ou mande WhatsApp. Priorizamos emergências!</p>
-          </div>
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <h1 class="hero-title">Fale com a gente</h1>
+          <p class="hero-subtitle">Estamos aqui para ajudar você e seu pet</p>
         </div>
       </div>
+    </section>
 
-      <!-- Call to Action -->
-      <div class="cta-section">
-        <h3>Pronto para ajudar mais um pet?</h3>
-        <p>Junte-se à nossa comunidade e ajude a reunir famílias!</p>
-        <router-link to="/cadastrar-pet" class="cta-button">
-          Cadastrar Pet Agora
-        </router-link>
-      </div>
+    <!-- Main Content -->
+    <div class="main-container">
+      <!-- Descrição -->
+      <section class="intro-section">
+        <div class="intro-content">
+          <p>Se você precisa de ajuda, quer relatar um animal perdido ou encontrado, ou tem alguma dúvida sobre o funcionamento do nosso site, estamos aqui para te ouvir!</p>
+          <p>Na <strong>ByPetz</strong>, acreditamos que cada mensagem pode fazer a diferença na vida de um pet e de uma família. Nossa equipe está pronta para te apoiar da melhor forma possível.</p>
+        </div>
+      </section>
+
+      <!-- Formas de Contato -->
+      <section class="contact-section">
+        <div class="section-header">
+          <h2 class="section-title">Como entrar em contato</h2>
+        </div>
+        <div class="contact-grid">
+          <a href="https://wa.me/5514998886799" target="_blank" class="contact-card whatsapp">
+            <div class="contact-info">
+              <h3 class="contact-title">WhatsApp</h3>
+              <p class="contact-description">Resposta rápida</p>
+              <span class="contact-detail">(14) 99888-6799</span>
+            </div>
+          </a>
+          
+          <a href="mailto:contato@bypetz.com.br" class="contact-card email">
+            <div class="contact-info">
+              <h3 class="contact-title">E-mail</h3>
+              <p class="contact-description">Suporte detalhado</p>
+              <span class="contact-detail">contato@bypetz.com.br</span>
+            </div>
+          </a>
+          
+          <a href="tel:+5514998886799" class="contact-card phone">
+            <div class="contact-info">
+              <h3 class="contact-title">Telefone</h3>
+              <p class="contact-description">Atendimento direto</p>
+              <span class="contact-detail">(14) 99888-6799</span>
+            </div>
+          </a>
+          
+          <a href="https://instagram.com/bypetz.com.br" target="_blank" class="contact-card instagram">
+            <div class="contact-info">
+              <h3 class="contact-title">Instagram</h3>
+              <p class="contact-description">Novidades e dicas</p>
+              <span class="contact-detail">@bypetz.com.br</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="faq-section">
+        <div class="section-header">
+          <h2 class="section-title">Perguntas Frequentes</h2>
+        </div>
+        <div class="faq-grid">
+          <div class="faq-card">
+            <h3 class="faq-question">Como cadastrar um pet?</h3>
+            <p class="faq-answer">Clique em "Cadastrar Pet" e preencha as informações. É rápido e gratuito!</p>
+          </div>
+          
+          <div class="faq-card">
+            <h3 class="faq-question">Como buscar pets?</h3>
+            <p class="faq-answer">Use os filtros no feed para encontrar pets por cidade, tipo e status.</p>
+          </div>
+          
+          <div class="faq-card">
+            <h3 class="faq-question">Como entrar em contato com tutores?</h3>
+            <p class="faq-answer">Clique no pet desejado e use os botões de WhatsApp ou Instagram disponíveis.</p>
+          </div>
+          
+          <div class="faq-card">
+            <h3 class="faq-question">Casos de emergência?</h3>
+            <p class="faq-answer">Para casos urgentes, ligue diretamente ou mande WhatsApp. Priorizamos emergências!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Horários -->
+      <section class="hours-section">
+        <div class="section-header">
+          <h2 class="section-title">Horários de Atendimento</h2>
+        </div>
+        <div class="hours-grid">
+          <div class="hours-card">
+            <h3 class="hours-title">WhatsApp</h3>
+            <p class="hours-time">24 horas por dia</p>
+            <p class="hours-note">Resposta automática</p>
+          </div>
+          
+          <div class="hours-card">
+            <h3 class="hours-title">E-mail</h3>
+            <p class="hours-time">Seg - Sex: 8h às 18h</p>
+            <p class="hours-note">Resposta em até 24h</p>
+          </div>
+          
+          <div class="hours-card">
+            <h3 class="hours-title">Telefone</h3>
+            <p class="hours-time">Seg - Sex: 9h às 17h</p>
+            <p class="hours-note">Atendimento ao vivo</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="cta-section">
+        <div class="cta-content">
+          <h2 class="cta-title">Pronto para ajudar mais um pet?</h2>
+          <p class="cta-description">Junte-se à nossa comunidade e ajude a reunir famílias!</p>
+          <router-link to="/cadastrar-pet" class="btn-primary">
+            Cadastrar Pet Agora
+          </router-link>
+        </div>
+      </section>
     </div>
   </div>
-  <RodapeSite/>
+    <!-- Footer -->
+    <RodapeSite />
 </template>
 
-<script scoped>
-import RodapeSite from '../components/RodapeSite.vue'
-
+<script>
+import RodapeSite from '../components/RodapeSite.vue';
 export default {
-  name: "PaginaContato",
   components: {
-    RodapeSite,
+    RodapeSite
   },
+  name: "PaginaContato"
 }
 </script>
 
-<style>
-.contact-page {
+<style scoped>
+.contato-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #ffffff;
 }
 
 /* Hero Section */
 .hero-section {
-  position: relative;
-  padding: 5rem 2rem 4rem;
-  text-align: center;
-  overflow: hidden;
+  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
+  padding: 6rem 0 4rem;
+}
+
+.hero-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
 .hero-content {
+  text-align: center;
   max-width: 800px;
   margin: 0 auto;
-  position: relative;
-  z-index: 2;
 }
 
-.hero-section h1 {
+.hero-title {
   font-size: 3.5rem;
-  color: white;
-  margin-bottom: 1rem;
   font-weight: 800;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  color: white;
+  margin: 0 0 1rem 0;
+  line-height: 1.1;
 }
 
 .hero-subtitle {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 0;
-  font-weight: 300;
+  font-weight: 400;
+  margin: 0;
 }
 
 /* Main Container */
-.contact-container {
-  max-width: 1200px;
+.main-container {
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 2rem 4rem;
+  padding: 0 1.5rem;
 }
 
-/* Description Section */
-.description-section {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 3rem;
-  margin-bottom: 4rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  
+/* Intro Section */
+.intro-section {
+  padding: 4rem 0;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
 }
 
-.description-section p {
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.95);
-  line-height: 1.8;
-  margin-bottom: 1.5rem;
+.intro-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
 }
 
-.description-section p:last-child {
+.intro-content p {
+  font-size: 1.125rem;
+  color: #374151;
+  line-height: 1.7;
+  margin: 0 0 1.5rem 0;
+}
+
+.intro-content p:last-child {
   margin-bottom: 0;
 }
 
-.description-section strong {
-  color: #FFD700;
-  font-weight: 700;
-}
-
-/* Contact Buttons */
-.contact-buttons {
-  display: flex;
-  justify-content: center;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-bottom: 4rem;
-}
-
-.btn {
-  background: rgba(255, 255, 255, 0.95);
-  color: #374151;
-  padding: 2rem;
-  border-radius: 20px;
-  text-decoration: none;
+.intro-content strong {
+  color: #9333ea;
   font-weight: 600;
-  transition: all 0.4s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border: 2px solid transparent;
-  position: relative;
-  overflow: hidden;
 }
 
-.btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.5s;
+/* Contact Section */
+.contact-section {
+  padding: 4rem 0;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
 }
 
-.btn:hover::before {
-  left: 100%;
+.section-header {
+  text-align: center;
+  margin-bottom: 3rem;
 }
 
-.btn span {
-  font-size: 1.3rem;
+.section-title {
+  font-size: 2.5rem;
   font-weight: 700;
+  color: #111827;
+  margin: 0;
 }
 
-.btn small {
-  font-size: 0.9rem;
-  opacity: 0.7;
-  font-weight: 400;
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
-.btn-whatsapp {
-  background: linear-gradient(135deg, #25D366, #128C7E);
-  color: white;
+.contact-card {
+  background: white;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 1rem;
+  padding: 2rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: block;
 }
 
-.btn-whatsapp:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(37, 211, 102, 0.4);
+.contact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.btn-email {
-  background: linear-gradient(135deg, #3B82F6, #1E40AF);
-  color: white;
+.contact-card.whatsapp:hover {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.02);
 }
 
-.btn-email:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+.contact-card.email:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.02);
 }
 
-.btn-phone {
-  background: linear-gradient(135deg, #F59E0B, #D97706);
-  color: white;
+.contact-card.phone:hover {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.02);
 }
 
-.btn-phone:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.4);
+.contact-card.instagram:hover {
+  border-color: #ec4899;
+  background: rgba(236, 72, 153, 0.02);
 }
 
-.btn-instagram {
-  background: linear-gradient(135deg, #E1306C, #C13584, #833AB4);
-  color: white;
+.contact-info {
+  text-align: center;
 }
 
-.btn-instagram:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(225, 48, 108, 0.4);
+.contact-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+}
+
+.contact-description {
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+}
+
+.contact-detail {
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.875rem;
 }
 
 /* FAQ Section */
 .faq-section {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 3rem;
-  margin-bottom: 4rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.faq-section h2 {
-  text-align: center;
-  color: white;
-  font-size: 2.5rem;
-  margin-bottom: 3rem;
-  font-weight: 700;
+  padding: 4rem 0;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
 }
 
 .faq-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
-.faq-item {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+.faq-card {
+  background: rgba(249, 250, 251, 0.8);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  border-radius: 1rem;
   padding: 2rem;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.faq-item:hover {
-  transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.15);
+.faq-card:hover {
+  background: rgba(147, 51, 234, 0.02);
+  border-color: rgba(147, 51, 234, 0.1);
+  transform: translateY(-2px);
 }
 
-.faq-icon {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.faq-item h4 {
-  color: #FFD700;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
+.faq-question {
+  font-size: 1.125rem;
   font-weight: 600;
+  color: #111827;
+  margin: 0 0 1rem 0;
 }
 
-.faq-item p {
-  color: rgba(255, 255, 255, 0.9);
+.faq-answer {
+  color: #6b7280;
   line-height: 1.6;
   margin: 0;
 }
 
 /* Hours Section */
 .hours-section {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 20px;
-  padding: 2.5rem;
-  margin-bottom: 4rem;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.hours-section h3 {
-  color: white;
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
-  font-weight: 700;
+  padding: 4rem 0;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
 }
 
 .hours-grid {
@@ -337,134 +347,141 @@ export default {
   gap: 1.5rem;
 }
 
-.hours-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
+.hours-card {
+  background: white;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.hours-card:hover {
+  background: rgba(147, 51, 234, 0.02);
+  border-color: rgba(147, 51, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.hours-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 0.75rem 0;
+}
+
+.hours-time {
+  color: #9333ea;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.hours-note {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
 }
 
 /* CTA Section */
 .cta-section {
-  text-align: center;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
-  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.05), rgba(59, 130, 246, 0.05));
+  border: 1px solid rgba(147, 51, 234, 0.1);
+  border-radius: 1.5rem;
   padding: 4rem 2rem;
-  border: 2px solid rgba(255, 215, 0, 0.3);
+  margin: 4rem 0;
 }
 
-.cta-section h3 {
+.cta-content {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 1rem 0;
+}
+
+.cta-description {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin: 0 0 2rem 0;
+  line-height: 1.6;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
-  font-weight: 700;
-}
-
-.cta-section p {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-}
-
-.cta-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #8B5CF6;
-  padding: 1.25rem 2.5rem;
-  border-radius: 50px;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
   text-decoration: none;
-  font-weight: 700;
-  font-size: 1.1rem;
-  transition: all 0.4s ease;
-  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: inline-block;
 }
 
-.cta-button:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
-  background: linear-gradient(135deg, #FFA500, #FF8C00);
+.btn-primary:hover {
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+}
+
 @media (max-width: 768px) {
   .hero-section {
-    padding: 5rem 1rem 3rem;
+    padding: 4rem 0 3rem;
   }
   
-  .hero-section h1 {
+  .hero-title {
     font-size: 2.5rem;
   }
   
   .hero-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.125rem;
   }
   
-  .contact-container {
-    padding: 0 1rem 3rem;
+  .intro-section,
+  .contact-section,
+  .faq-section,
+  .hours-section {
+    padding: 3rem 0;
   }
   
-  .description-section {
-    padding: 2rem;
-  }
-  
-  .description-section p {
-    font-size: 1rem;
-  }
-  
-  .contact-buttons {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    display: grid;
-  }
-  
-  .btn {
-    padding: 1.5rem;
-  }
-  
-  .btn span {
-    font-size: 1.1rem;
-  }
-  
-  .faq-section {
-    padding: 2rem;
-  }
-  
-  .faq-section h2 {
+  .section-title {
     font-size: 2rem;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
   }
   
   .faq-grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
   }
   
   .hours-grid {
     grid-template-columns: 1fr;
   }
-  
-  .cta-section {
-    padding: 3rem 1.5rem;
-  }
-  
-  .cta-section h3 {
-    font-size: 1.8rem;
-  }
-  
-  .cta-button {
-    padding: 1rem 2rem;
-    font-size: 1rem;
-  }
 }
 
 @media (max-width: 480px) {
-  .hero-section h1 {
+  .main-container {
+    padding: 0 1rem;
+  }
+  
+  .hero-container {
+    padding: 0 1rem;
+  }
+  
+  .hero-title {
     font-size: 2rem;
   }
   
@@ -472,28 +489,38 @@ export default {
     font-size: 1rem;
   }
   
-  .description-section {
-    padding: 1.5rem;
-  }
-  
-  .btn {
-    padding: 1.25rem;
-  }
-  
-  .faq-section {
-    padding: 1.5rem;
-  }
-  
-  .faq-item {
-    padding: 1.5rem;
-  }
-  
+  .intro-section,
+  .contact-section,
+  .faq-section,
   .hours-section {
-    padding: 2rem;
+    padding: 2rem 0;
+  }
+  
+  .section-title {
+    font-size: 1.75rem;
+  }
+  
+  .intro-content p {
+    font-size: 1rem;
+  }
+  
+  .contact-card,
+  .faq-card,
+  .hours-card {
+    padding: 1.5rem;
   }
   
   .cta-section {
-    padding: 2rem 1rem;
+    padding: 3rem 1.5rem;
+    margin: 3rem 0;
+  }
+  
+  .cta-title {
+    font-size: 1.5rem;
+  }
+  
+  .cta-description {
+    font-size: 1rem;
   }
 }
 </style>

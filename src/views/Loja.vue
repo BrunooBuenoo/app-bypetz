@@ -1,200 +1,176 @@
 <template>
   <div class="loja-page">
+    <!-- Seção de Patrocinadores -->
+    <div class="sponsors-section">
+      <div class="sponsors-container">
+        <h2 class="sponsors-title">Nossos Parceiros</h2>
+        <div class="sponsors-grid">
+          <div class="sponsor-card">
+            <div class="sponsor-placeholder">Dog Chow</div>
+          </div>
+          <div class="sponsor-card">
+            <div class="sponsor-placeholder">Casa das Rações</div>
+          </div>
+          <div class="sponsor-card">
+            <div class="sponsor-placeholder">Whiskas</div>
+          </div>
+          <div class="sponsor-card">
+            <div class="sponsor-placeholder">Royal Canin</div>
+          </div>
+          <div class="sponsor-card">
+            <div class="sponsor-placeholder">Pedigree</div>
+          </div>
+          <div class="sponsor-card">
+            <div class="sponsor-placeholder">Purina</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Container Principal -->
     <div class="loja-container">
       <!-- Header da Loja -->
       <div class="loja-header">
-        <h1>
-          <i class="fas fa-store"></i>
-        </h1>
+        <div class="header-content">
+          <p class="page-subtitle">Encontre os melhores produtos para seu pet</p>
+        </div>
         
         <!-- Mobile Filter Button -->
         <button class="mobile-filter-btn" @click="toggleMobileFilters">
-          <i class="fas fa-filter"></i>
           Filtros
         </button>
-        
-        <!-- Results Info -->
-        <div class="results-info">
-          <span>{{ filteredProducts.length }} produtos encontrados</span>
-          <select v-model="sortOrder" class="sort-select">
-            <option value="relevance">Ordenar por: Relevância</option>
-            <option value="name-asc">Nome A-Z</option>
-            <option value="name-desc">Nome Z-A</option>
-            <option value="price-asc">Menor Preço</option>
-            <option value="price-desc">Maior Preço</option>
-          </select>
-        </div>
       </div>
 
       <div class="loja-content">
         <!-- Desktop Sidebar -->
         <aside class="desktop-sidebar">
           <div class="sidebar-content">
-            <h3 class="sidebar-title">Categorias</h3>
-            
-            <div class="categories-list">
-              <div 
-                v-for="categoria in categorias" 
-                :key="categoria.id"
-                class="category-item"
-              >
+            <!-- Categorias -->
+            <div class="filter-section">
+              <h3 class="filter-title">Categorias</h3>
+              <div class="categories-list">
                 <div 
-                  class="category-header"
-                  @click="toggleCategory(categoria.id)"
-                  :class="{ active: selectedCategory === categoria.id }"
-                >
-                  <label class="category-checkbox" @click.prevent="handleCategoryClick(categoria.id)">
-                    <input 
-                      type="radio" 
-                      :value="categoria.id" 
-                      :checked="selectedCategory === categoria.id"
-                      readonly
-                    />
-                    <span class="checkmark"></span>
-                    <span class="category-name">{{ categoria.nome }}</span>
-                    <span class="product-count">({{ getCategoryProductCount(categoria.id) }})</span>
-                  </label>
-                  
-                  <button 
-                    v-if="categoria.subcategorias && categoria.subcategorias.length > 0"
-                    class="expand-btn"
-                    :class="{ expanded: expandedCategories.includes(categoria.id) }"
-                    @click.stop
-                  >
-                    <i class="fas fa-chevron-down"></i>
-                  </button>
-                </div>
-                
-                <!-- Subcategorias -->
-                <div 
-                  v-if="categoria.subcategorias && categoria.subcategorias.length > 0"
-                  class="subcategories"
-                  :class="{ expanded: expandedCategories.includes(categoria.id) }"
+                  v-for="categoria in categorias" 
+                  :key="categoria.id"
+                  class="category-item"
                 >
                   <div 
-                    v-for="sub in categoria.subcategorias" 
-                    :key="sub.id"
-                    class="subcategory-item"
+                    class="category-header"
+                    @click="toggleCategory(categoria.id)"
                   >
-                    <label class="subcategory-checkbox" 
-                          :class="{ active: String(selectedSubcategory) === String(sub.id) }"
+                    <label class="category-label" @click.prevent="handleCategoryClick(categoria.id)">
+                      <input 
+                        type="radio" 
+                        :value="categoria.id" 
+                        :checked="selectedCategory === categoria.id"
+                        readonly
+                      />
+                      <span class="category-name">{{ categoria.nome }}</span>
+                      <span class="product-count">({{ getCategoryProductCount(categoria.id) }})</span>
+                    </label>
+                    
+                    <button 
+                      v-if="categoria.subcategorias && categoria.subcategorias.length > 0"
+                      class="expand-btn"
+                      :class="{ expanded: expandedCategories.includes(categoria.id) }"
+                      @click.stop
                     >
+                      ▼
+                    </button>
+                  </div>
+                  
+                  <!-- Subcategorias -->
+                  <div 
+                    v-if="categoria.subcategorias && categoria.subcategorias.length > 0"
+                    class="subcategories"
+                    :class="{ expanded: expandedCategories.includes(categoria.id) }"
+                  >
+                    <div 
+                      v-for="sub in categoria.subcategorias" 
+                      :key="sub.id"
+                      class="subcategory-item"
+                    >
+                      <label class="subcategory-label" 
+                            :class="{ active: String(selectedSubcategory) === String(sub.id) }"
+                            @click="handleSubcategoryClick(sub.id)"
+                      >
                         <input 
                           type="radio" 
                           :value="sub.id" 
                           :checked="String(selectedSubcategory) === String(sub.id)"
-                          @click="handleSubcategoryClick(sub.id)"
                           readonly
                         />
-                        <span class="checkmark"></span>
                         <span class="subcategory-name">{{ sub.nome }}</span>
                         <span class="product-count">({{ getSubcategoryProductCount(sub.id) }})</span>
-                    </label>
+                      </label>
+                    </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <!-- Filtro de Preço -->
+            <div class="filter-section">
+              <h3 class="filter-title">Faixa de Preço</h3>
+              <div class="price-filter">
+                <div class="price-inputs">
+                  <div class="price-input-group">
+                    <label>Mínimo</label>
+                    <input 
+                      type="number" 
+                      v-model="priceMin" 
+                      placeholder="0"
+                      class="price-input"
+                      min="0"
+                    />
+                  </div>
+                  <div class="price-separator">até</div>
+                  <div class="price-input-group">
+                    <label>Máximo</label>
+                    <input 
+                      type="number" 
+                      v-model="priceMax" 
+                      placeholder="1000"
+                      class="price-input"
+                      min="0"
+                    />
+                  </div>
+                </div>
+                <button @click="applyPriceFilter" class="apply-price-btn">
+                  Aplicar
+                </button>
               </div>
             </div>
             
             <!-- Botão Limpar Filtros -->
             <button 
-              v-if="selectedCategory || selectedSubcategory"
-              @click="clearFilters" 
+              v-if="selectedCategory || selectedSubcategory || priceMin || priceMax"
+              @click="clearAllFilters" 
               class="clear-filters-btn"
             >
-              <i class="fas fa-times"></i>
-              Limpar Filtros
+              Limpar Todos os Filtros
             </button>
           </div>
         </aside>
 
-        <!-- Mobile Filters Modal -->
-        <div v-if="showMobileFilters" class="mobile-filters-overlay" @click="closeMobileFilters">
-          <div class="mobile-filters-content" @click.stop>
-            <div class="mobile-filters-header">
-              <h3>Filtros</h3>
-              <button @click="closeMobileFilters" class="close-btn">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            
-            <div class="mobile-categories-list">
-              <div 
-                v-for="categoria in categorias" 
-                :key="categoria.id"
-                class="mobile-category-item"
-              >
-                <div 
-                  class="mobile-category-header"
-                  @click="toggleMobileCategory(categoria.id)"
-                >
-                  <label class="mobile-category-checkbox" @click.stop="handleCategoryClick(categoria.id)">
-                    <input 
-                      type="radio" 
-                      :value="categoria.id" 
-                      :checked="selectedCategory === categoria.id"
-                      readonly
-                    />
-                    <span class="mobile-checkmark"></span>
-                    <span class="mobile-category-name">{{ categoria.nome }}</span>
-                    <span class="mobile-product-count">({{ getCategoryProductCount(categoria.id) }})</span>
-                  </label>
-                  
-                  <button 
-                    v-if="categoria.subcategorias && categoria.subcategorias.length > 0"
-                    class="mobile-expand-btn"
-                    :class="{ expanded: expandedMobileCategories.includes(categoria.id) }"
-                  >
-                    <i class="fas fa-chevron-down"></i>
-                  </button>
-                </div>
-                
-                <!-- Mobile Subcategorias -->
-                <div 
-                  v-if="categoria.subcategorias && categoria.subcategorias.length > 0"
-                  class="mobile-subcategories"
-                  :class="{ expanded: expandedMobileCategories.includes(categoria.id) }"
-                >
-                  <div 
-                      v-for="sub in categoria.subcategorias" 
-                      :key="sub.id"
-                      class="mobile-subcategory-item"
-                    >
-                    <label class="subcategory-checkbox"
-                          :class="{ active: String(selectedSubcategory) === String(sub.id) }"
-                    >
-                      <input 
-                        type="radio" 
-                        :value="sub.id" 
-                        :checked="String(selectedSubcategory) === String(sub.id)"
-                        @click="handleSubcategoryClick(sub.id)"
-                        readonly
-                      />
-                      <span class="checkmark"></span>
-                      <span class="subcategory-name">{{ sub.nome }}</span>
-                      <span class="product-count">({{ getSubcategoryProductCount(sub.id) }})</span>
-                  </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="mobile-filters-actions">
-              <button 
-                v-if="selectedCategory || selectedSubcategory"
-                @click="clearFilters" 
-                class="mobile-clear-btn"
-              >
-                Limpar Filtros
-              </button>
-              <button @click="closeMobileFilters" class="mobile-apply-btn">
-                Aplicar Filtros
-              </button>
-            </div>
-          </div>
-        </div>
-
         <!-- Main Content -->
         <main class="main-content">
+          <!-- Results Info e Sort -->
+          <div class="content-header">
+            <div class="results-info">
+              <span class="results-count">{{ filteredProducts.length }} produtos encontrados</span>
+            </div>
+            <div class="sort-section">
+              <select v-model="sortOrder" class="sort-select">
+                <option value="relevance">Ordenar por: Relevância</option>
+                <option value="name-asc">Nome A-Z</option>
+                <option value="name-desc">Nome Z-A</option>
+                <option value="price-asc">Menor Preço</option>
+                <option value="price-desc">Maior Preço</option>
+              </select>
+            </div>
+          </div>
+
           <!-- Loading -->
           <div v-if="loading" class="loading-container">
             <div class="loading-spinner"></div>
@@ -214,16 +190,130 @@
 
           <!-- Sem produtos -->
           <div v-else class="no-products">
-            <div class="no-products-icon">🛍️</div>
-            <h3>Nenhum produto encontrado</h3>
-            <p>Tente selecionar uma categoria diferente</p>
+            <div class="no-products-content">
+              <div class="no-products-icon">🛍️</div>
+              <h3>Nenhum produto encontrado</h3>
+              <p>Tente ajustar os filtros ou selecionar uma categoria diferente</p>
+              <button @click="clearAllFilters" class="reset-filters-btn">
+                Ver Todos os Produtos
+              </button>
+            </div>
           </div>
         </main>
       </div>
 
+      <!-- Mobile Filters Modal -->
+      <div v-if="showMobileFilters" class="mobile-filters-overlay" @click="closeMobileFilters">
+        <div class="mobile-filters-content" @click.stop>
+          <div class="mobile-filters-header">
+            <h3>Filtros</h3>
+            <button @click="closeMobileFilters" class="close-btn">✕</button>
+          </div>
+          
+          <div class="mobile-filters-body">
+            <!-- Categorias Mobile -->
+            <div class="mobile-filter-section">
+              <h4>Categorias</h4>
+              <div class="mobile-categories-list">
+                <div 
+                  v-for="categoria in categorias" 
+                  :key="categoria.id"
+                  class="mobile-category-item"
+                >
+                  <div 
+                    class="mobile-category-header"
+                    @click="toggleMobileCategory(categoria.id)"
+                  >
+                    <label class="mobile-category-label" @click.stop="handleCategoryClick(categoria.id)">
+                      <input 
+                        type="radio" 
+                        :value="categoria.id" 
+                        :checked="selectedCategory === categoria.id"
+                        readonly
+                      />
+                      <span class="mobile-category-name">{{ categoria.nome }}</span>
+                      <span class="mobile-product-count">({{ getCategoryProductCount(categoria.id) }})</span>
+                    </label>
+                    
+                    <button 
+                      v-if="categoria.subcategorias && categoria.subcategorias.length > 0"
+                      class="mobile-expand-btn"
+                      :class="{ expanded: expandedMobileCategories.includes(categoria.id) }"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                  
+                  <!-- Mobile Subcategorias -->
+                  <div 
+                    v-if="categoria.subcategorias && categoria.subcategorias.length > 0"
+                    class="mobile-subcategories"
+                    :class="{ expanded: expandedMobileCategories.includes(categoria.id) }"
+                  >
+                    <div 
+                      v-for="sub in categoria.subcategorias" 
+                      :key="sub.id"
+                      class="mobile-subcategory-item"
+                    >
+                      <label class="mobile-subcategory-label"
+                            :class="{ active: String(selectedSubcategory) === String(sub.id) }"
+                            @click="handleSubcategoryClick(sub.id)"
+                      >
+                        <input 
+                          type="radio" 
+                          :value="sub.id" 
+                          :checked="String(selectedSubcategory) === String(sub.id)"
+                          readonly
+                        />
+                        <span class="mobile-subcategory-name">{{ sub.nome }}</span>
+                        <span class="mobile-product-count">({{ getSubcategoryProductCount(sub.id) }})</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filtro de Preço Mobile -->
+            <div class="mobile-filter-section">
+              <h4>Faixa de Preço</h4>
+              <div class="mobile-price-filter">
+                <div class="mobile-price-inputs">
+                  <input 
+                    type="number" 
+                    v-model="priceMin" 
+                    placeholder="Preço mínimo"
+                    class="mobile-price-input"
+                  />
+                  <input 
+                    type="number" 
+                    v-model="priceMax" 
+                    placeholder="Preço máximo"
+                    class="mobile-price-input"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mobile-filters-actions">
+            <button 
+              v-if="selectedCategory || selectedSubcategory || priceMin || priceMax"
+              @click="clearAllFilters" 
+              class="mobile-clear-btn"
+            >
+              Limpar Filtros
+            </button>
+            <button @click="closeMobileFilters" class="mobile-apply-btn">
+              Aplicar Filtros
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Botão do Carrinho Fixo -->
       <router-link to="/carrinho" class="cart-button-fixed" v-if="cartItemsCount > 0">
-        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-icon">🛒</span>
         <span class="cart-count">{{ cartItemsCount }}</span>
         <span class="cart-text">Carrinho</span>
       </router-link>
@@ -238,8 +328,8 @@
       />
 
       <!-- Mensagem de sucesso -->
-      <div v-if="successMessage" class="alert alert-success">
-        <i class="fas fa-check-circle"></i>
+      <div v-if="successMessage" class="success-alert">
+        <span class="success-icon">✓</span>
         {{ successMessage }}
       </div>
     </div>
@@ -255,7 +345,6 @@ import { useCartStore } from '../stores/cartStore'
 import ProductCard from '../components/ProductCard.vue'
 import ProductModal from '../components/ProductModal.vue'
 import RodapeSite from '../components/RodapeSite.vue'
-
 
 export default {
   name: 'LojaView',
@@ -279,23 +368,34 @@ export default {
     const expandedMobileCategories = ref([])
     const showProductModal = ref(false)
     const selectedProduct = ref(null)
+    const priceMin = ref('')
+    const priceMax = ref('')
 
     const filteredProducts = computed(() => {
-        let filtered = produtos.value
+      let filtered = produtos.value
 
-        if (selectedSubcategory.value) {
-          filtered = filtered.filter(produto =>
-            String(produto.subcategoriaId) === String(selectedSubcategory.value)
-          )
-        } else if (selectedCategory.value) {
-          filtered = filtered.filter(produto =>
-            String(produto.categoriaId) === String(selectedCategory.value)
-          )
-        }
+      // Filtro por categoria/subcategoria
+      if (selectedSubcategory.value) {
+        filtered = filtered.filter(produto =>
+          String(produto.subcategoriaId) === String(selectedSubcategory.value)
+        )
+      } else if (selectedCategory.value) {
+        filtered = filtered.filter(produto =>
+          String(produto.categoriaId) === String(selectedCategory.value)
+        )
+      }
 
-        return filtered
-      })
+      // Filtro por preço
+      if (priceMin.value !== '' && priceMin.value !== null) {
+        filtered = filtered.filter(produto => produto.preco >= Number(priceMin.value))
+      }
+      
+      if (priceMax.value !== '' && priceMax.value !== null) {
+        filtered = filtered.filter(produto => produto.preco <= Number(priceMax.value))
+      }
 
+      return filtered
+    })
 
     const sortedProducts = computed(() => {
       const filtered = [...filteredProducts.value]
@@ -328,7 +428,6 @@ export default {
       ).length
     }
 
-
     const toggleCategory = (categoryId) => {
       const index = expandedCategories.value.indexOf(categoryId)
       if (index > -1) {
@@ -347,29 +446,24 @@ export default {
       }
     }
 
-    // Função para lidar com clique na categoria
+    // Função para lidar com clique na categoria (sua lógica original)
     const handleCategoryClick = (categoryId) => {
-      // Se clicou na categoria já selecionada, desmarca
       if (selectedCategory.value === categoryId && !selectedSubcategory.value) {
         selectedCategory.value = ''
         selectedSubcategory.value = ''
       } else {
-        // Seleciona nova categoria e limpa subcategoria
         selectedCategory.value = categoryId
         selectedSubcategory.value = ''
       }
     }
 
-    // Função para lidar com clique na subcategoria
+    // Função para lidar com clique na subcategoria (sua lógica original)
     const handleSubcategoryClick = (subcategoryId) => {
-      // Se clicou na subcategoria já selecionada, desmarca
       if (selectedSubcategory.value === subcategoryId) {
         selectedSubcategory.value = ''
         selectedCategory.value = ''
       } else {
-        // Seleciona nova subcategoria
         selectedSubcategory.value = subcategoryId
-        // Encontrar e selecionar categoria pai (manter visualmente)
         const subcategoria = subcategorias.value.find(s => s.id === subcategoryId)
         if (subcategoria) {
           selectedCategory.value = subcategoria.categoriaId
@@ -377,9 +471,15 @@ export default {
       }
     }
 
-    const clearFilters = () => {
+    const applyPriceFilter = () => {
+      // O filtro é aplicado automaticamente via computed
+    }
+
+    const clearAllFilters = () => {
       selectedCategory.value = ''
       selectedSubcategory.value = ''
+      priceMin.value = ''
+      priceMax.value = ''
     }
 
     const toggleMobileFilters = () => {
@@ -432,7 +532,6 @@ export default {
         
         subcategorias.value = fetchedSubcategorias
         
-        // Associar subcategorias às categorias
         categorias.value.forEach(categoria => {
           categoria.subcategorias = fetchedSubcategorias.filter(sub => sub.categoriaId === categoria.id)
         })
@@ -464,23 +563,18 @@ export default {
       }
     }
 
-    // Função atualizada para lidar com o novo formato do evento
     const addToCart = (data) => {
       try {
-        // Verifica se é o formato antigo (só produto) ou novo (objeto com produto e quantidade)
         let produto, quantidade
         
         if (data.produto && data.quantidade) {
-          // Novo formato: { produto, quantidade }
           produto = data.produto
           quantidade = data.quantidade
         } else {
-          // Formato antigo: só o produto
           produto = data
           quantidade = 1
         }
 
-        // Adiciona ao carrinho usando o store
         for (let i = 0; i < quantidade; i++) {
           cartStore.addItem(produto)
         }
@@ -513,26 +607,19 @@ export default {
     }
 
     const openProductModal = (produto) => {
-      console.log('Função openProductModal chamada com produto:', produto.nome) // Debug
       selectedProduct.value = produto
       showProductModal.value = true
-      // Previne scroll do body quando modal está aberto
       document.body.style.overflow = 'hidden'
     }
 
     const closeProductModal = () => {
-      console.log('Fechando modal') // Debug
       showProductModal.value = false
       selectedProduct.value = null
-      // Restaura scroll do body
       document.body.style.overflow = 'auto'
     }
 
-    // Função atualizada para lidar com o evento do modal
     const handleModalAddToCart = (data) => {
       addToCart(data)
-      // Opcional: fechar modal após adicionar
-      // closeProductModal()
     }
 
     onMounted(() => {
@@ -554,11 +641,13 @@ export default {
       showMobileFilters,
       expandedCategories,
       expandedMobileCategories,
+      priceMin,
+      priceMax,
       getCategoryProductCount,
       getSubcategoryProductCount,
       toggleCategory,
       toggleMobileCategory,
-      clearFilters,
+      clearAllFilters,
       toggleMobileFilters,
       closeMobileFilters,
       addToCart,
@@ -569,28 +658,81 @@ export default {
       handleModalAddToCart,
       handleCategoryClick,
       handleSubcategoryClick,
+      applyPriceFilter
     }
   }
 }
 </script>
 
 <style scoped>
-/* Mantendo todos os estilos originais */
 .loja-page {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: #ffffff;
 }
 
+/* Seção de Patrocinadores */
+.sponsors-section {
+  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
+  padding: 3rem 0;
+  width: 100%;
+}
+
+.sponsors-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.sponsors-title {
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 2rem 0;
+}
+
+.sponsors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.sponsor-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  min-height: 80px;
+}
+
+.sponsor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.sponsor-placeholder {
+  color: #9333ea;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Container Principal */
 .loja-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0;
 }
 
 .loja-header {
   background: white;
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid #e9ecef;
+  padding: 2rem;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -598,72 +740,76 @@ export default {
   gap: 1rem;
 }
 
-.loja-header h1 {
-  color: #8C52FF;
-  font-size: 1.8rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.header-content {
+  flex: 1;
+}
+
+.page-title {
+  color: #111827;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.page-subtitle {
+  color: #6b7280;
+  font-size: 1.125rem;
   margin: 0;
+  text-align: center;
 }
 
 .mobile-filter-btn {
   display: none;
-  background: #8C52FF;
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
   border: none;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
-  gap: 0.5rem;
-  align-items: center;
+  transition: all 0.3s ease;
 }
 
-.results-info {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.sort-select {
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: white;
-  color: #333;
-  font-size: 0.9rem;
+.mobile-filter-btn:hover {
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
+  transform: translateY(-2px);
 }
 
 .loja-content {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  min-height: calc(100vh - 120px);
+  grid-template-columns: 300px 1fr;
+  min-height: calc(100vh - 200px);
 }
 
 /* Desktop Sidebar */
 .desktop-sidebar {
   background: white;
-  border-right: 1px solid #e9ecef;
-  padding: 2rem 1.5rem;
-  overflow-y: auto;
+  border-right: 1px solid rgba(229, 231, 235, 0.8);
+  padding: 2rem;
 }
 
 .sidebar-content {
   position: sticky;
   top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.sidebar-title {
-  color: #333;
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
+.filter-section {
+  background: white;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.filter-title {
+  color: #111827;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #8C52FF;
+  border-bottom: 2px solid #9333ea;
 }
 
 .categories-list {
@@ -673,8 +819,12 @@ export default {
 }
 
 .category-item {
-  border-bottom: 1px solid #f1f3f4;
+  border-bottom: 1px solid rgba(243, 244, 246, 0.8);
   padding-bottom: 0.5rem;
+}
+
+.category-item:last-child {
+  border-bottom: none;
 }
 
 .category-header {
@@ -685,7 +835,7 @@ export default {
   padding: 0.5rem 0;
 }
 
-.category-checkbox {
+.category-label {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -693,67 +843,18 @@ export default {
   flex: 1;
 }
 
-.category-checkbox input[type="radio"] {
-  display: none;
-}
-
-.checkmark {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #ddd;
-  border-radius: 3px;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.subcategory-checkbox.active {
-  font-weight: 600;
-  color: #8C52FF;
-}
-
-.subcategory-checkbox.active .subcategory-name {
-  color: #8C52FF;
-  font-weight: 600;
-}
-
-.subcategory-checkbox.active .checkmark {
-  border-color: #8C52FF;
-  background: #8C52FF;
-}
-
-.subcategory-checkbox.active .checkmark::after {
-  content: '✓';
-  position: absolute;
-  top: -2px;
-  left: 3px;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.category-checkbox input[type="radio"]:checked + .checkmark {
-  background: #8C52FF;
-  border-color: #8C52FF;
-}
-
-.category-checkbox input[type="radio"]:checked + .checkmark::after {
-  content: '✓';
-  position: absolute;
-  top: -2px;
-  left: 2px;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
+.category-label input[type="radio"] {
+  accent-color: #9333ea;
 }
 
 .category-name {
-  color: #333;
+  color: #374151;
   font-weight: 500;
   font-size: 0.95rem;
 }
 
 .product-count {
-  color: #666;
+  color: #6b7280;
   font-size: 0.85rem;
   margin-left: auto;
 }
@@ -761,10 +862,11 @@ export default {
 .expand-btn {
   background: none;
   border: none;
-  color: #666;
+  color: #6b7280;
   cursor: pointer;
   padding: 0.25rem;
   transition: transform 0.3s ease;
+  font-size: 0.75rem;
 }
 
 .expand-btn.expanded {
@@ -775,7 +877,7 @@ export default {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
-  margin-left: 1rem;
+  margin-left: 1.5rem;
 }
 
 .subcategories.expanded {
@@ -787,15 +889,25 @@ export default {
   padding: 0.25rem 0;
 }
 
-.subcategory-checkbox {
+.subcategory-label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.subcategory-checkbox input[type="radio"] {
-  display: none;
+.subcategory-label:hover {
+  color: #9333ea;
+}
+
+.subcategory-label.active {
+  color: #9333ea;
+  font-weight: 600;
+}
+
+.subcategory-label input[type="radio"] {
+  accent-color: #9333ea;
 }
 
 .subcategory-name {
@@ -803,24 +915,215 @@ export default {
   font-size: 0.9rem;
 }
 
-.clear-filters-btn {
-  background: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 1.5rem;
-  width: 100%;
+.subcategory-label.active .subcategory-name {
+  color: #9333ea;
+}
+
+/* Filtro de Preço - CORRIGIDO */
+.price-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.price-inputs {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5rem;
 }
 
+.price-input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0; /* Permite que o flex item encolha */
+}
+
+.price-input-group label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.price-input {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  min-width: 0; /* Permite que o input encolha */
+  box-sizing: border-box;
+}
+
+.price-input:focus {
+  outline: none;
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.price-separator {
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-top: 1rem;
+  flex-shrink: 0;
+}
+
+.apply-price-btn {
+  background: linear-gradient(to right, #9333ea, #2563eb);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.apply-price-btn:hover {
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
+  transform: translateY(-1px);
+}
+
+.clear-filters-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
 .clear-filters-btn:hover {
-  background: #c82333;
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+/* Main Content */
+.main-content {
+  padding: 2rem;
+  background: #ffffff;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.results-info {
+  display: flex;
+  align-items: center;
+}
+
+.results-count {
+  color: #6b7280;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.sort-section {
+  display: flex;
+  align-items: center;
+}
+
+.sort-select {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 0.5rem;
+  background: white;
+  color: #374151;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(147, 51, 234, 0.3);
+  border-top: 4px solid #9333ea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+.no-products {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.no-products-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.no-products-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.no-products h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.5rem 0;
+}
+
+.no-products p {
+  color: #6b7280;
+  margin: 0 0 1.5rem 0;
+}
+
+.reset-filters-btn {
+  background: linear-gradient(to right, #9333ea, #2563eb);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reset-filters-btn:hover {
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
+  transform: translateY(-2px);
 }
 
 /* Mobile Filters */
@@ -839,7 +1142,8 @@ export default {
   position: absolute;
   top: 0;
   right: 0;
-  width: 320px;
+  width: 100%;
+  max-width: 400px;
   height: 100vh;
   background: white;
   display: flex;
@@ -852,12 +1156,16 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .mobile-filters-header h3 {
-  color: #333;
-  font-size: 1.2rem;
+  color: #111827;
+  font-size: 1.25rem;
   font-weight: 700;
   margin: 0;
 }
@@ -865,21 +1173,51 @@ export default {
 .close-btn {
   background: none;
   border: none;
-  color: #666;
-  font-size: 1.2rem;
+  color: #6b7280;
+  font-size: 1.5rem;
   cursor: pointer;
   padding: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #374151;
+}
+
+.mobile-filters-body {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.mobile-filter-section {
+  background: rgba(249, 250, 251, 0.5);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.mobile-filter-section h4 {
+  color: #111827;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
 }
 
 .mobile-categories-list {
-  flex: 1;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .mobile-category-item {
-  border-bottom: 1px solid #f1f3f4;
-  padding-bottom: 0.75rem;
-  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  padding-bottom: 1rem;
+}
+
+.mobile-category-item:last-child {
+  border-bottom: none;
 }
 
 .mobile-category-header {
@@ -890,7 +1228,7 @@ export default {
   padding: 0.5rem 0;
 }
 
-.mobile-category-checkbox {
+.mobile-category-label {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -898,53 +1236,30 @@ export default {
   flex: 1;
 }
 
-.mobile-category-checkbox input[type="radio"] {
-  display: none;
-}
-
-.mobile-checkmark {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #ddd;
-  border-radius: 3px;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.mobile-category-checkbox input[type="radio"]:checked + .mobile-checkmark {
-  background: #8C52FF;
-  border-color: #8C52FF;
-}
-
-.mobile-category-checkbox input[type="radio"]:checked + .mobile-checkmark::after {
-  content: '✓';
-  position: absolute;
-  top: -2px;
-  left: 3px;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
+.mobile-category-label input[type="radio"] {
+  accent-color: #9333ea;
 }
 
 .mobile-category-name {
-  color: #333;
+  color: #374151;
   font-weight: 500;
   font-size: 1rem;
 }
 
 .mobile-product-count {
-  color: #666;
-  font-size: 0.9rem;
+  color: #6b7280;
+  font-size: 0.875rem;
   margin-left: auto;
 }
 
 .mobile-expand-btn {
   background: none;
   border: none;
-  color: #666;
+  color: #6b7280;
   cursor: pointer;
   padding: 0.5rem;
   transition: transform 0.3s ease;
+  font-size: 0.875rem;
 }
 
 .mobile-expand-btn.expanded {
@@ -960,22 +1275,32 @@ export default {
 
 .mobile-subcategories.expanded {
   max-height: 500px;
-  padding-top: 0.75rem;
+  padding-top: 1rem;
 }
 
 .mobile-subcategory-item {
   padding: 0.5rem 0;
 }
 
-.mobile-subcategory-checkbox {
+.mobile-subcategory-label {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.mobile-subcategory-checkbox input[type="radio"] {
-  display: none;
+.mobile-subcategory-label:hover {
+  color: #9333ea;
+}
+
+.mobile-subcategory-label.active {
+  color: #9333ea;
+  font-weight: 600;
+}
+
+.mobile-subcategory-label input[type="radio"] {
+  accent-color: #9333ea;
 }
 
 .mobile-subcategory-name {
@@ -983,100 +1308,90 @@ export default {
   font-size: 0.95rem;
 }
 
-.mobile-filters-actions {
-  padding: 1.5rem;
-  border-top: 1px solid #e9ecef;
+.mobile-subcategory-label.active .mobile-subcategory-name {
+  color: #9333ea;
+}
+
+.mobile-price-filter {
   display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
+.mobile-price-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-price-input {
+  padding: 0.75rem;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.mobile-price-input:focus {
+  outline: none;
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.mobile-filters-actions {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(229, 231, 235, 0.8);
+  display: flex;
+  gap: 1rem;
+  background: white;
+  position: sticky;
+  bottom: 0;
+}
+
 .mobile-clear-btn {
-  background: #dc3545;
+  background: #dc2626;
   color: white;
   border: none;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
   flex: 1;
+  transition: all 0.3s ease;
+}
+
+.mobile-clear-btn:hover {
+  background: #b91c1c;
 }
 
 .mobile-apply-btn {
-  background: #8C52FF;
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
   border: none;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
   flex: 2;
+  transition: all 0.3s ease;
 }
 
-/* Main Content */
-.main-content {
-  padding: 2rem;
-  background: #f8f9fa;
+.mobile-apply-btn:hover {
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
 }
 
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem;
-  color: #666;
-}
-
-.loading-spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid rgba(140, 82, 255, 0.3);
-  border-top: 4px solid #8C52FF;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  align-items: start;
-}
-
-.no-products {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: #666;
-}
-
-.no-products-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
-
-.no-products h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
+/* Carrinho Fixo */
 .cart-button-fixed {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: #0077ff;
+  background: linear-gradient(to right, #9333ea, #2563eb);
   color: white;
   padding: 1rem 1.5rem;
   border-radius: 50px;
   text-decoration: none;
   font-weight: 700;
-  box-shadow: 0 8px 25px rgba(140, 82, 255, 0.4);
+  box-shadow: 0 8px 25px rgba(147, 51, 234, 0.4);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -1085,13 +1400,17 @@ export default {
 }
 
 .cart-button-fixed:hover {
-  background: #01037ce5;
+  background: linear-gradient(to right, #7c3aed, #1d4ed8);
   transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(147, 51, 234, 0.5);
+}
+
+.cart-icon {
+  font-size: 1.25rem;
 }
 
 .cart-count {
-  background: #FFD700;
-  color: #8C52FF;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -1106,60 +1425,97 @@ export default {
   font-size: 1rem;
 }
 
-.alert {
+/* Mensagem de Sucesso */
+.success-alert {
   position: fixed;
   top: 2rem;
   right: 2rem;
+  background: rgba(34, 197, 94, 0.95);
+  color: white;
   padding: 1rem 2rem;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   font-weight: 600;
   z-index: 10000;
   max-width: 400px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
 }
 
-.alert-success {
-  background: rgba(34, 197, 94, 0.95);
-  color: white;
-  border: 1px solid #22C55E;
+.success-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 800;
 }
 
-/* Tablet */
+/* Responsividade */
 @media (max-width: 1024px) {
+  .sponsors-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+  
   .loja-content {
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: 280px 1fr;
   }
   
   .products-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
   }
   
   .desktop-sidebar {
-    padding: 1.5rem 1rem;
+    padding: 1.5rem;
   }
 }
 
-/* Mobile */
 @media (max-width: 768px) {
-  .loja-header {
+  .sponsors-section {
+    padding: 2rem 0;
+  }
+  
+  .sponsors-container {
+    padding: 0 1rem;
+  }
+  
+  .sponsors-title {
+    font-size: 1.5rem;
+  }
+  
+  .sponsors-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+  }
+  
+  .sponsor-card {
     padding: 1rem;
   }
   
-  .loja-header h1 {
-    font-size: 1.5rem;
+  .loja-header {
+    padding: 1.5rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .page-title {
+    font-size: 1.75rem;
+  }
+  
+  .page-subtitle {
+    font-size: 1rem;
   }
   
   .mobile-filter-btn {
     display: flex;
-  }
-  
-  .results-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    width: 100%;
+    align-self: flex-end;
   }
   
   .loja-content {
@@ -1175,11 +1531,17 @@ export default {
   }
   
   .main-content {
-    padding: 1rem;
+    padding: 1.5rem 1rem;
+  }
+  
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
   
   .products-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
   }
   
@@ -1194,32 +1556,43 @@ export default {
   }
 }
 
-/* Small Mobile */
 @media (max-width: 480px) {
-  .loja-header {
+  .sponsors-section {
+    padding: 1.5rem 0;
+  }
+  
+  .sponsors-title {
+    font-size: 1.25rem;
+  }
+  
+  .sponsors-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .sponsor-card {
     padding: 0.75rem;
   }
   
-  .loja-header h1 {
-    font-size: 1.3rem;
+  .loja-header {
+    padding: 1rem;
   }
   
-  .mobile-filter-btn {
-    padding: 0.5rem 0.75rem;
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .page-subtitle {
     font-size: 0.9rem;
   }
   
-  .results-info {
-    font-size: 0.8rem;
-  }
-  
-  .sort-select {
-    font-size: 0.8rem;
-    padding: 0.4rem;
+  .mobile-filter-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
   }
   
   .main-content {
-    padding: 0.75rem;
+    padding: 1rem;
   }
   
   .products-grid {
@@ -1235,7 +1608,7 @@ export default {
     padding: 1rem;
   }
   
-  .mobile-categories-list {
+  .mobile-filters-body {
     padding: 0.75rem;
   }
   
@@ -1257,19 +1630,17 @@ export default {
   }
 }
 
-/* Extra Small */
 @media (max-width: 360px) {
-  .loja-header h1 {
-    font-size: 1.1rem;
+  .sponsors-grid {
+    grid-template-columns: 1fr;
   }
   
-  .mobile-filter-btn {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
+  .page-title {
+    font-size: 1.25rem;
   }
   
   .main-content {
-    padding: 0.5rem;
+    padding: 0.75rem;
   }
   
   .products-grid {
