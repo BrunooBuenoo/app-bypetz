@@ -1822,7 +1822,6 @@ export default {
   cursor: pointer;
   font-size: 1.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
 }
 
 .whatsapp-btn:hover {
@@ -1844,7 +1843,6 @@ export default {
   cursor: pointer;
   font-size: 1.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(188, 24, 136, 0.3);
 }
 
 .instagram-btn:hover {
@@ -2037,7 +2035,7 @@ export default {
   display: flex;
   align-items: flex-end;
   gap: 0.5rem;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 20px;
   padding: 0.75rem;
   z-index: 10;
@@ -2126,8 +2124,8 @@ export default {
 
   .modal-close-new {
     position: absolute;
-    top: 50px; /* MAIS PRÓXIMO DO TOPO */
-    right: 35px; /* MAIS PRÓXIMO DA LATERAL */
+    top: 40px; /* MAIS PRÓXIMO DO TOPO */
+    right: 25px; /* MAIS PRÓXIMO DA LATERAL */
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     color: white;
@@ -2349,7 +2347,7 @@ export default {
     flex: 1;
     background: transparent;
     border: none;
-    color: white;
+    color: black;
     padding: 0.75rem 1rem;
     font-size: 16px; /* PREVINE ZOOM NO iOS */
     outline: none;
