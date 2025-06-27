@@ -126,7 +126,7 @@ export default {
 .carrinho-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 2rem 0;
+  padding-top: 80px;
 }
 
 .carrinho-container {
@@ -145,6 +145,7 @@ export default {
 }
 
 .carrinho-header h1 {
+  padding-top: 30px;
   color: #111827;
   font-size: 2rem;
   margin-bottom: 0.5rem;
@@ -156,6 +157,7 @@ export default {
 }
 
 .continue-shopping-btn {
+  margin-top: 20px; 
   background: rgba(82, 151, 255, 0.1);
   color: #528fff;
   text-decoration: none;
@@ -166,11 +168,11 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border: 1px solid rgba(140, 82, 255, 0.2);
+  border: 1px solid rgba(82, 128, 255, 0.2);
 }
 
 .continue-shopping-btn:hover {
-  background: rgba(140, 82, 255, 0.15);
+  background: rgba(82, 122, 255, 0.2);
   transform: translateY(-2px);
 }
 
@@ -229,7 +231,7 @@ export default {
   align-items: center;
   font-size: 1.3rem;
   font-weight: 700;
-  color: #333;
+  color: #528fff;
   margin-bottom: 2rem;
 }
 

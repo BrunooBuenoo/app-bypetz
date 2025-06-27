@@ -39,6 +39,7 @@ export default {
 
 <style scoped>
 .hero-container {
+  padding-top: 90px;
   background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
   min-height: 100vh;
   width: 100%;
@@ -47,7 +48,6 @@ export default {
   position: relative;
   overflow: hidden;
   margin: 0;
-  padding: 0;
 }
 
 /* Hero Dogs */

@@ -152,6 +152,7 @@ export default {
 .dashboard-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding-top: 80px;
 }
 
 .access-denied {

@@ -5,12 +5,6 @@
       <div class="floating-shape shape-1"></div>
       <div class="floating-shape shape-2"></div>
       <div class="floating-shape shape-3"></div>
-      <div class="floating-paws">
-        <div class="paw paw-1">🐾</div>
-        <div class="paw paw-2">🐾</div>
-        <div class="paw paw-3">🐾</div>
-        <div class="paw paw-4">🐾</div>
-      </div>
     </div>
 
     <div class="login-container">
@@ -270,7 +264,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding-top: 90px;
   position: relative;
   overflow: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -947,6 +941,7 @@ export default {
 @media (max-width: 768px) {
   .login-page {
     padding: 1rem;
+    padding-top: 90px;
   }
   
   .login-container {

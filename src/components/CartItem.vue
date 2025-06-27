@@ -149,7 +149,7 @@ export default {
 
 .item-price {
   font-size: 0.9rem;
-  color: #1752f1;
+  color: #528fff;
   font-weight: 600;
 }
 
@@ -213,7 +213,7 @@ export default {
 .subtotal-value {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1752f1;
+  color: #528fff;
 }
 
 .remove-btn {

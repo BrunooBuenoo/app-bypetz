@@ -144,6 +144,7 @@ export default {
 .contato-page {
   min-height: 100vh;
   background: #ffffff;
+  padding-top: 80px;
 }
 
 /* Hero Section */

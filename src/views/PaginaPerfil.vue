@@ -756,7 +756,7 @@ export default {
 .profile-page {
   min-height: 100vh;
   background: #f8fafc;
-  padding: 2rem 1rem;
+  padding-top: 80px;
 }
 
 .profile-container {

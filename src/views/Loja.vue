@@ -666,6 +666,7 @@ export default {
 
 <style scoped>
 .loja-page {
+  padding-top: 80px;
   min-height: 100vh;
   background: #ffffff;
 }

@@ -1257,6 +1257,7 @@ export default {
 }
 
 .bypetz-app {
+  padding-top: 80px;
   min-height: 100vh;
   background: linear-gradient(135deg, #f1f1f1 0%, #f4ecfc 100%);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -1629,7 +1630,7 @@ export default {
 .modal-body-desktop {
   display: grid;
   grid-template-columns: 1fr 350px;
-  gap: 2rem;
+  gap: 0.1rem;
   height: 600px; /* ALTURA MANTIDA COMO SOLICITADO */
 }
 
@@ -1642,7 +1643,7 @@ export default {
 
 .image-card {
   background: white;
-  border-radius: 20px;
+  border-radius: 20px 0px 0px 20px;
   padding: 0;
   width: 100%;
   height: 600px;
@@ -1658,7 +1659,7 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 20px;
+  border-radius: 20px 0px 0px 20px;
 }
 
 /* Desktop Navigation Arrows */
@@ -1727,12 +1728,12 @@ export default {
 
 /* Right side - Info & Comments */
 .modal-info-section {
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: 20px;
+  background: rgba(243, 243, 243, 1);
+  border-radius: 0px 20px 20px 0px;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  color: white;
+  color: rgb(0, 0, 0);
   overflow: hidden;
   height: 600px; /* ALTURA FIXA */
 }
@@ -2194,7 +2195,7 @@ export default {
 
   /* MOBILE: Bottom Info Section - MAIS ESPAÇO */
   .mobile-bottom-info {
-    background: rgba(0, 0, 0, 0.95); /* BACKGROUND MAIS ESCURO */
+    background: white; /* BACKGROUND MAIS ESCURO */
     color: white;
     padding: 1rem; /* PADDING RESTAURADO */
     flex: 1;
@@ -2301,7 +2302,7 @@ export default {
   .mobile-owner-name {
     font-weight: 600;
     font-size: 1rem;
-    color: white;
+    color: black;
   }
 
   /* MOBILE: Pet Details Section */
@@ -2316,7 +2317,7 @@ export default {
   .mobile-detail-item {
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
-    color: rgba(255, 255, 255, 0.9);
+    color: black;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -2336,7 +2337,7 @@ export default {
     display: flex;
     align-items: flex-end;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(0 0 0 / 10%);
     border-radius: 25px;
     padding: 0.5rem;
     margin-bottom: 1rem;
@@ -2355,7 +2356,7 @@ export default {
   }
 
   .mobile-comment-input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: black;
   }
 
   .mobile-send-btn {
@@ -2389,7 +2390,7 @@ export default {
     justify-content: space-between;
     cursor: pointer;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgb(0 0 0 / 10%);
     border: none;
     border-radius: 15px;
     transition: background-color 0.2s;
@@ -2402,11 +2403,11 @@ export default {
   .mobile-comments-toggle-text {
     font-size: 1rem;
     font-weight: 600;
-    color: white;
+    color: black;
   }
 
   .mobile-comments-toggle-btn i.fa-chevron-up {
-    color: white;
+    color: black;
     transition: transform 0.3s ease;
     font-size: 0.9rem;
   }

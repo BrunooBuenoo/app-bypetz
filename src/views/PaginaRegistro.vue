@@ -364,7 +364,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding-top: 90px;
   position: relative;
   overflow: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -1015,6 +1015,7 @@ export default {
 @media (max-width: 768px) {
   .register-page {
     padding: 1rem;
+    padding-top: 90px;
   }
   
   .register-container {

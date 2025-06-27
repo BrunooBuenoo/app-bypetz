@@ -473,7 +473,7 @@ export default {
 .cadastrar-pet-page {
   min-height: 100vh;
   background: #f8fafc;
-  padding: 2rem 1rem;
+  padding-top: 80px;
 }
 
 .cadastrar-container {
@@ -868,7 +868,8 @@ export default {
 /* Responsividade */
 @media (max-width: 768px) {
   .cadastrar-pet-page {
-    padding: 1rem 0.5rem;
+    padding-top: 80px;
+    
   }
 
   .cadastrar-container {
@@ -902,7 +903,7 @@ export default {
 
 @media (max-width: 480px) {
   .cadastrar-pet-page {
-    padding: 0.5rem;
+    padding-top: 80px;
   }
 
   .cadastrar-container {

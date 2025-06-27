@@ -327,15 +327,17 @@ export default {
 
 <style scoped>
 /* Estilos anteriores mantidos... */
-.header {
-  position: sticky;
+header {
+  position: fixed;
   top: 0;
-  z-index: 50;
+  left: 0;
   width: 100%;
-  background: rgba(255, 255, 255, 0.8);
+  z-index: 50;
+  background: white;
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(229, 231, 235, 0.5);
 }
+
 
 .header-container {
   max-width: 1280px;
