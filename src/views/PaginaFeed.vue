@@ -2204,7 +2204,7 @@ export default {
     overflow: hidden;
     border-radius: 0 0 20px 20px; /* BORDAS ARREDONDADAS APENAS EMBAIXO */
     position: relative; /* IMPORTANTE PARA POSICIONAMENTO DOS ÍCONES */
-    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 20px));
+    padding-bottom: calc(0.70rem + env(safe-area-inset-bottom, 20px));
   }
 
   /* MOBILE: Social Buttons - OVERLAPPING INFO SECTION */
@@ -2680,6 +2680,8 @@ export default {
   }
 }
 
+/*////////////////
+
 /* Indicador de resposta FORA e ACIMA do input */
 .replying-indicator-floating {
   position: absolute;
@@ -2826,9 +2828,9 @@ export default {
 /* Mobile Extra Small - Ajustes para telas muito pequenas */
 @media (max-width: 480px) {
   .modal-content-new {
-    height: 95vh; /* Reduzir altura total */
-    max-height: 95vh;
-    margin: 5px; /* Margem menor */
+    height: auto; /* Reduzir altura total */
+    max-height: 93.5vh;
+    margin: auto; /* Margem menor */
   }
 
   /* Reduzir altura da seção de imagem */
@@ -2838,7 +2840,7 @@ export default {
 
   /* Ajustar seção de informações */
   .mobile-bottom-info {
-    min-height: 50vh; /* Aumentado de 45vh para 50vh */
+    min-height: 45vh; /* Aumentado de 45vh para 50vh */
     max-height: 50vh;
     padding: 0.75rem; /* Padding menor */
   }
