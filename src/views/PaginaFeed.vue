@@ -1528,7 +1528,7 @@ export default {
 }
 
 .smart-crop {
-  object-position: center 30%; /* Foca na parte superior-central (onde geralmente está o rosto) */
+  object-position: center 50%; /* Foca na parte superior-central (onde geralmente está o rosto) */
 }
 
 /* Para diferentes tipos de animais, podemos usar classes específicas */
@@ -2164,6 +2164,7 @@ export default {
   .mobile-image-centered {
     width: 100%;
     height: 100%;
+    max-height: 260px;
     object-fit: cover;
     border-radius: 20px 20px 0 0; /* BORDAS ARREDONDADAS APENAS NO TOPO */
   }
@@ -2230,7 +2231,6 @@ export default {
     justify-content: center;
     cursor: pointer;
     font-size: 1.5rem;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
     transition: transform 0.2s;
   }
 
@@ -2250,7 +2250,6 @@ export default {
     justify-content: center;
     cursor: pointer;
     font-size: 1.5rem;
-    box-shadow: 0 4px 15px rgba(188, 24, 136, 0.4);
     transition: transform 0.2s;
   }
 
@@ -2362,8 +2361,8 @@ export default {
     color: white;
     border: none;
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
