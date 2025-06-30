@@ -1,25 +1,18 @@
 <template>
   <div class="register-page">
-    <!-- Background Elements -->
+    <!-- Background Elements - Mais sutis -->
     <div class="background-elements">
       <div class="floating-shape shape-1"></div>
       <div class="floating-shape shape-2"></div>
       <div class="floating-shape shape-3"></div>
       <div class="floating-shape shape-4"></div>
-      <div class="floating-paws">
-        <div class="paw paw-1">🐾</div>
-        <div class="paw paw-2">🐾</div>
-        <div class="paw paw-3">🐾</div>
-        <div class="paw paw-4">🐾</div>
-        <div class="paw paw-5">🐾</div>
-      </div>
     </div>
 
     <div class="register-container">
-      <!-- Brand Section -->
+      <!-- Brand Section - Logo como texto -->
       <div class="brand-section">
-        <div class="brand-icon">
-          <i class="fas fa-paw"></i>
+        <div class="brand-logo">
+          <span class="logo-text">ByPetz</span>
         </div>
         <h1>Junte-se à ByPetz!</h1>
         <p>Crie sua conta e ajude a reunir famílias com seus pets</p>
@@ -29,10 +22,7 @@
       <form @submit.prevent="handleRegister" class="register-form">
         <!-- Name Field -->
         <div class="form-group">
-          <label for="name">
-            <i class="fas fa-user"></i>
-            Nome Completo
-          </label>
+          <label for="name">Nome Completo</label>
           <div class="input-container">
             <input
               v-model="form.name"
@@ -49,10 +39,7 @@
 
         <!-- Email Field -->
         <div class="form-group">
-          <label for="email">
-            <i class="fas fa-envelope"></i>
-            Email
-          </label>
+          <label for="email">Email</label>
           <div class="input-container">
             <input
               v-model="form.email"
@@ -69,10 +56,7 @@
 
         <!-- Password Field -->
         <div class="form-group">
-          <label for="password">
-            <i class="fas fa-lock"></i>
-            Senha
-          </label>
+          <label for="password">Senha</label>
           <div class="input-container password-container">
             <input
               v-model="form.password"
@@ -88,7 +72,7 @@
               @click="showPassword = !showPassword"
               class="password-toggle"
             >
-              <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              {{ showPassword ? 'Ocultar' : 'Mostrar' }}
             </button>
             <div class="input-border"></div>
           </div>
@@ -102,15 +86,15 @@
               <span class="strength-text">{{ passwordStrength.text }}</span>
               <div class="strength-requirements">
                 <div class="requirement" :class="{ 'met': form.password.length >= 8 }">
-                  <i class="fas fa-check"></i>
+                  <span class="requirement-indicator">{{ form.password.length >= 8 ? '✓' : '○' }}</span>
                   8+ caracteres
                 </div>
                 <div class="requirement" :class="{ 'met': /[A-Z]/.test(form.password) }">
-                  <i class="fas fa-check"></i>
+                  <span class="requirement-indicator">{{ /[A-Z]/.test(form.password) ? '✓' : '○' }}</span>
                   Maiúscula
                 </div>
                 <div class="requirement" :class="{ 'met': /\d/.test(form.password) }">
-                  <i class="fas fa-check"></i>
+                  <span class="requirement-indicator">{{ /\d/.test(form.password) ? '✓' : '○' }}</span>
                   Número
                 </div>
               </div>
@@ -120,10 +104,7 @@
 
         <!-- Confirm Password Field -->
         <div class="form-group">
-          <label for="confirmPassword">
-            <i class="fas fa-shield-alt"></i>
-            Confirmar Senha
-          </label>
+          <label for="confirmPassword">Confirmar Senha</label>
           <div class="input-container">
             <input
               v-model="form.confirmPassword"
@@ -142,14 +123,13 @@
               @click="showConfirmPassword = !showConfirmPassword"
               class="password-toggle"
             >
-              <i :class="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              {{ showConfirmPassword ? 'Ocultar' : 'Mostrar' }}
             </button>
             <div class="input-border"></div>
           </div>
           
           <transition name="error">
             <div v-if="form.confirmPassword && !passwordsMatch" class="password-error">
-              <i class="fas fa-exclamation-triangle"></i>
               As senhas não coincidem
             </div>
           </transition>
@@ -159,9 +139,7 @@
         <div class="form-group">
           <label class="checkbox-label">
             <input type="checkbox" v-model="acceptTerms" required>
-            <span class="checkmark">
-              <i class="fas fa-check"></i>
-            </span>
+            <span class="checkmark"></span>
             <span class="label-text">
               Aceito os 
               <a href="#" @click.prevent="showTerms = true">Termos de Uso</a> 
@@ -174,8 +152,7 @@
         <!-- Register Button -->
         <button type="submit" class="btn-register" :disabled="!canRegister || loading">
           <div class="btn-content">
-            <i v-if="loading" class="fas fa-spinner fa-spin"></i>
-            <i v-else class="fas fa-user-plus"></i>
+            <div v-if="loading" class="loading-spinner"></div>
             <span>{{ loading ? 'Criando conta...' : 'Criar Conta' }}</span>
           </div>
           <div class="btn-bg"></div>
@@ -188,9 +165,6 @@
 
         <!-- Google Register -->
         <button type="button" @click="handleGoogleRegister" class="btn-google" :disabled="loading">
-          <div class="google-icon">
-            <i class="fab fa-google"></i>
-          </div>
           <span>Cadastrar com Google</span>
           <div class="btn-shine"></div>
         </button>
@@ -198,11 +172,9 @@
         <!-- Login Link -->
         <div class="login-link">
           <p>
-            <i class="fas fa-sign-in-alt"></i>
             Já tem uma conta? 
             <router-link to="/login">
               <strong>Faça login aqui</strong>
-              <i class="fas fa-arrow-right"></i>
             </router-link>
           </p>
         </div>
@@ -211,35 +183,33 @@
       <!-- Success/Error Messages -->
       <transition name="alert">
         <div v-if="error" class="alert alert-error">
-          <i class="fas fa-exclamation-triangle"></i>
           {{ error }}
         </div>
       </transition>
       
       <transition name="alert">
         <div v-if="successMessage" class="alert alert-success">
-          <i class="fas fa-check-circle"></i>
           {{ successMessage }}
         </div>
       </transition>
     </div>
 
-    <!-- Progress Indicator -->
+    <!-- Progress Indicator - Simplificado -->
     <div class="progress-indicator">
       <div class="progress-step" :class="{ 'active': form.name }">
-        <i class="fas fa-user"></i>
+        <span>1</span>
       </div>
       <div class="progress-step" :class="{ 'active': form.email }">
-        <i class="fas fa-envelope"></i>
+        <span>2</span>
       </div>
       <div class="progress-step" :class="{ 'active': form.password && passwordStrength.score >= 3 }">
-        <i class="fas fa-lock"></i>
+        <span>3</span>
       </div>
       <div class="progress-step" :class="{ 'active': passwordsMatch && form.confirmPassword }">
-        <i class="fas fa-shield-alt"></i>
+        <span>4</span>
       </div>
       <div class="progress-step" :class="{ 'active': acceptTerms }">
-        <i class="fas fa-check"></i>
+        <span>5</span>
       </div>
     </div>
   </div>
@@ -251,7 +221,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 export default {
-  name: 'PaginaRegistro',
+  name: 'RegistroClean',
   setup() {
     const router = useRouter()
     const { register, loginWithGoogle, loading, error } = useAuth()
@@ -279,7 +249,6 @@ export default {
       if (!password) return { class: '', width: '0%', text: '', score: 0 }
 
       let score = 0
-      let feedback = []
 
       // Critérios de força da senha
       if (password.length >= 8) score += 1
@@ -360,7 +329,7 @@ export default {
 <style scoped>
 .register-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
+  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -370,7 +339,7 @@ export default {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Background Elements */
+/* Background Elements - Mais sutis */
 .background-elements {
   position: absolute;
   top: 0;
@@ -384,7 +353,7 @@ export default {
 .floating-shape {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
   animation: float 8s ease-in-out infinite;
 }
 
@@ -420,30 +389,9 @@ export default {
   animation-delay: 6s;
 }
 
-.floating-paws {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.paw {
-  position: absolute;
-  font-size: 1.2rem;
-  opacity: 0.2;
-  animation: float 10s ease-in-out infinite;
-}
-
-.paw-1 { top: 20%; left: 8%; animation-delay: 1s; }
-.paw-2 { top: 60%; right: 12%; animation-delay: 3s; }
-.paw-3 { bottom: 25%; left: 20%; animation-delay: 5s; }
-.paw-4 { top: 45%; right: 20%; animation-delay: 7s; }
-.paw-5 { bottom: 40%; right: 40%; animation-delay: 9s; }
-
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-25px) rotate(10deg); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
 }
 
 /* Main Container */
@@ -460,33 +408,24 @@ export default {
   z-index: 1;
 }
 
-/* Brand Section */
+/* Brand Section - Mais clean */
 .brand-section {
   text-align: center;
   margin-bottom: 3rem;
 }
 
-.brand-icon {
-  width: 80px;
-  height: 80px;
+.brand-logo {
+  margin-bottom: 1.5rem;
+}
+
+.logo-text {
+  font-size: 2.5rem;
+  font-weight: 800;
   background: linear-gradient(135deg, #FFD700, #FFA500);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-  animation: pulse 2s infinite;
-}
-
-.brand-icon i {
-  font-size: 2rem;
-  color: #8B5CF6;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
 }
 
 .brand-section h1 {
@@ -515,18 +454,11 @@ export default {
 }
 
 .form-group label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: block;
   color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
   font-size: 0.95rem;
   margin-bottom: 0.75rem;
-}
-
-.form-group label i {
-  color: #FFD700;
-  font-size: 1rem;
 }
 
 .input-container {
@@ -600,15 +532,13 @@ export default {
   border-radius: 8px;
   transition: all 0.3s ease;
   z-index: 2;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .password-toggle:hover {
   color: #FFD700;
   background: rgba(255, 215, 0, 0.1);
-}
-
-.password-toggle i {
-  font-size: 1.1rem;
 }
 
 /* Password Strength */
@@ -674,21 +604,15 @@ export default {
   color: #10B981;
 }
 
-.requirement i {
+.requirement-indicator {
   font-size: 0.7rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.requirement.met i {
-  opacity: 1;
+  font-weight: bold;
+  width: 12px;
+  text-align: center;
 }
 
 /* Password Error */
 .password-error {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   color: #FCA5A5;
   font-size: 0.85rem;
   margin-top: 0.5rem;
@@ -727,13 +651,11 @@ export default {
   height: 20px;
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
   margin-top: 2px;
+  position: relative;
 }
 
 .checkbox-label input:checked + .checkmark {
@@ -742,15 +664,15 @@ export default {
   transform: scale(1.1);
 }
 
-.checkmark i {
-  font-size: 0.8rem;
+.checkbox-label input:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   color: #8B5CF6;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.checkbox-label input:checked + .checkmark i {
-  opacity: 1;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
 .label-text a {
@@ -800,6 +722,20 @@ export default {
   gap: 0.75rem;
   position: relative;
   z-index: 2;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .btn-bg {
@@ -858,7 +794,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
@@ -866,22 +801,6 @@ export default {
 .btn-google:hover:not(:disabled) {
   transform: translateY(-3px);
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
-}
-
-.google-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.google-icon i {
-  font-size: 1.2rem;
-  background: linear-gradient(45deg, #4285f4, #ea4335, #fbbc05, #34a853);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .btn-shine {
@@ -907,24 +826,12 @@ export default {
 .login-link p {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.login-link i {
-  color: #FFD700;
 }
 
 .login-link a {
   color: #FFD700;
   text-decoration: none;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   padding: 0.25rem 0.5rem;
   border-radius: 8px;
 }
@@ -932,10 +839,9 @@ export default {
 .login-link a:hover {
   color: #FFA500;
   background: rgba(255, 215, 0, 0.1);
-  transform: translateX(2px);
 }
 
-/* Progress Indicator */
+/* Progress Indicator - Simplificado */
 .progress-indicator {
   position: fixed;
   top: 50%;
@@ -960,9 +866,10 @@ export default {
   backdrop-filter: blur(10px);
 }
 
-.progress-step i {
-  font-size: 1rem;
+.progress-step span {
+  font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
   transition: all 0.4s ease;
 }
 
@@ -973,7 +880,7 @@ export default {
   box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
 }
 
-.progress-step.active i {
+.progress-step.active span {
   color: #8B5CF6;
 }
 
@@ -982,9 +889,6 @@ export default {
   margin-top: 1.5rem;
   padding: 1rem 1.25rem;
   border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   font-weight: 500;
   backdrop-filter: blur(10px);
 }
@@ -1043,11 +947,6 @@ export default {
   .strength-requirements {
     gap: 0.5rem;
   }
-  
-  .login-link p {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
 }
 
 @media (max-width: 480px) {
@@ -1055,13 +954,8 @@ export default {
     padding: 1.5rem;
   }
   
-  .brand-icon {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .brand-icon i {
-    font-size: 1.5rem;
+  .logo-text {
+    font-size: 2rem;
   }
   
   .brand-section h1 {

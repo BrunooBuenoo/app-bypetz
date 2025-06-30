@@ -1,6 +1,6 @@
 <template>
   <div class="login-page">
-    <!-- Background Elements -->
+    <!-- Background Elements - Mais sutis -->
     <div class="background-elements">
       <div class="floating-shape shape-1"></div>
       <div class="floating-shape shape-2"></div>
@@ -8,23 +8,20 @@
     </div>
 
     <div class="login-container">
-      <!-- Logo/Brand Section -->
+      <!-- Brand Section - Sem ícone, mais clean -->
       <div class="brand-section">
-        <div class="brand-icon">
-          <i class="fas fa-heart"></i>
+        <div class="brand-logo">
+          <span class="logo-text">ByPetz</span>
         </div>
         <h1>Bem-vindo de volta!</h1>
-        <p>Entre na sua conta ByPetz e continue ajudando pets</p>
+        <p>Entre na sua conta e continue ajudando pets</p>
       </div>
 
-      <!-- Login Form -->
+      <!-- Login Form - Inputs mais limpos -->
       <form @submit.prevent="handleLogin" class="login-form">
         <!-- Email Field -->
         <div class="form-group">
-          <label for="email">
-            <i class="fas fa-envelope"></i>
-            Email
-          </label>
+          <label for="email">Email</label>
           <div class="input-container">
             <input
               v-model="form.email"
@@ -41,10 +38,7 @@
 
         <!-- Password Field -->
         <div class="form-group">
-          <label for="password">
-            <i class="fas fa-lock"></i>
-            Senha
-          </label>
+          <label for="password">Senha</label>
           <div class="input-container password-container">
             <input
               v-model="form.password"
@@ -60,7 +54,7 @@
               @click="showPassword = !showPassword"
               class="password-toggle"
             >
-              <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+              {{ showPassword ? 'Ocultar' : 'Mostrar' }}
             </button>
             <div class="input-border"></div>
           </div>
@@ -70,13 +64,10 @@
         <div class="form-options">
           <label class="remember-me">
             <input type="checkbox" v-model="rememberMe">
-            <span class="checkmark">
-              <i class="fas fa-check"></i>
-            </span>
+            <span class="checkmark"></span>
             <span class="label-text">Lembrar de mim</span>
           </label>
           <button type="button" @click="showResetPassword = true" class="forgot-password">
-            <i class="fas fa-question-circle"></i>
             Esqueci minha senha
           </button>
         </div>
@@ -84,8 +75,7 @@
         <!-- Login Button -->
         <button type="submit" class="btn-login" :disabled="loading || !canLogin">
           <div class="btn-content">
-            <i v-if="loading" class="fas fa-spinner fa-spin"></i>
-            <i v-else class="fas fa-sign-in-alt"></i>
+            <div v-if="loading" class="loading-spinner"></div>
             <span>{{ loading ? 'Entrando...' : 'Entrar' }}</span>
           </div>
           <div class="btn-bg"></div>
@@ -98,9 +88,6 @@
 
         <!-- Google Login -->
         <button type="button" @click="handleGoogleLogin" class="btn-google" :disabled="loading">
-          <div class="google-icon">
-            <i class="fab fa-google"></i>
-          </div>
           <span>Entrar com Google</span>
           <div class="btn-shine"></div>
         </button>
@@ -108,11 +95,9 @@
         <!-- Signup Link -->
         <div class="signup-link">
           <p>
-            <i class="fas fa-user-plus"></i>
             Não tem uma conta? 
             <router-link to="/registro">
               <strong>Cadastre-se aqui</strong>
-              <i class="fas fa-arrow-right"></i>
             </router-link>
           </p>
         </div>
@@ -121,14 +106,12 @@
       <!-- Success/Error Messages -->
       <transition name="alert">
         <div v-if="error" class="alert alert-error">
-          <i class="fas fa-exclamation-triangle"></i>
           {{ error }}
         </div>
       </transition>
       
       <transition name="alert">
         <div v-if="successMessage" class="alert alert-success">
-          <i class="fas fa-check-circle"></i>
           {{ successMessage }}
         </div>
       </transition>
@@ -139,10 +122,9 @@
       <div v-if="showResetPassword" class="modal-overlay" @click="showResetPassword = false">
         <div class="modal-content" @click.stop>
           <div class="modal-header">
-            <i class="fas fa-key"></i>
             <h3>Recuperar Senha</h3>
             <button @click="showResetPassword = false" class="modal-close">
-              <i class="fas fa-times"></i>
+              ×
             </button>
           </div>
           
@@ -162,12 +144,9 @@
           
           <div class="modal-footer">
             <button @click="handleResetPassword" class="btn-reset" :disabled="loading || !resetEmail">
-              <i v-if="loading" class="fas fa-spinner fa-spin"></i>
-              <i v-else class="fas fa-paper-plane"></i>
               {{ loading ? 'Enviando...' : 'Enviar Link' }}
             </button>
             <button @click="showResetPassword = false" class="btn-cancel">
-              <i class="fas fa-times"></i>
               Cancelar
             </button>
           </div>
@@ -183,7 +162,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 export default {
-  name: 'PaginaLogin',
+  name: 'LoginClean',
   setup() {
     const router = useRouter()
     const { login, loginWithGoogle, resetPassword, loading, error } = useAuth()
@@ -260,7 +239,7 @@ export default {
 <style scoped>
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #8C52FF 0%, #6B3DD6 50%, #4A2B9A 100%);
+  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -270,7 +249,7 @@ export default {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Background Elements */
+/* Background Elements - Mais sutis */
 .background-elements {
   position: absolute;
   top: 0;
@@ -284,57 +263,37 @@ export default {
 .floating-shape {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  animation: float 6s ease-in-out infinite;
+  background: rgba(255, 255, 255, 0.05);
+  animation: float 8s ease-in-out infinite;
 }
 
 .shape-1 {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   top: 20%;
   left: 10%;
   animation-delay: 0s;
 }
 
 .shape-2 {
-  width: 150px;
-  height: 150px;
+  width: 80px;
+  height: 80px;
   top: 60%;
   right: 15%;
-  animation-delay: 2s;
+  animation-delay: 3s;
 }
 
 .shape-3 {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   bottom: 20%;
   left: 20%;
-  animation-delay: 4s;
+  animation-delay: 6s;
 }
-
-.floating-paws {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.paw {
-  position: absolute;
-  font-size: 1.5rem;
-  opacity: 0.3;
-  animation: float 8s ease-in-out infinite;
-}
-
-.paw-1 { top: 15%; left: 5%; animation-delay: 1s; }
-.paw-2 { top: 70%; right: 10%; animation-delay: 3s; }
-.paw-3 { bottom: 30%; left: 15%; animation-delay: 5s; }
-.paw-4 { top: 40%; right: 25%; animation-delay: 7s; }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
 }
 
 /* Main Container */
@@ -351,33 +310,24 @@ export default {
   z-index: 1;
 }
 
-/* Brand Section */
+/* Brand Section - Mais clean */
 .brand-section {
   text-align: center;
   margin-bottom: 3rem;
 }
 
-.brand-icon {
-  width: 80px;
-  height: 80px;
+.brand-logo {
+  margin-bottom: 1.5rem;
+}
+
+.logo-text {
+  font-size: 2.5rem;
+  font-weight: 800;
   background: linear-gradient(135deg, #FFD700, #FFA500);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
-  animation: pulse 2s infinite;
-}
-
-.brand-icon i {
-  font-size: 2rem;
-  color: #8B5CF6;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
 }
 
 .brand-section h1 {
@@ -406,18 +356,11 @@ export default {
 }
 
 .form-group label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: block;
   color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
   font-size: 0.95rem;
   margin-bottom: 0.75rem;
-}
-
-.form-group label i {
-  color: #FFD700;
-  font-size: 1rem;
 }
 
 .input-container {
@@ -486,15 +429,13 @@ export default {
   border-radius: 8px;
   transition: all 0.3s ease;
   z-index: 2;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .password-toggle:hover {
   color: #FFD700;
   background: rgba(255, 215, 0, 0.1);
-}
-
-.password-toggle i {
-  font-size: 1.1rem;
 }
 
 /* Form Options */
@@ -528,11 +469,9 @@ export default {
   height: 20px;
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.1);
+  position: relative;
 }
 
 .remember-me input:checked + .checkmark {
@@ -541,15 +480,15 @@ export default {
   transform: scale(1.1);
 }
 
-.checkmark i {
-  font-size: 0.8rem;
+.remember-me input:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   color: #8B5CF6;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.remember-me input:checked + .checkmark i {
-  opacity: 1;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
 .forgot-password {
@@ -560,9 +499,6 @@ export default {
   font-size: 0.9rem;
   text-decoration: none;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   padding: 0.5rem;
   border-radius: 8px;
 }
@@ -570,7 +506,6 @@ export default {
 .forgot-password:hover {
   color: #FFA500;
   background: rgba(255, 215, 0, 0.1);
-  transform: translateX(2px);
 }
 
 /* Login Button */
@@ -607,6 +542,20 @@ export default {
   gap: 0.75rem;
   position: relative;
   z-index: 2;
+}
+
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .btn-bg {
@@ -665,7 +614,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
@@ -673,22 +621,6 @@ export default {
 .btn-google:hover:not(:disabled) {
   transform: translateY(-3px);
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
-}
-
-.google-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.google-icon i {
-  font-size: 1.2rem;
-  background: linear-gradient(45deg, #4285f4, #ea4335, #fbbc05, #34a853);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .btn-shine {
@@ -714,23 +646,12 @@ export default {
 .signup-link p {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.signup-link i {
-  color: #FFD700;
 }
 
 .signup-link a {
   color: #FFD700;
   text-decoration: none;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   padding: 0.25rem 0.5rem;
   border-radius: 8px;
 }
@@ -738,7 +659,6 @@ export default {
 .signup-link a:hover {
   color: #FFA500;
   background: rgba(255, 215, 0, 0.1);
-  transform: translateX(2px);
 }
 
 /* Alerts */
@@ -746,9 +666,6 @@ export default {
   margin-top: 1.5rem;
   padding: 1rem 1.25rem;
   border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   font-weight: 500;
   backdrop-filter: blur(10px);
 }
@@ -805,26 +722,16 @@ export default {
   padding: 2rem 2rem 1rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  position: relative;
-}
-
-.modal-header i {
-  font-size: 1.5rem;
-  color: #8B5CF6;
+  justify-content: space-between;
 }
 
 .modal-header h3 {
   color: #333;
   font-size: 1.4rem;
   font-weight: 700;
-  flex: 1;
 }
 
 .modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
   background: rgba(0, 0, 0, 0.1);
   border: none;
   border-radius: 50%;
@@ -835,6 +742,8 @@ export default {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 1.5rem;
+  color: #666;
 }
 
 .modal-close:hover {
@@ -889,9 +798,6 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .btn-reset:hover:not(:disabled) {
@@ -913,9 +819,6 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .btn-cancel:hover {
@@ -983,22 +886,12 @@ export default {
     padding: 1.5rem;
   }
   
-  .brand-icon {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .brand-icon i {
-    font-size: 1.5rem;
+  .logo-text {
+    font-size: 2rem;
   }
   
   .brand-section h1 {
     font-size: 1.5rem;
-  }
-  
-  .signup-link p {
-    flex-direction: column;
-    gap: 0.5rem;
   }
 }
 </style>

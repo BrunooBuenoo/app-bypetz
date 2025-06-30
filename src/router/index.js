@@ -18,6 +18,7 @@ import Loja from "../views/Loja.vue"
 import Carrinho from "../views/Carrinho.vue"
 import FinalizarPedido from "../views/FinalizarPedido.vue"
 import Dashboard from "../views/Dashboard.vue"
+import Exemplo from "../components/Exemplo.vue" 
 
 const routes = [
   {
@@ -90,6 +91,11 @@ const routes = [
       requiresAuth: true,
       requiresAdmin: true 
     },
+  },
+  {
+    path: "/exemplo",
+    name: "ExemploComponente",
+    component: Exemplo,
   },
 ]
 
