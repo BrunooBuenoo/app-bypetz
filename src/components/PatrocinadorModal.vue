@@ -358,7 +358,7 @@ export default {
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   max-width: 600px;
   width: 100%;
-  max-height: 85vh;
+  max-height: 70vh;
   display: flex;
   flex-direction: column;
   animation: slideIn 0.3s ease-out;
@@ -453,6 +453,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-height: 0; /* Importante para permitir scroll */
 }
 
 /* Patrocinador Header */
@@ -623,7 +624,7 @@ export default {
 /* Status Controls */
 .status-controls {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 0.75rem;
 }
 
@@ -733,14 +734,18 @@ export default {
   transform: translateY(-1px);
 }
 
-/* Responsive Design */
+/* Responsive Design - Mobile First */
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
   }
 
   .modal-container {
-    max-height: 90vh;
+    max-height: calc(100vh - 8rem);
+    min-height: 50vh;
   }
 
   .modal-header {
@@ -760,6 +765,7 @@ export default {
     flex-direction: column;
     text-align: center;
     gap: 0.75rem;
+    padding: 0.75rem;
   }
 
   .patrocinador-logo {
@@ -775,42 +781,106 @@ export default {
     grid-template-columns: 1fr;
   }
 
+  .status-btn {
+    padding: 0.875rem;
+    font-size: 0.875rem;
+  }
+
   .modal-footer {
     padding: 1rem;
     flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
   .modal-overlay {
     padding: 0.25rem;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    
   }
 
   .modal-container {
-    max-height: 95vh;
+    max-height: calc(100vh - 6rem);
+    border-radius: 16px;
+    margin: 10px;
   }
 
   .modal-header {
     padding: 0.75rem;
   }
 
+  .modal-title {
+    font-size: 1rem;
+  }
+
   .modal-content {
     padding: 0.75rem;
+    gap: 0.75rem;
   }
 
   .modal-footer {
     padding: 0.75rem;
   }
 
+  .section-title {
+    font-size: 0.875rem;
+  }
+
   .contact-item {
-    flex-direction: column;
-    text-align: center;
+    padding: 0.5rem;
     gap: 0.5rem;
   }
 
+  .contact-icon {
+    width: 32px;
+    height: 32px;
+  }
+
   .btn {
-    padding: 0.625rem 1rem;
-    font-size: 0.8rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    min-height: 44px;
+  }
+
+  .close-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Muito pequeno - ajustes extras */
+@media (max-width: 360px) {
+  .modal-overlay {
+    padding: 0.125rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .modal-container {
+    max-height: calc(100vh - 4rem);
+  }
+
+  .modal-header {
+    padding: 0.5rem;
+  }
+
+  .modal-content {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .modal-footer {
+    padding: 0.5rem;
+  }
+
+  .patrocinador-header {
+    padding: 0.5rem;
   }
 }
 </style>
