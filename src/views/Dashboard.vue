@@ -159,7 +159,7 @@
                 <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
               </svg>
             </div>
-            <span class="mobile-brand-name">ByPetz Admin</span>
+            <span class="mobile-brand-name">Admin</span>
           </div>
           
           <button @click="showMobileMenu = !showMobileMenu" class="mobile-menu-toggle">
@@ -1301,7 +1301,7 @@ export default {
   }
 
   .mobile-header-content {
-    padding: 0.75rem 1rem;
+    padding: 1rem 2rem;
   }
 
   .mobile-brand-name {
