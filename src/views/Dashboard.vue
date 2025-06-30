@@ -3,12 +3,11 @@
     <!-- Verificação de acesso -->
     <div v-if="!hasAccess" class="access-denied">
       <div class="access-denied-icon">
-        <i class="fas fa-lock"></i>
+        <span class="lock-icon">🔒</span>
       </div>
       <h2>Acesso Negado</h2>
       <p>Você não tem permissão para acessar esta área.</p>
       <router-link to="/" class="btn-home">
-        <i class="fas fa-home"></i>
         Voltar ao Início
       </router-link>
     </div>
@@ -24,7 +23,7 @@
             class="mobile-nav-item"
             :class="{ active: activeSection === 'pedidos' }"
           >
-            <i class="fas fa-shopping-bag"></i>
+            <span class="nav-icon">📦</span>
             <span>Pedidos</span>
           </button>
           
@@ -33,7 +32,7 @@
             class="mobile-nav-item"
             :class="{ active: activeSection === 'produtos' }"
           >
-            <i class="fas fa-box"></i>
+            <span class="nav-icon">🎁</span>
             <span>Produtos</span>
           </button>
           
@@ -42,8 +41,17 @@
             class="mobile-nav-item"
             :class="{ active: activeSection === 'categorias' }"
           >
-            <i class="fas fa-tags"></i>
+            <span class="nav-icon">🏷️</span>
             <span>Categorias</span>
+          </button>
+
+          <button
+            @click="activeSection = 'patrocinadores'"
+            class="mobile-nav-item"
+            :class="{ active: activeSection === 'patrocinadores' }"
+          >
+            <span class="nav-icon">🤝</span>
+            <span>Parceiros</span>
           </button>
         </div>
       </div>
@@ -52,8 +60,8 @@
       <aside class="desktop-sidebar">
         <div class="sidebar-header">
           <h2>
-            <i class="fas fa-cog"></i>
-            Admin ByPetz
+            <span class="logo-text">ByPetz</span>
+            <span class="admin-text">Admin</span>
           </h2>
         </div>
         
@@ -63,7 +71,7 @@
             class="nav-item"
             :class="{ active: activeSection === 'pedidos' }"
           >
-            <i class="fas fa-shopping-bag"></i>
+            <span class="nav-icon">📦</span>
             <span>Pedidos</span>
           </button>
           
@@ -72,7 +80,7 @@
             class="nav-item"
             :class="{ active: activeSection === 'produtos' }"
           >
-            <i class="fas fa-box"></i>
+            <span class="nav-icon">🎁</span>
             <span>Produtos</span>
           </button>
           
@@ -81,8 +89,17 @@
             class="nav-item"
             :class="{ active: activeSection === 'categorias' }"
           >
-            <i class="fas fa-tags"></i>
+            <span class="nav-icon">🏷️</span>
             <span>Categorias</span>
+          </button>
+
+          <button
+            @click="activeSection = 'patrocinadores'"
+            class="nav-item"
+            :class="{ active: activeSection === 'patrocinadores' }"
+          >
+            <span class="nav-icon">🤝</span>
+            <span>Patrocinadores</span>
           </button>
         </nav>
       </aside>
@@ -101,6 +118,7 @@
           <PedidosAdmin v-if="activeSection === 'pedidos'" />
           <CadastroProduto v-else-if="activeSection === 'produtos'" />
           <CadastroCategoria v-else-if="activeSection === 'categorias'" />
+          <CadastroPatrocinador v-else-if="activeSection === 'patrocinadores'" />
         </div>
       </main>
     </div>
@@ -113,13 +131,15 @@ import { useAuth } from '../composables/useAuth'
 import PedidosAdmin from '../components/PedidosAdmin.vue'
 import CadastroProduto from '../components/CadastroProduto.vue'
 import CadastroCategoria from '../components/CadastroCategoria.vue'
+import CadastroPatrocinador from '../components/CadastroPatrocinador.vue'
 
 export default {
   name: 'DashboardView',
   components: {
     PedidosAdmin,
     CadastroProduto,
-    CadastroCategoria
+    CadastroCategoria,
+    CadastroPatrocinador
   },
   setup() {
     const { user } = useAuth()
@@ -133,7 +153,8 @@ export default {
       const titles = {
         pedidos: 'Gerenciar Pedidos',
         produtos: 'Gerenciar Produtos',
-        categorias: 'Gerenciar Categorias'
+        categorias: 'Gerenciar Categorias',
+        patrocinadores: 'Gerenciar Patrocinadores'
       }
       return titles[activeSection.value] || 'Dashboard'
     }
@@ -153,6 +174,7 @@ export default {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   padding-top: 80px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .access-denied {
@@ -167,8 +189,12 @@ export default {
 
 .access-denied-icon {
   font-size: 4rem;
-  color: #EF4444;
   margin-bottom: 1.5rem;
+}
+
+.lock-icon {
+  font-size: 4rem;
+  filter: grayscale(100%);
 }
 
 .access-denied h2 {
@@ -185,7 +211,7 @@ export default {
 }
 
 .btn-home {
-  background: linear-gradient(135deg, #8C52FF, #6B3DD6);
+  background: linear-gradient(135deg, #9333ea, #2563eb);
   color: white;
   text-decoration: none;
   padding: 1rem 2rem;
@@ -198,8 +224,9 @@ export default {
 }
 
 .btn-home:hover {
-  background: linear-gradient(135deg, #6B3DD6, #4A2B9A);
+  background: linear-gradient(135deg, #7c3aed, #1d4ed8);
   transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(147, 51, 234, 0.3);
 }
 
 .dashboard-container {
@@ -210,14 +237,18 @@ export default {
 
 .mobile-header {
   display: none;
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
   padding: 1rem;
-  border-bottom: 1px solid rgba(140, 82, 255, 0.1);
-  box-shadow: 0 2px 10px rgba(140, 82, 255, 0.05);
+  border-bottom: 1px solid rgba(147, 51, 234, 0.1);
+  box-shadow: 0 2px 20px rgba(147, 51, 234, 0.1);
 }
 
 .mobile-header h1 {
-  color: #8C52FF;
+  background: linear-gradient(135deg, #9333ea, #2563eb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
   font-size: 1.5rem;
   font-weight: 800;
   margin-bottom: 1rem;
@@ -243,16 +274,18 @@ export default {
   font-size: 0.8rem;
   font-weight: 600;
   color: #666;
-  border-radius: 8px;
+  border-radius: 12px;
   flex: 1;
   min-width: 0;
 }
 
-.mobile-nav-item i {
+.mobile-nav-item .nav-icon {
   font-size: 1.2rem;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
 }
 
-.mobile-nav-item span {
+.mobile-nav-item span:last-child {
   font-size: 0.75rem;
   white-space: nowrap;
   overflow: hidden;
@@ -260,34 +293,56 @@ export default {
 }
 
 .mobile-nav-item:hover {
-  background: rgba(140, 82, 255, 0.05);
-  color: #8C52FF;
+  background: rgba(147, 51, 234, 0.05);
+  color: #9333ea;
+}
+
+.mobile-nav-item:hover .nav-icon {
+  filter: grayscale(0%);
 }
 
 .mobile-nav-item.active {
-  background: linear-gradient(135deg, rgba(140, 82, 255, 0.1), rgba(140, 82, 255, 0.05));
-  color: #8C52FF;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(37, 99, 235, 0.05));
+  color: #9333ea;
+}
+
+.mobile-nav-item.active .nav-icon {
+  filter: grayscale(0%);
 }
 
 .desktop-sidebar {
-  background: white;
-  border-right: 1px solid rgba(140, 82, 255, 0.1);
-  box-shadow: 4px 0 20px rgba(140, 82, 255, 0.05);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(147, 51, 234, 0.1);
+  box-shadow: 4px 0 20px rgba(147, 51, 234, 0.1);
 }
 
 .sidebar-header {
   padding: 2rem;
-  border-bottom: 1px solid rgba(140, 82, 255, 0.1);
+  border-bottom: 1px solid rgba(147, 51, 234, 0.1);
 }
 
 .sidebar-header h2 {
-  color: #8C52FF;
   font-size: 1.5rem;
   font-weight: 800;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   margin: 0;
+}
+
+.logo-text {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.admin-text {
+  background: linear-gradient(135deg, #9333ea, #2563eb);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .sidebar-nav {
@@ -308,17 +363,32 @@ export default {
   font-size: 1rem;
   font-weight: 600;
   color: #666;
+  border-radius: 0;
+}
+
+.nav-item .nav-icon {
+  font-size: 1.2rem;
+  filter: grayscale(100%);
+  transition: filter 0.3s ease;
 }
 
 .nav-item:hover {
-  background: rgba(140, 82, 255, 0.05);
-  color: #8C52FF;
+  background: rgba(147, 51, 234, 0.05);
+  color: #9333ea;
+}
+
+.nav-item:hover .nav-icon {
+  filter: grayscale(0%);
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, rgba(140, 82, 255, 0.1), rgba(140, 82, 255, 0.05));
-  color: #8C52FF;
-  border-right: 3px solid #8C52FF;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(37, 99, 235, 0.05));
+  color: #9333ea;
+  border-right: 3px solid #9333ea;
+}
+
+.nav-item.active .nav-icon {
+  filter: grayscale(0%);
 }
 
 .main-content {
@@ -332,7 +402,7 @@ export default {
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(140, 82, 255, 0.1);
+  border-bottom: 1px solid rgba(147, 51, 234, 0.1);
 }
 
 .content-header h1 {
@@ -345,14 +415,19 @@ export default {
 .user-info {
   color: #666;
   font-weight: 500;
+  padding: 0.5rem 1rem;
+  background: rgba(147, 51, 234, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(147, 51, 234, 0.1);
 }
 
 .content-body {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(140, 82, 255, 0.1);
-  border: 1px solid rgba(140, 82, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(147, 51, 234, 0.1);
+  border: 1px solid rgba(147, 51, 234, 0.1);
 }
 
 @media (max-width: 768px) {
@@ -406,11 +481,11 @@ export default {
     font-size: 0.7rem;
   }
   
-  .mobile-nav-item i {
+  .mobile-nav-item .nav-icon {
     font-size: 1rem;
   }
   
-  .mobile-nav-item span {
+  .mobile-nav-item span:last-child {
     font-size: 0.65rem;
   }
   
@@ -428,7 +503,7 @@ export default {
 }
 
 @media (max-width: 360px) {
-  .mobile-nav-item span {
+  .mobile-nav-item span:last-child {
     display: none;
   }
   

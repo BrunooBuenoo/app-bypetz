@@ -19,12 +19,19 @@ import Carrinho from "../views/Carrinho.vue"
 import FinalizarPedido from "../views/FinalizarPedido.vue"
 import Dashboard from "../views/Dashboard.vue"
 import Exemplo from "../components/Exemplo.vue" 
+import Patrocinadores from "../views/Patrocinadores.vue"
+
 
 const routes = [
   {
     path: "/",
     name: "Home",
     component: PaginaInicial,
+  },
+  {
+    path: "/patrocinadores",
+    name: "Patrocinadores",
+    component: Patrocinadores,
   },
   {
     path: "/feed",
@@ -97,6 +104,7 @@ const routes = [
     name: "ExemploComponente",
     component: Exemplo,
   },
+  
 ]
 
 const router = createRouter({

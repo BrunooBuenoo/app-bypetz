@@ -493,6 +493,7 @@
       </div>
     </div>
   </div>
+  <Patrocinadores />
   <RodapeSite />
 </template>
 
@@ -503,12 +504,14 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { db } from '../firebase/config'
 import RodapeSite from '../components/RodapeSite.vue'
 import CityAutocomplete from '../components/CityAutocomplete.vue'
+import Patrocinadores from './Patrocinadores.vue'
 
 export default {
   name: "PaginaFeed",
   components: {
     RodapeSite,
-    CityAutocomplete
+    CityAutocomplete,
+    Patrocinadores
   },
   setup() {
     const pets = ref([])

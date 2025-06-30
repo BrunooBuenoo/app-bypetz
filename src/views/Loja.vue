@@ -1,32 +1,6 @@
 <template>
   <div class="loja-page">
-    <!-- Seção de Patrocinadores -->
-    <div class="sponsors-section">
-      <div class="sponsors-container">
-        <h2 class="sponsors-title">Nossos Parceiros</h2>
-        <div class="sponsors-grid">
-          <div class="sponsor-card">
-            <div class="sponsor-placeholder">Dog Chow</div>
-          </div>
-          <div class="sponsor-card">
-            <div class="sponsor-placeholder">Casa das Rações</div>
-          </div>
-          <div class="sponsor-card">
-            <div class="sponsor-placeholder">Whiskas</div>
-          </div>
-          <div class="sponsor-card">
-            <div class="sponsor-placeholder">Royal Canin</div>
-          </div>
-          <div class="sponsor-card">
-            <div class="sponsor-placeholder">Pedigree</div>
-          </div>
-          <div class="sponsor-card">
-            <div class="sponsor-placeholder">Purina</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <Patrocinadores />
     <!-- Container Principal -->
     <div class="loja-container">
       <!-- Header da Loja -->
@@ -345,10 +319,12 @@ import { useCartStore } from '../stores/cartStore'
 import ProductCard from '../components/ProductCard.vue'
 import ProductModal from '../components/ProductModal.vue'
 import RodapeSite from '../components/RodapeSite.vue'
+import Patrocinadores from './Patrocinadores.vue'
 
 export default {
   name: 'LojaView',
   components: {
+    Patrocinadores,
     ProductCard,
     ProductModal,
     RodapeSite
@@ -671,58 +647,7 @@ export default {
   background: #ffffff;
 }
 
-/* Seção de Patrocinadores */
-.sponsors-section {
-  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
-  padding: 3rem 0;
-  width: 100%;
-}
 
-.sponsors-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  text-align: center;
-}
-
-.sponsors-title {
-  color: white;
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0 0 2rem 0;
-}
-
-.sponsors-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1.5rem;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.sponsor-card {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  min-height: 80px;
-}
-
-.sponsor-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.sponsor-placeholder {
-  color: #9333ea;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-align: center;
-}
 
 /* Container Principal */
 .loja-container {
@@ -1458,10 +1383,6 @@ export default {
 
 /* Responsividade */
 @media (max-width: 1024px) {
-  .sponsors-grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1rem;
-  }
   
   .loja-content {
     grid-template-columns: 280px 1fr;
@@ -1478,26 +1399,8 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .sponsors-section {
-    padding: 2rem 0;
-  }
-  
-  .sponsors-container {
-    padding: 0 1rem;
-  }
-  
-  .sponsors-title {
-    font-size: 1.5rem;
-  }
-  
-  .sponsors-grid {
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 1rem;
-  }
-  
-  .sponsor-card {
-    padding: 1rem;
-  }
+
+
   
   .loja-header {
     padding: 1.5rem 1rem;
@@ -1558,23 +1461,6 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .sponsors-section {
-    padding: 1.5rem 0;
-  }
-  
-  .sponsors-title {
-    font-size: 1.25rem;
-  }
-  
-  .sponsors-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-  
-  .sponsor-card {
-    padding: 0.75rem;
-  }
-  
   .loja-header {
     padding: 1rem;
   }
@@ -1632,10 +1518,6 @@ export default {
 }
 
 @media (max-width: 360px) {
-  .sponsors-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .page-title {
     font-size: 1.25rem;
   }
