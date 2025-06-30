@@ -1,5 +1,3 @@
-"use client"
-
 import { createRouter, createWebHistory } from "vue-router"
 import { useAuth } from "../composables/useAuth"
 
@@ -20,7 +18,6 @@ import FinalizarPedido from "../views/FinalizarPedido.vue"
 import Dashboard from "../views/Dashboard.vue"
 import Exemplo from "../components/Exemplo.vue" 
 import Patrocinadores from "../views/Patrocinadores.vue"
-
 
 const routes = [
   {
@@ -104,12 +101,33 @@ const routes = [
     name: "ExemploComponente",
     component: Exemplo,
   },
-  
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  // 👇 ADICIONE ESTA CONFIGURAÇÃO AQUI
+  scrollBehavior(to, from, savedPosition) {
+    // Se há uma posição salva (botão voltar do navegador)
+    if (savedPosition) {
+      return savedPosition
+    }
+    
+    // Se há um hash na URL (#section)
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth'
+      }
+    }
+    
+    // Para todas as outras navegações, voltar ao topo
+    return { 
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    }
+  }
 })
 
 // Guard de navegação com verificação de admin
