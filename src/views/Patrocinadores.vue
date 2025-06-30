@@ -1,541 +1,492 @@
 <template>
-  <div class="sponsors-section">
-    <div class="sponsors-container">
-      
-      <!-- Loading State -->
-      <div v-if="loading" class="loading-container">
-        <div class="loading-spinner"></div>
-        <p>Carregando parceiros...</p>
-      </div>
+  <div class="patrocinadores">
+    <div class="patrocinadores-header">
+      <h2>Patrocinadores</h2>
+      <button @click="openPatrocinadorModal">Adicionar Patrocinador</button>
+    </div>
 
-      <!-- Error State -->
-      <div v-else-if="error" class="error-container">
-        <p>{{ error }}</p>
-      </div>
+    <div v-if="isLoading" class="loading">Carregando patrocinadores...</div>
+    <div v-else-if="sponsors.length === 0" class="no-sponsors">Nenhum patrocinador cadastrado.</div>
+    <div v-else class="patrocinadores-grid">
+      <div v-for="patrocinador in sponsors" :key="patrocinador.id" class="patrocinador-card">
+        <img :src="patrocinador.logoURL" :alt="patrocinador.nome" class="patrocinador-logo">
+        <div class="patrocinador-info">
+          <h3>{{ patrocinador.nome }}</h3>
+          <p>{{ patrocinador.descricao }}</p>
+          <span :class="['status', patrocinador.status]">{{ patrocinador.status }}</span>
+        </div>
 
-      <!-- Sponsors Display -->
-      <div v-else-if="activeSponsors.length > 0" class="sponsors-wrapper">
-        <div 
-          class="sponsors-track" 
-          :style="{ 
-            animationDuration: `${animationDuration}s`
-          }"
-        >
-          <!-- Primeira sequência -->
-          <div class="sponsor-card" v-for="sponsor in activeSponsors" :key="`first-${sponsor.id}`">
-            <div class="sponsor-logo">
-              <img v-if="sponsor.logo" :src="sponsor.logo" :alt="sponsor.nome" />
-              <span v-else class="sponsor-placeholder">{{ sponsor.nome }}</span>
-            </div>
-          </div>
+        <div class="patrocinador-actions">
+          <button 
+            @click="openModal(patrocinador)"
+            class="action-btn view"
+            title="Ver detalhes"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
           
-          <!-- Segunda sequência (para loop infinito) -->
-          <div class="sponsor-card" v-for="sponsor in activeSponsors" :key="`second-${sponsor.id}`">
-            <div class="sponsor-logo">
-              <img v-if="sponsor.logo" :src="sponsor.logo" :alt="sponsor.nome" />
-              <span v-else class="sponsor-placeholder">{{ sponsor.nome }}</span>
-            </div>
-          </div>
+          <button 
+            @click="editPatrocinador(patrocinador)"
+            class="action-btn edit"
+            title="Editar patrocinador"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M18.5 2.50023C18.8978 2.1024 19.4374 1.87891 20 1.87891C20.5626 1.87891 21.1022 2.1024 21.5 2.50023C21.8978 2.89805 22.1213 3.43762 22.1213 4.00023C22.1213 4.56284 21.8978 5.1024 21.5 5.50023L12 15.0002L8 16.0002L9 12.0002L18.5 2.50023Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <button 
+            @click="deletePatrocinador(patrocinador.id)"
+            class="action-btn delete"
+            title="Excluir patrocinador"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2"/>
+              <path d="M19,6V20C19,21 18,22 17,22H7C6,22 5,21 5,20V6M8,6V4C8,3 9,2 10,2H14C15,2 16,3 16,4V6" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
         </div>
       </div>
-
-      <!-- No Sponsors State -->
-      <div v-else class="no-sponsors">
-        <div class="no-sponsors-icon">🤝</div>
-        <h3>Nenhum parceiro ativo no momento</h3>
-        <p>Em breve teremos novos parceiros para apresentar!</p>
-      </div>
     </div>
+
+    <!-- Modal do Patrocinador -->
+    <PatrocinadorModal
+      v-if="selectedPatrocinador"
+      :patrocinador="selectedPatrocinador"
+      :isOpen="showModal"
+      @close="closeModal"
+      @edit="handleModalEdit"
+      @status-change="handleModalStatusChange"
+    />
+
+    <Teleport to="body">
+      <div v-if="showPatrocinadorModal" class="modal-overlay">
+        <div class="modal">
+          <header class="modal-header">
+            <h2>Adicionar Patrocinador</h2>
+            <button @click="closePatrocinadorModal" class="close-button">&times;</button>
+          </header>
+          <form @submit.prevent="addPatrocinador" class="modal-content">
+            <div class="form-group">
+              <label for="nome">Nome:</label>
+              <input type="text" id="nome" v-model="newPatrocinador.nome" required>
+            </div>
+            <div class="form-group">
+              <label for="descricao">Descrição:</label>
+              <textarea id="descricao" v-model="newPatrocinador.descricao" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="logoURL">URL do Logo:</label>
+              <input type="url" id="logoURL" v-model="newPatrocinador.logoURL" required>
+            </div>
+            <div class="form-group">
+              <label for="status">Status:</label>
+              <select id="status" v-model="newPatrocinador.status">
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button type="submit">Salvar</button>
+              <button type="button" @click="closePatrocinadorModal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
+
+    <div v-if="successMessage" class="success-message">{{ successMessage }}</div>
+    <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted, watch } from 'vue'
-import { 
-  collection, 
-  getDocs, 
-  query, 
-  orderBy 
-} from 'firebase/firestore'
+import { ref, onMounted } from 'vue'
 import { db } from '../firebase/config'
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore'
+import PatrocinadorModal from '../components/PatrocinadorModal.vue'
 
 export default {
-  name: 'Patrocinadores',
+  components: {
+    PatrocinadorModal
+  },
   setup() {
     const sponsors = ref([])
-    const loading = ref(true)
-    const error = ref('')
-    const animationDuration = ref(30)
-
-    // Computed para filtrar apenas patrocinadores ativos
-    const activeSponsors = computed(() => {
-      return sponsors.value.filter(sponsor => sponsor.status === 'ativo')
+    const isLoading = ref(true)
+    const showPatrocinadorModal = ref(false)
+    const newPatrocinador = ref({
+      nome: '',
+      descricao: '',
+      logoURL: '',
+      status: 'ativo'
     })
+    const successMessage = ref('')
+    const errorMessage = ref('')
 
-    // Calcular duração da animação baseada na quantidade de patrocinadores
-    const calculateAnimationDuration = () => {
-      const sponsorCount = activeSponsors.value.length
-      if (sponsorCount === 0) return
-      
-      // Velocidade base: 3 segundos por patrocinador
-      // Mínimo de 20s, máximo de 60s
-      const baseDuration = sponsorCount * 3
-      animationDuration.value = Math.max(20, Math.min(60, baseDuration))
+    const showModal = ref(false)
+    const selectedPatrocinador = ref(null)
+
+    const openModal = (patrocinador) => {
+      selectedPatrocinador.value = patrocinador
+      showModal.value = true
     }
 
-    // Observar mudanças nos patrocinadores ativos
-    watch(activeSponsors, () => {
-      calculateAnimationDuration()
-    }, { immediate: true })
+    const closeModal = () => {
+      showModal.value = false
+      selectedPatrocinador.value = null
+    }
 
-    // Função para buscar patrocinadores do Firebase
-    const fetchSponsors = async () => {
+    const handleModalEdit = (patrocinador) => {
+      editPatrocinador(patrocinador)
+      closeModal()
+    }
+
+    const handleModalStatusChange = async (updatedPatrocinador) => {
       try {
-        loading.value = true
-        error.value = ''
-
-        // Query para buscar patrocinadores ordenados por nome
-        const sponsorsQuery = query(
-          collection(db, 'patrocinadores'),
-          orderBy('nome', 'asc')
-        )
-
-        const querySnapshot = await getDocs(sponsorsQuery)
-        const fetchedSponsors = []
-
-        querySnapshot.forEach((doc) => {
-          const sponsorData = {
-            id: doc.id,
-            ...doc.data()
-          }
-          
-          // Verificar se o patrocinador está dentro do período de validade
-          const now = new Date()
-          const dataInicio = sponsorData.dataInicio ? new Date(sponsorData.dataInicio) : null
-          const dataFim = sponsorData.dataFim ? new Date(sponsorData.dataFim) : null
-
-          // Incluir se:
-          // 1. Status é ativo
-          // 2. Não tem data de início OU data de início já passou
-          // 3. Não tem data de fim OU data de fim ainda não chegou
-          const isActive = sponsorData.status === 'ativo' &&
-                          (!dataInicio || dataInicio <= now) &&
-                          (!dataFim || dataFim >= now)
-
-          if (isActive) {
-            fetchedSponsors.push(sponsorData)
-          }
+        await updateDoc(doc(db, 'patrocinadores', updatedPatrocinador.id), {
+          status: updatedPatrocinador.status,
+          atualizadoEm: serverTimestamp()
         })
 
-        sponsors.value = fetchedSponsors
-
-        // Se não houver patrocinadores ativos, mostrar dados de exemplo
-        if (fetchedSponsors.length === 0) {
-          sponsors.value = [
-            { id: 'demo1', nome: 'Dog Chow', logo: null, status: 'ativo' },
-            { id: 'demo2', nome: 'Casa das Rações', logo: null, status: 'ativo' },
-            { id: 'demo3', nome: 'Whiskas', logo: null, status: 'ativo' },
-            { id: 'demo4', nome: 'Royal Canin', logo: null, status: 'ativo' },
-            { id: 'demo5', nome: 'Pedigree', logo: null, status: 'ativo' },
-            { id: 'demo6', nome: 'Purina', logo: null, status: 'ativo' },
-            { id: 'demo7', nome: 'Hills', logo: null, status: 'ativo' },
-            { id: 'demo8', nome: 'Premier', logo: null, status: 'ativo' },
-            { id: 'demo9', nome: 'Friskies', logo: null, status: 'ativo' },
-            { id: 'demo10', nome: 'Biofresh', logo: null, status: 'ativo' }
-          ]
+        const index = sponsors.value.findIndex(p => p.id === updatedPatrocinador.id)
+        if (index !== -1) {
+          sponsors.value[index].status = updatedPatrocinador.status
         }
 
-      } catch (err) {
-        console.error('Erro ao buscar patrocinadores:', err)
-        error.value = 'Erro ao carregar parceiros. Tente novamente mais tarde.'
-        
-        // Em caso de erro, mostrar dados de exemplo
-        sponsors.value = [
-          { id: 'demo1', nome: 'Dog Chow', logo: null, status: 'ativo' },
-          { id: 'demo2', nome: 'Casa das Rações', logo: null, status: 'ativo' },
-          { id: 'demo3', nome: 'Whiskas', logo: null, status: 'ativo' },
-          { id: 'demo4', nome: 'Royal Canin', logo: null, status: 'ativo' },
-          { id: 'demo5', nome: 'Pedigree', logo: null, status: 'ativo' },
-          { id: 'demo6', nome: 'Purina', logo: null, status: 'ativo' },
-          { id: 'demo7', nome: 'Hills', logo: null, status: 'ativo' },
-          { id: 'demo8', nome: 'Premier', logo: null, status: 'ativo' },
-          { id: 'demo9', nome: 'Friskies', logo: null, status: 'ativo' },
-          { id: 'demo10', nome: 'Biofresh', logo: null, status: 'ativo' }
-        ]
-      } finally {
-        loading.value = false
+        successMessage.value = `Patrocinador ${updatedPatrocinador.status === 'ativo' ? 'ativado' : 'desativado'} com sucesso!`
+        setTimeout(() => { successMessage.value = '' }, 3000)
+        closeModal()
+      } catch (error) {
+        console.error('Erro ao alterar status:', error)
+        errorMessage.value = 'Erro ao alterar status do patrocinador'
+        setTimeout(() => { errorMessage.value = '' }, 3000)
       }
     }
 
-    // Carregar patrocinadores quando o componente for montado
-    onMounted(() => {
-      fetchSponsors()
-    })
+    const fetchPatrocinadores = async () => {
+      isLoading.value = true
+      try {
+        const querySnapshot = await getDocs(collection(db, 'patrocinadores'))
+        sponsors.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+      } catch (error) {
+        console.error('Erro ao buscar patrocinadores:', error)
+        errorMessage.value = 'Erro ao buscar patrocinadores.'
+        setTimeout(() => { errorMessage.value = '' }, 3000)
+      } finally {
+        isLoading.value = false
+      }
+    }
+
+    onMounted(fetchPatrocinadores)
+
+    const openPatrocinadorModal = () => {
+      showPatrocinadorModal.value = true
+    }
+
+    const closePatrocinadorModal = () => {
+      showPatrocinadorModal.value = false
+      newPatrocinador.value = {
+        nome: '',
+        descricao: '',
+        logoURL: '',
+        status: 'ativo'
+      }
+    }
+
+    const addPatrocinador = async () => {
+      try {
+        await addDoc(collection(db, 'patrocinadores'), {
+          ...newPatrocinador.value,
+          criadoEm: serverTimestamp(),
+          atualizadoEm: serverTimestamp()
+        })
+        successMessage.value = 'Patrocinador adicionado com sucesso!'
+        setTimeout(() => { successMessage.value = '' }, 3000)
+        closePatrocinadorModal()
+        await fetchPatrocinadores() // Recarrega os patrocinadores após adicionar
+      } catch (error) {
+        console.error('Erro ao adicionar patrocinador:', error)
+        errorMessage.value = 'Erro ao adicionar patrocinador.'
+        setTimeout(() => { errorMessage.value = '' }, 3000)
+      }
+    }
+
+    const editPatrocinador = (patrocinador) => {
+      // Implemente a lógica para editar o patrocinador aqui
+      console.log('Editar patrocinador:', patrocinador)
+    }
+
+    const deletePatrocinador = async (id) => {
+      if (confirm('Tem certeza que deseja excluir este patrocinador?')) {
+        try {
+          await deleteDoc(doc(db, 'patrocinadores', id))
+          sponsors.value = sponsors.value.filter(patrocinador => patrocinador.id !== id)
+          successMessage.value = 'Patrocinador excluído com sucesso!'
+          setTimeout(() => { successMessage.value = '' }, 3000)
+        } catch (error) {
+          console.error('Erro ao excluir patrocinador:', error)
+          errorMessage.value = 'Erro ao excluir patrocinador.'
+          setTimeout(() => { errorMessage.value = '' }, 3000)
+        }
+      }
+    }
 
     return {
       sponsors,
-      activeSponsors,
-      loading,
-      error,
-      animationDuration,
-      fetchSponsors
+      isLoading,
+      showPatrocinadorModal,
+      newPatrocinador,
+      successMessage,
+      errorMessage,
+      fetchPatrocinadores,
+      openPatrocinadorModal,
+      closePatrocinadorModal,
+      addPatrocinador,
+      editPatrocinador,
+      deletePatrocinador,
+      showModal,
+      selectedPatrocinador,
+      openModal,
+      closeModal,
+      handleModalEdit,
+      handleModalStatusChange,
     }
   }
 }
 </script>
 
 <style scoped>
-.sponsors-section {
-  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
-  padding: 2rem;
-  padding-top: 3rem;
-  overflow: hidden;
-  position: relative;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+.patrocinadores {
+  padding: 20px;
 }
 
-.sponsors-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 2rem;
+.patrocinadores-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.sponsors-title {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: 800;
+.patrocinadores-header h2 {
+  margin: 0;
+}
+
+.patrocinadores-header button {
+  background-color: #4CAF50;
   color: white;
-  margin-bottom: 3rem;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-/* Loading State */
-.loading-container {
+.patrocinadores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.patrocinador-card {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
+  justify-content: space-between;
+}
+
+.patrocinador-logo {
+  max-width: 100%;
+  height: 150px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.patrocinador-info h3 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.patrocinador-info p {
+  margin: 5px 0;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.8em;
   color: white;
 }
 
-.loading-spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top: 3px solid white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
+.status.ativo {
+  background-color: #28a745;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.status.inativo {
+  background-color: #dc3545;
 }
 
-.loading-container p {
-  font-size: 1.1rem;
-  font-weight: 500;
-  opacity: 0.9;
-}
-
-/* Error State */
-.error-container {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.error-container p {
-  font-size: 1.1rem;
-  font-weight: 500;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-}
-
-/* No Sponsors State */
-.no-sponsors {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: white;
-}
-
-.no-sponsors-icon {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
-  opacity: 0.8;
-}
-
-.no-sponsors h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  opacity: 0.9;
-}
-
-.no-sponsors p {
-  font-size: 1rem;
-  opacity: 0.8;
-  max-width: 400px;
-  margin: 0 auto;
-  line-height: 1.5;
-}
-
-/* Sponsors Display */
-.sponsors-wrapper {
-  position: relative;
-  overflow: hidden;
-  height: 140px;
-  width: 100%;
-  /* Máscara sutil para fade nas bordas */
-  mask: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(0, 0, 0, 0.1) 5%,
-    rgba(0, 0, 0, 0.8) 15%,
-    black 25%,
-    black 75%,
-    rgba(0, 0, 0, 0.8) 85%,
-    rgba(0, 0, 0, 0.1) 95%,
-    transparent 100%
-  );
-  -webkit-mask: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(0, 0, 0, 0.1) 5%,
-    rgba(0, 0, 0, 0.8) 15%,
-    black 25%,
-    black 75%,
-    rgba(0, 0, 0, 0.8) 85%,
-    rgba(0, 0, 0, 0.1) 95%,
-    transparent 100%
-  );
-}
-
-.sponsors-track {
+.patrocinador-actions {
   display: flex;
-  gap: 2rem;
-  animation: scroll-infinite linear infinite;
-  width: fit-content;
-  will-change: transform;
+  justify-content: flex-end;
+  margin-top: 10px;
 }
 
-/* Animação de loop infinito perfeito */
-@keyframes scroll-infinite {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.sponsor-card {
-  flex-shrink: 0;
-  width: 200px;
-  height: 130px;
-  background: white;
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+.action-btn {
+  background: #eee;
+  border: none;
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 5px;
   transition: all 0.3s ease;
 }
 
-.sponsor-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+.action-btn svg {
+  display: block;
 }
 
-.sponsor-logo {
+.action-btn.edit {
+  background: #d1c4e9;
+  color: #4527a0;
+}
+
+.action-btn.edit:hover {
+  background: #b39ddb;
+  transform: scale(1.1);
+}
+
+.action-btn.delete {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
+
+.action-btn.delete:hover {
+  background: #ef9a9a;
+  transform: scale(1.1);
+}
+
+.action-btn.view {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.action-btn.view:hover {
+  background: #e9d5ff;
+  transform: scale(1.1);
+}
+
+.loading,
+.no-sponsors {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #888;
+}
+
+/* Estilos do Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 1rem;
+  align-items: center;
+  z-index: 1000;
 }
 
-.sponsor-logo img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  transition: all 0.3s ease; /* Manter apenas a transição suave */
+.modal {
+  background: white;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.sponsor-card:hover .sponsor-logo img {
-  transform: scale(1.05); /* Adicionar um leve zoom no hover em vez do grayscale */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
 }
 
-.sponsor-placeholder {
-  font-size: 1.1rem;
-  font-weight: 700;
+.modal-header h2 {
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #888;
+}
+
+.modal-content {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.form-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #5c6bc0;
+  color: white;
+}
+
+.success-message {
+  background-color: #4CAF50;
+  color: white;
   text-align: center;
-  background: linear-gradient(135deg, #9333ea, #2563eb);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  line-height: 1.2;
-  padding: 0.5rem;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-  .sponsors-section {
-    padding: 1.5rem;
-  }
-  
-  .sponsors-container {
-    padding: 0 1rem;
-  }
-  
-  .sponsors-title {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-  }
-  
-  .sponsors-wrapper {
-    height: 110px;
-    /* Máscara mais suave para mobile */
-    mask: linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(0, 0, 0, 0.2) 8%,
-      black 20%,
-      black 80%,
-      rgba(0, 0, 0, 0.2) 92%,
-      transparent 100%
-    );
-    -webkit-mask: linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(0, 0, 0, 0.2) 8%,
-      black 20%,
-      black 80%,
-      rgba(0, 0, 0, 0.2) 92%,
-      transparent 100%
-    );
-  }
-  
-  .sponsor-card {
-    width: 160px;
-    height: 100px;
-  }
-  
-  .sponsors-track {
-    gap: 1.5rem;
-  }
-  
-  .loading-container,
-  .error-container,
-  .no-sponsors {
-    padding: 3rem 1rem;
-  }
-  
-  .no-sponsors-icon {
-    font-size: 3rem;
-  }
-  
-  .no-sponsors h3 {
-    font-size: 1.3rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .sponsors-title {
-    font-size: 1.5rem;
-  }
-  
-  .sponsors-wrapper {
-    height: 95px;
-    /* Máscara ainda mais suave para mobile pequeno */
-    mask: linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(0, 0, 0, 0.3) 10%,
-      black 25%,
-      black 75%,
-      rgba(0, 0, 0, 0.3) 90%,
-      transparent 100%
-    );
-    -webkit-mask: linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(0, 0, 0, 0.3) 10%,
-      black 25%,
-      black 75%,
-      rgba(0, 0, 0, 0.3) 90%,
-      transparent 100%
-    );
-  }
-  
-  .sponsor-card {
-    width: 140px;
-    height: 90px;
-  }
-  
-  .sponsor-placeholder {
-    font-size: 0.9rem;
-  }
-  
-  .sponsors-track {
-    gap: 1rem;
-  }
-  
-  .loading-container,
-  .error-container,
-  .no-sponsors {
-    padding: 2rem 1rem;
-  }
-  
-  .no-sponsors-icon {
-    font-size: 2.5rem;
-  }
-  
-  .no-sponsors h3 {
-    font-size: 1.2rem;
-  }
-  
-  .no-sponsors p {
-    font-size: 0.9rem;
-  }
-}
-
-/* Animação mais suave em dispositivos com preferência por movimento reduzido */
-@media (prefers-reduced-motion: reduce) {
-  .sponsors-track {
-    animation-duration: 120s !important;
-  }
-  
-  .sponsor-card:hover {
-    transform: none;
-  }
-  
-  .loading-spinner {
-    animation: none;
-  }
-  
-  .sponsors-wrapper {
-    mask: none;
-    -webkit-mask: none;
-  }
-}
-
-/* Otimizações de performance */
-.sponsors-track {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-}
-
-.sponsor-card {
-  transform: translateZ(0);
+.error-message {
+  background-color: #f44336;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
 }
 </style>

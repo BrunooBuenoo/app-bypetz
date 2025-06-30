@@ -221,7 +221,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 export default {
-  name: 'RegistroClean',
+  name: 'Registro',
   setup() {
     const router = useRouter()
     const { register, loginWithGoogle, loading, error } = useAuth()

@@ -1,137 +1,205 @@
 <template>
   <div class="pedidos-admin">
+    <!-- Header com estatísticas -->
     <div class="section-header">
-      <h2>
-        <i class="fas fa-shopping-bag"></i>
-        Lista de Pedidos
-      </h2>
-      <div class="stats">
-        <div class="stat-item">
-          <span class="stat-number">{{ pedidos.length }}</span>
-          <span class="stat-label">Total</span>
+      <div class="header-content">
+        <h2 class="section-title">
+          <div class="title-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 7L12 1L5 7V20H19V7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          Gerenciar Pedidos
+        </h2>
+        <p class="section-subtitle">Acompanhe e gerencie todos os pedidos da loja</p>
+      </div>
+      
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-icon total">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+              <circle cx="9" cy="9" r="2" stroke="currentColor" stroke-width="2"/>
+              <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-number">{{ pedidos.length }}</span>
+            <span class="stat-label">Total de Pedidos</span>
+          </div>
         </div>
-        <div class="stat-item">
-          <span class="stat-number">{{ pedidosPendentes }}</span>
-          <span class="stat-label">Pendentes</span>
+        
+        <div class="stat-card">
+          <div class="stat-icon pending">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <span class="stat-number">{{ pedidosPendentes }}</span>
+            <span class="stat-label">Pendentes</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Loading -->
-    <div v-if="loading" class="loading-container">
+    <!-- Loading State -->
+    <div v-if="loading" class="loading-state">
       <div class="loading-spinner"></div>
-      <p>Carregando pedidos...</p>
+      <p class="loading-text">Carregando pedidos...</p>
     </div>
 
     <!-- Lista de Pedidos -->
-    <div v-else-if="pedidos.length > 0" class="pedidos-list">
+    <div v-else-if="pedidos.length > 0" class="pedidos-container">
       <div v-for="pedido in pedidos" :key="pedido.id" class="pedido-card">
+        <!-- Header do Pedido -->
         <div class="pedido-header">
           <div class="pedido-info">
-            <span class="pedido-numero">{{ pedido.numeropedido }}</span>
+            <h3 class="pedido-numero">{{ pedido.numeropedido }}</h3>
             <span class="pedido-data">{{ formatDate(pedido.criadoEm) }}</span>
           </div>
-          <div class="pedido-status">
+          <div class="status-container">
             <span class="status-badge" :class="pedido.status">
               {{ getStatusLabel(pedido.status) }}
             </span>
           </div>
         </div>
 
-        <div class="pedido-cliente">
-          <i class="fas fa-user"></i>
-          <span>{{ pedido.userName || pedido.userEmail }}</span>
+        <!-- Cliente -->
+        <div class="cliente-info">
+          <div class="cliente-avatar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+          <span class="cliente-nome">{{ pedido.userName || pedido.userEmail }}</span>
         </div>
 
-        <div class="pedido-produtos">
-          <h4>Produtos:</h4>
+        <!-- Produtos -->
+        <div class="produtos-section">
+          <h4 class="produtos-title">Produtos do Pedido</h4>
           <div class="produtos-list">
             <div v-for="produto in pedido.produtos" :key="produto.id" class="produto-item">
-              <img :src="produto.imagem || placeholderImage" :alt="produto.nome" />
+              <div class="produto-image">
+                <img :src="produto.imagem || placeholderImage" :alt="produto.nome" />
+              </div>
               <div class="produto-details">
                 <span class="produto-nome">{{ produto.nome }}</span>
-                <span class="produto-quantidade">Qtd: {{ produto.quantidade }}</span>
-                <span class="produto-preco">R$ {{ formatPrice(produto.preco * produto.quantidade) }}</span>
+                <div class="produto-meta">
+                  <span class="produto-quantidade">Qtd: {{ produto.quantidade }}</span>
+                  <span class="produto-preco">R$ {{ formatPrice(produto.preco * produto.quantidade) }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Footer com Total e Ações -->
         <div class="pedido-footer">
-          <div class="pedido-total">
-            <span class="total-label">Total:</span>
+          <div class="total-section">
+            <span class="total-label">Total do Pedido</span>
             <span class="total-value">R$ {{ formatPrice(pedido.total) }}</span>
           </div>
-          <div class="pedido-actions">
+          
+          <div class="actions-section">
             <button 
               @click="updateStatus(pedido.id, 'processando')"
-              class="btn-action btn-process"
+              class="action-btn primary"
               :disabled="pedido.status !== 'pendente'"
             >
-              <i class="fas fa-cog"></i>
-              <span class="btn-text">Processar</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 1V9" stroke="currentColor" stroke-width="2"/>
+                <path d="M21 12H13" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 15V23" stroke="currentColor" stroke-width="2"/>
+                <path d="M3 12H11" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Processar
             </button>
+            
             <button 
               @click="updateStatus(pedido.id, 'concluido')"
-              class="btn-action btn-complete"
+              class="action-btn success"
               :disabled="pedido.status === 'concluido'"
             >
-              <i class="fas fa-check"></i>
-              <span class="btn-text">Concluir</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Concluir
             </button>
+            
             <button 
               @click="openDeleteModal(pedido)"
-              class="btn-action btn-delete"
-              title="Excluir pedido"
+              class="action-btn danger"
             >
-              <i class="fas fa-trash"></i>
-              <span class="btn-text">Excluir</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2"/>
+                <path d="M19,6V20C19,21 18,22 17,22H7C6,22 5,21 5,20V6M8,6V4C8,3 9,2 10,2H14C15,2 16,3 16,4V6" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Excluir
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Sem pedidos -->
-    <div v-else class="no-pedidos">
-      <div class="no-pedidos-icon">📦</div>
-      <h3>Nenhum pedido encontrado</h3>
-      <p>Os pedidos aparecerão aqui quando forem realizados</p>
+    <!-- Estado Vazio -->
+    <div v-else class="empty-state">
+      <div class="empty-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="9" cy="9" r="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M21 15L16 10L5 21" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">Nenhum pedido encontrado</h3>
+      <p class="empty-description">Os pedidos aparecerão aqui quando forem realizados pelos clientes</p>
     </div>
 
-    <!-- Mensagem de sucesso -->
-    <div v-if="successMessage" class="alert alert-success">
-      <i class="fas fa-check-circle"></i>
-      {{ successMessage }}
-    </div>
-
-    <!-- Modal de Confirmação de Exclusão -->
+    <!-- Modal de Confirmação -->
     <div v-if="showDeleteModal" class="modal-overlay" @click="closeDeleteModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h3>
-            <i class="fas fa-exclamation-triangle"></i>
+          <h3 class="modal-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2"/>
+              <line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2"/>
+            </svg>
             Confirmar Exclusão
           </h3>
           <button @click="closeDeleteModal" class="modal-close">
-            <i class="fas fa-times"></i>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"/>
+              <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"/>
+            </svg>
           </button>
         </div>
         
         <div class="modal-body">
-          <div class="warning-message">
-            <p><strong>⚠️ ATENÇÃO:</strong> Esta ação não pode ser desfeita!</p>
-            <p>Você está prestes a excluir permanentemente o pedido:</p>
-            <div class="pedido-info-modal">
-              <span class="pedido-numero-modal">{{ deletingPedido?.numeropedido }}</span>
-              <span class="pedido-total-modal">Total: R$ {{ formatPrice(deletingPedido?.total || 0) }}</span>
+          <div class="warning-card">
+            <div class="warning-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.29 3.86L1.82 18C1.64 18.37 1.9 18.75 2.31 18.75H21.69C22.1 18.75 22.36 18.37 22.18 18L13.71 3.86C13.32 3.15 12.68 3.15 12.29 3.86V3.86Z" stroke="currentColor" stroke-width="2"/>
+                <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2"/>
+                <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="warning-content">
+              <p class="warning-title">Esta ação não pode ser desfeita!</p>
+              <p class="warning-text">Você está prestes a excluir permanentemente o pedido:</p>
+              <div class="pedido-preview">
+                <span class="preview-numero">{{ deletingPedido?.numeropedido }}</span>
+                <span class="preview-total">Total: R$ {{ formatPrice(deletingPedido?.total || 0) }}</span>
+              </div>
             </div>
           </div>
           
-          <div class="confirmation-input">
-            <label for="delete-confirm">
-              Para confirmar, digite exatamente: 
-              <strong>"Sim, Excluir pedido {{ deletingPedido?.numeropedido }}"</strong>
+          <div class="confirmation-section">
+            <label for="delete-confirm" class="confirm-label">
+              Para confirmar, digite: <strong>"Sim, Excluir pedido {{ deletingPedido?.numeropedido }}"</strong>
             </label>
             <input
               v-model="deleteConfirmText"
@@ -141,27 +209,31 @@
               class="confirm-input"
               :class="{ 'error': errorMessage }"
             />
-            <div v-if="errorMessage" class="error-text">
-              {{ errorMessage }}
-            </div>
+            <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
           </div>
         </div>
         
         <div class="modal-actions">
-          <button @click="closeDeleteModal" class="btn-cancel-modal">
-            <i class="fas fa-times"></i>
+          <button @click="closeDeleteModal" class="modal-btn secondary">
             Cancelar
           </button>
           <button 
             @click="deletePedido" 
-            class="btn-delete-confirm"
+            class="modal-btn danger"
             :disabled="deleteLoading || !deleteConfirmText.trim()"
           >
-            <i class="fas fa-trash"></i>
             {{ deleteLoading ? 'Excluindo...' : 'Excluir Pedido' }}
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- Notificações -->
+    <div v-if="successMessage" class="notification success">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="20,6 9,17 4,12" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      {{ successMessage }}
     </div>
   </div>
 </template>
@@ -172,12 +244,12 @@ import { collection, getDocs, query, orderBy, doc, updateDoc, deleteDoc } from '
 import { db } from '../firebase/config'
 
 export default {
-  name: 'PedidosAdmin',
+  name: 'Pedidos',
   setup() {
     const loading = ref(true)
     const pedidos = ref([])
     const successMessage = ref('')
-    const placeholderImage = 'https://via.placeholder.com/50x50/8C52FF/FFFFFF?text=Item'
+    const placeholderImage = 'https://via.placeholder.com/60x60/9333ea/FFFFFF?text=Item'
     const showDeleteModal = ref(false)
     const deletingPedido = ref(null)
     const deleteConfirmText = ref('')
@@ -254,19 +326,14 @@ export default {
         await updateDoc(doc(db, 'pedidos', pedidoId), {
           status: newStatus
         })
-
-        // Atualizar localmente
+        
         const pedido = pedidos.value.find(p => p.id === pedidoId)
         if (pedido) {
           pedido.status = newStatus
         }
-
-        successMessage.value = `Status do pedido atualizado para ${getStatusLabel(newStatus)}`
         
-        setTimeout(() => {
-          successMessage.value = ''
-        }, 3000)
-
+        successMessage.value = `Status atualizado para ${getStatusLabel(newStatus)}`
+        setTimeout(() => { successMessage.value = '' }, 3000)
       } catch (error) {
         console.error('Erro ao atualizar status:', error)
       }
@@ -287,16 +354,12 @@ export default {
       try {
         await deleteDoc(doc(db, 'pedidos', deletingPedido.value.id))
         
-        // Remover da lista local
         pedidos.value = pedidos.value.filter(p => p.id !== deletingPedido.value.id)
         
         successMessage.value = `Pedido ${deletingPedido.value.numeropedido} excluído com sucesso!`
         closeDeleteModal()
         
-        setTimeout(() => {
-          successMessage.value = ''
-        }, 3000)
-
+        setTimeout(() => { successMessage.value = '' }, 3000)
       } catch (error) {
         console.error('Erro ao excluir pedido:', error)
         errorMessage.value = 'Erro ao excluir pedido: ' + error.message
@@ -350,66 +413,124 @@ export default {
 
 <style scoped>
 .pedidos-admin {
-  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
 }
 
+/* Header */
 .section-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 2rem;
-  flex-wrap: wrap;
+  gap: 2rem;
+  
+}
+
+.header-content {
+  flex: 1;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #9333ea, #2563eb);
+  border-radius: 12px;
+  color: white;
+}
+
+.section-subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Stats Cards */
+.stats-cards {
+  display: flex;
   gap: 1rem;
 }
 
-.section-header h2 {
-  color: #333;
-  font-size: 1.5rem;
-  font-weight: 700;
+.stat-card {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0;
+  gap: 1rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
 }
 
-.stats {
+.stat-icon {
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: white;
 }
 
-.stat-item {
+.stat-icon.total {
+  background: linear-gradient(135deg, #9333ea, #2563eb);
+}
+
+.stat-icon.pending {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.stat-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
 }
 
 .stat-number {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #8C52FF;
+  color: #111827;
+  line-height: 1;
 }
 
 .stat-label {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 0.875rem;
+  color: #6b7280;
   font-weight: 500;
 }
 
-.loading-container {
+/* Loading */
+.loading-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem;
-  color: #666;
+  padding: 4rem 2rem;
+  text-align: center;
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(140, 82, 255, 0.3);
-  border-top: 3px solid #8C52FF;
+  border: 3px solid #e5e7eb;
+  border-top: 3px solid #9333ea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -420,31 +541,41 @@ export default {
   100% { transform: rotate(360deg); }
 }
 
-.pedidos-list {
+.loading-text {
+  color: #6b7280;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Pedidos Container */
+.pedidos-container {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
 .pedido-card {
-  background: rgba(140, 82, 255, 0.02);
-  border: 1px solid rgba(140, 82, 255, 0.1);
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
   transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .pedido-card:hover {
-  box-shadow: 0 4px 15px rgba(140, 82, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
+/* Pedido Header */
 .pedido-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  gap: 1rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .pedido-info {
@@ -454,81 +585,117 @@ export default {
 }
 
 .pedido-numero {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #8C52FF;
+  color: #9333ea;
+  margin: 0;
 }
 
 .pedido-data {
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.status-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.status-badge.pendente {
-  background: rgba(255, 193, 7, 0.2);
-  color: #FFC107;
-}
-
-.status-badge.processando {
-  background: rgba(33, 150, 243, 0.2);
-  color: #2196F3;
-}
-
-.status-badge.concluido {
-  background: rgba(76, 175, 80, 0.2);
-  color: #4CAF50;
-}
-
-.status-badge.cancelado {
-  background: rgba(244, 67, 54, 0.2);
-  color: #F44336;
-}
-
-.pedido-cliente {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  color: #666;
+  font-size: 0.875rem;
+  color: #6b7280;
   font-weight: 500;
 }
 
-.pedido-produtos h4 {
-  color: #333;
+.status-container {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.pendente {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-badge.processando {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status-badge.concluido {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.status-badge.cancelado {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Cliente Info */
+.cliente-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: #fafafa;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.cliente-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #9333ea, #2563eb);
+  border-radius: 8px;
+  color: white;
+}
+
+.cliente-nome {
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Produtos Section */
+.produtos-section {
+  padding: 1.5rem 2rem;
+}
+
+.produtos-title {
   font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  color: #374151;
+  margin: 0 0 1rem 0;
 }
 
 .produtos-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 1rem;
 }
 
 .produto-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background: white;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border: 1px solid rgba(140, 82, 255, 0.1);
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 
-.produto-item img {
-  width: 50px;
-  height: 50px;
-  border-radius: 6px;
+.produto-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.produto-image img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -541,160 +708,154 @@ export default {
 
 .produto-nome {
   font-weight: 600;
-  color: #333;
-  font-size: 0.9rem;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.produto-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .produto-quantidade {
-  color: #666;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .produto-preco {
-  color: #8C52FF;
+  font-size: 0.95rem;
   font-weight: 700;
-  font-size: 0.9rem;
+  color: #9333ea;
 }
 
+/* Footer */
 .pedido-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(140, 82, 255, 0.1);
+  padding: 1.5rem 2rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
 }
 
-.pedido-total {
+.total-section {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .total-label {
-  color: #666;
-  font-weight: 600;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .total-value {
-  color: #8C52FF;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   font-weight: 800;
+  color: #9333ea;
 }
 
-.pedido-actions {
+.actions-section {
   display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
-.btn-action {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.action-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  min-width: 44px;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
   min-height: 44px;
-  justify-content: center;
 }
 
-.btn-process {
-  background: rgba(33, 150, 243, 0.1);
-  color: #2196F3;
-  border: 1px solid rgba(33, 150, 243, 0.3);
-}
-
-.btn-process:hover:not(:disabled) {
-  background: rgba(33, 150, 243, 0.2);
-}
-
-.btn-complete {
-  background: rgba(76, 175, 80, 0.1);
-  color: #4CAF50;
-  border: 1px solid rgba(76, 175, 80, 0.3);
-}
-
-.btn-complete:hover:not(:disabled) {
-  background: rgba(76, 175, 80, 0.2);
-}
-
-.btn-delete {
-  background: rgba(244, 67, 54, 0.1);
-  color: #F44336;
-  border: 1px solid rgba(244, 67, 54, 0.3);
-}
-
-.btn-delete:hover:not(:disabled) {
-  background: rgba(244, 67, 54, 0.2);
-}
-
-.btn-action:disabled {
+.action-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.no-pedidos {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: #666;
+.action-btn.primary {
+  background: #dbeafe;
+  color: #2563eb;
 }
 
-.no-pedidos-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
+.action-btn.primary:hover:not(:disabled) {
+  background: #bfdbfe;
 }
 
-.no-pedidos h3 {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #333;
+.action-btn.success {
+  background: #d1fae5;
+  color: #059669;
 }
 
-.alert {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  font-weight: 600;
-  z-index: 10000;
-  max-width: 400px;
+.action-btn.success:hover:not(:disabled) {
+  background: #a7f3d0;
+}
+
+.action-btn.danger {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.action-btn.danger:hover:not(:disabled) {
+  background: #fecaca;
+}
+
+/* Empty State */
+.empty-state {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
 }
 
-.alert-success {
-  background: rgba(34, 197, 94, 0.95);
-  color: white;
-  border: 1px solid #22C55E;
+.empty-icon {
+  margin-bottom: 1.5rem;
+  color: #d1d5db;
 }
 
-/* Modal Styles */
+.empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-description {
+  color: #6b7280;
+  font-weight: 500;
+  margin: 0;
+  max-width: 400px;
+}
+
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
+  z-index: 1000;
   padding: 2rem;
 }
 
 .modal-content {
   background: white;
-  border-radius: 16px;
+  border-radius: 20px;
   max-width: 500px;
   width: 100%;
   max-height: 90vh;
@@ -707,118 +868,127 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 2rem 2rem 1rem;
-  border-bottom: 1px solid rgba(244, 67, 54, 0.1);
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.modal-header h3 {
-  color: #F44336;
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin: 0;
+.modal-title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #dc2626;
+  margin: 0;
 }
 
 .modal-close {
-  background: rgba(244, 67, 54, 0.1);
-  color: #F44336;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .modal-close:hover {
-  background: rgba(244, 67, 54, 0.2);
+  background: #e5e7eb;
+  color: #374151;
 }
 
 .modal-body {
   padding: 1.5rem 2rem;
 }
 
-.warning-message {
-  background: rgba(244, 67, 54, 0.05);
-  border: 1px solid rgba(244, 67, 54, 0.2);
-  border-radius: 12px;
+.warning-card {
+  display: flex;
+  gap: 1rem;
   padding: 1.5rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
   margin-bottom: 1.5rem;
 }
 
-.warning-message p {
-  margin: 0 0 0.75rem 0;
-  color: #333;
+.warning-icon {
+  color: #dc2626;
+  flex-shrink: 0;
 }
 
-.warning-message p:last-child {
-  margin-bottom: 0;
+.warning-content {
+  flex: 1;
 }
 
-.pedido-info-modal {
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-top: 1rem;
+.warning-title {
+  font-weight: 700;
+  color: #dc2626;
+  margin: 0 0 0.5rem 0;
+}
+
+.warning-text {
+  color: #374151;
+  margin: 0 0 1rem 0;
+}
+
+.pedido-preview {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  border: 1px solid rgba(244, 67, 54, 0.2);
+  gap: 0.25rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
 }
 
-.pedido-numero-modal {
-  font-size: 1.1rem;
+.preview-numero {
   font-weight: 700;
-  color: #8C52FF;
+  color: #9333ea;
 }
 
-.pedido-total-modal {
-  font-size: 1rem;
+.preview-total {
   font-weight: 600;
-  color: #F44336;
+  color: #dc2626;
 }
 
-.confirmation-input {
+.confirmation-section {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.confirmation-input label {
-  color: #333;
+.confirm-label {
   font-weight: 600;
-  font-size: 0.9rem;
+  color: #374151;
+  font-size: 0.875rem;
   line-height: 1.4;
 }
 
 .confirm-input {
   padding: 0.75rem;
-  border: 2px solid rgba(244, 67, 54, 0.3);
+  border: 2px solid #e5e7eb;
   border-radius: 8px;
-  background: white;
-  color: #333;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
 
 .confirm-input:focus {
   outline: none;
-  border-color: #F44336;
-  box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
 }
 
 .confirm-input.error {
-  border-color: #F44336;
-  background: rgba(244, 67, 54, 0.05);
+  border-color: #dc2626;
+  background: #fef2f2;
 }
 
-.error-text {
-  color: #F44336;
-  font-size: 0.8rem;
+.error-message {
+  color: #dc2626;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 
@@ -829,87 +999,120 @@ export default {
   justify-content: flex-end;
 }
 
-.btn-cancel-modal,
-.btn-delete-confirm {
+.modal-btn {
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border: none;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
-.btn-cancel-modal {
-  background: rgba(140, 82, 255, 0.1);
-  color: #8C52FF;
+.modal-btn.secondary {
+  background: #f3f4f6;
+  color: #374151;
 }
 
-.btn-cancel-modal:hover {
-  background: rgba(140, 82, 255, 0.15);
+.modal-btn.secondary:hover {
+  background: #e5e7eb;
 }
 
-.btn-delete-confirm {
-  background: linear-gradient(135deg, #F44336, #D32F2F);
+.modal-btn.danger {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: white;
 }
 
-.btn-delete-confirm:hover:not(:disabled) {
-  background: linear-gradient(135deg, #D32F2F, #B71C1C);
-  transform: translateY(-1px);
+.modal-btn.danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
 }
 
-.btn-delete-confirm:disabled {
+.modal-btn.danger:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
 
+/* Notifications */
+.notification {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  z-index: 1001;
+  max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.notification.success {
+  background: #d1fae5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
+  .pedidos-admin {
+    padding: 1rem;
+  }
+
   .section-header {
     flex-direction: column;
-    align-items: stretch;
+    gap: 1.5rem;
   }
-  
-  .stats {
-    justify-content: center;
+
+  .stats-cards {
+    flex-direction: column;
+    width: 100%;
   }
-  
+
+  .stat-card {
+    min-width: auto;
+  }
+
   .pedido-header {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
   }
-  
+
   .pedido-footer {
     flex-direction: column;
+    gap: 1.5rem;
     align-items: stretch;
-    gap: 1rem;
   }
-  
-  .pedido-actions {
+
+  .actions-section {
     justify-content: center;
-    gap: 0.75rem;
   }
-  
+
   .produto-item {
     flex-direction: column;
     text-align: center;
+    gap: 0.75rem;
   }
-  
+
+  .produto-meta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
   .modal-overlay {
     padding: 1rem;
   }
-  
+
   .modal-header {
     padding: 1.5rem 1.5rem 1rem;
   }
-  
+
   .modal-body {
     padding: 1rem 1.5rem;
   }
-  
+
   .modal-actions {
     padding: 1rem 1.5rem 1.5rem;
     flex-direction: column;
@@ -917,67 +1120,28 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .pedido-actions {
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .title-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .actions-section {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
-  .btn-action {
-    width: 100%;
-    padding: 0.75rem 1rem;
-  }
-  
-  .btn-text {
-    display: inline;
-  }
-  
-  .modal-overlay {
-    padding: 0.5rem;
-  }
-  
-  .modal-content {
-    max-height: 95vh;
-  }
-  
-  .modal-header {
-    padding: 1rem;
-  }
-  
-  .modal-body {
-    padding: 1rem;
-  }
-  
-  .modal-actions {
-    padding: 1rem;
-  }
-  
-  .warning-message {
-    padding: 1rem;
-  }
-  
-  .confirmation-input label {
-    font-size: 0.85rem;
-  }
-  
-  .confirm-input {
-    padding: 0.6rem;
-    font-size: 0.9rem;
-  }
-}
 
-@media (max-width: 360px) {
-  .btn-text {
-    display: none;
+  .action-btn {
+    width: 100%;
+    justify-content: center;
   }
-  
-  .btn-action {
-    min-width: 44px;
-    padding: 0.75rem 0.5rem;
-  }
-  
-  .pedido-actions {
-    flex-direction: row;
-    justify-content: space-around;
+
+  .warning-card {
+    flex-direction: column;
+    gap: 0.75rem;
   }
 }
 </style>

@@ -162,7 +162,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 export default {
-  name: 'LoginClean',
+  name: 'Login',
   setup() {
     const router = useRouter()
     const { login, loginWithGoogle, resetPassword, loading, error } = useAuth()
