@@ -800,7 +800,7 @@ export default {
 @media (max-width: 480px) {
   .modal-overlay {
     padding: 0.25rem;
-    padding-top: 0.3rem;
+    padding-top: 0.15rem;
     padding-bottom: 3rem;
     
   }
