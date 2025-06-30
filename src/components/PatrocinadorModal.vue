@@ -739,7 +739,7 @@ export default {
   .modal-overlay {
     padding: 0.5rem;
     align-items: flex-start;
-    padding-top: 4rem;
+    padding-top: 2rem;
     padding-bottom: 4rem;
   }
 
@@ -800,7 +800,7 @@ export default {
 @media (max-width: 480px) {
   .modal-overlay {
     padding: 0.25rem;
-    padding-top: 3rem;
+    padding-top: 1rem;
     padding-bottom: 3rem;
     
   }
