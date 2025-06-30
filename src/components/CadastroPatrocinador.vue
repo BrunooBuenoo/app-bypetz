@@ -1665,7 +1665,7 @@ export default {
   }
 
   .patrocinadores-header {
-    flex-direction: row;
+    flex-direction: column;
     gap: 1.5rem;
     align-items: center;
   }
