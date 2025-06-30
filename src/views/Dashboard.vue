@@ -163,11 +163,10 @@
           </div>
           
           <button @click="showMobileMenu = !showMobileMenu" class="mobile-menu-toggle">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
               <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2"/>
               <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2"/>
               <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2"/>
-            </svg>
           </button>
         </div>
 
@@ -809,7 +808,7 @@ export default {
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 10;
 }
 
 .mobile-header-content {
@@ -843,11 +842,12 @@ export default {
 }
 
 .mobile-menu-toggle {
+  font-size: 1.5rem;
   background: none;
   border: none;
   padding: 0.5rem;
   cursor: pointer;
-  color: #6b7280;
+  color: #806b6b;
   border-radius: 8px;
   transition: all 0.3s ease;
 }
@@ -1209,6 +1209,7 @@ export default {
 
   .mobile-header {
     display: block;
+    margin-top: 5rem;
   }
 
   .stats-grid {
