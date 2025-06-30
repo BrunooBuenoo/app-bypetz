@@ -1224,7 +1224,7 @@ export default {
   background: white;
   border-radius: 20px;
   border: 1px solid #e5e7eb;
-  padding: 2rem;
+  padding: 0.9rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -1665,8 +1665,9 @@ export default {
   }
 
   .patrocinadores-header {
-    flex-direction: column;
+    flex-direction: row;
     gap: 1.5rem;
+    align-items: center;
   }
 
   .patrocinadores-grid {

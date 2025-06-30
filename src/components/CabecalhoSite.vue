@@ -118,7 +118,6 @@
           <!-- Links de Navegação -->
           <nav class="mobile-nav">
             <div class="nav-section">
-              <h4 class="nav-section-title">Navegação</h4>
               <div class="nav-links-grid">
                 <router-link to="/" class="mobile-nav-card" @click="closeMobileMenu">
                   <div class="nav-card-content">
@@ -811,6 +810,7 @@ header {
 
 .mobile-nav {
   padding: 1.5rem;
+  margin-bottom: 8rem;
 }
 
 .nav-section {
