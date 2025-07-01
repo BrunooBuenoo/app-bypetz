@@ -39,13 +39,13 @@
 
           <div class="hero-cta">
             <button @click="scrollToContact" class="btn-primary">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 15C21 15.5304 20.7893 16.0391 20.4142 16.4142C20.0391 16.7893 19.5304 17 19 17H7L3 21V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V15Z" stroke="currentColor" stroke-width="2"/>
-              </svg>
               Quero ser Patrocinador
             </button>
             <button @click="scrollToExamples" class="btn-secondary">
               Ver Exemplos de Parceria
+            </button>
+            <button @click="scrollToPlain" class="btn-tertiary">
+              Planos de Patrocínio
             </button>
           </div>
         </div>
@@ -340,7 +340,7 @@
     </section>
 
     <!-- Planos de Patrocínio -->
-    <section class="planos-section">
+    <section ref="plainSection" class="planos-section">
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">Planos de Patrocínio</h2>
@@ -615,6 +615,7 @@ export default {
     const totalComments = ref(0)
     const examplesSection = ref(null)
     const contactSection = ref(null)
+    const plainSection = ref(null)
 
     const form = ref({
       empresa: '',
@@ -679,6 +680,10 @@ export default {
       examplesSection.value?.scrollIntoView({ behavior: 'smooth' })
     }
 
+    const scrollToPlain = () => {
+      plainSection.value?.scrollIntoView({ behavior: 'smooth' })
+    }
+
     const scrollToContact = () => {
       contactSection.value?.scrollIntoView({ behavior: 'smooth' })
     }
@@ -731,8 +736,10 @@ export default {
       form,
       examplesSection,
       contactSection,
+      plainSection,
       scrollToExamples,
       scrollToContact,
+      scrollToPlain,
       submitForm
     }
   }
@@ -866,6 +873,29 @@ export default {
 .btn-secondary:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.5);
+}
+
+
+.btn-tertiary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgb(255, 196, 0);
+  color: rgb(105, 90, 1);
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-tertiary:hover {
+  background: rgba(255, 196, 0, 0.596);
+  transform: translateY(-2px);
+  color: white;
 }
 
 /* Container */

@@ -871,6 +871,8 @@ export default {
 }
 
 .sponsor-logo {
+  background: white;
+  border-radius: 10px;
   width: 140px;
   height: 100%;
   display: flex;
@@ -1078,15 +1080,11 @@ export default {
   }
 }
 
-/* Estilos para a nova seção de apoiadores */
-.apoiadores-footer-section {
-  max-width: 300px;
-}
 
 .apoiadores-footer-section .apoiadores-wrapper {
   position: relative;
   overflow: hidden;
-  height: 120px;
+  height: 280px;
   width: 100%;
   mask: linear-gradient(
     to bottom,
@@ -1123,7 +1121,7 @@ export default {
 .apoiadores-footer-section .apoiador-item {
   flex-shrink: 0;
   padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0);
   backdrop-filter: blur(10px);
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.2);

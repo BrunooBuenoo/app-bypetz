@@ -18,6 +18,9 @@ import FinalizarPedido from "../views/FinalizarPedido.vue"
 import Dashboard from "../views/Dashboard.vue"
 import Exemplo from "../components/Exemplo.vue" 
 import Patrocinadores from "../views/Patrocinadores.vue"
+import ConvitePatrocinadores from "../components/ConvitePatrocinadores.vue"
+import Apoiar from "../views/PaginaApoiadores.vue"
+import PaginaApoiadores from "../views/PaginaApoiadores.vue"
 
 const routes = [
   {
@@ -97,10 +100,15 @@ const routes = [
     },
   },
   {
-    path: "/exemplo",
-    name: "ExemploComponente",
-    component: Exemplo,
+    path: "/apoiar",
+    name: "Apoiar",
+    component: ConvitePatrocinadores,
   },
+  {
+    path: "/pagina-apoiadores",
+    name: "PaginaApoiadores",
+    component: PaginaApoiadores,
+  }
 ]
 
 const router = createRouter({

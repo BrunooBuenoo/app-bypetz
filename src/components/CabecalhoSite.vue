@@ -17,6 +17,7 @@
           <router-link to="/cadastrar-pet" class="nav-link" v-if="isAuthenticated">Cadastrar Pet</router-link>
           <router-link to="/sobre" class="nav-link">Sobre</router-link>
           <router-link to="/contato" class="nav-link">Contato</router-link>
+          <router-link to="/pagina-apoiadores" class="nav-link">Apoiar Causa</router-link>
         </nav>
 
         <!-- Área do usuário -->
