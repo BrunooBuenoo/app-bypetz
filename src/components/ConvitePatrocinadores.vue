@@ -846,7 +846,6 @@ export default {
 }
 
 .btn-primary {
-  display: flex;
   align-items: center;
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.2);
@@ -867,7 +866,6 @@ export default {
 }
 
 .btn-secondary {
-  display: flex;
   align-items: center;
   gap: 0.5rem;
   background: transparent;
@@ -887,7 +885,6 @@ export default {
 
 
 .btn-tertiary {
-  display: flex;
   align-items: center;
   gap: 0.5rem;
   background: rgb(255, 196, 0);
@@ -1447,9 +1444,11 @@ export default {
   }
   
   .btn-primary,
-  .btn-secondary {
+  .btn-secondary,
+  .btn-tertiary {
     width: 100%;
     max-width: 300px;
+    text-align: center;
   }
   
   .beneficios-grid,
