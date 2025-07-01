@@ -1242,7 +1242,7 @@ export default {
 /* Contato Section */
 .contato-section {
   padding: 6rem 0;
-  background: linear-gradient(135deg, rgba(147, 51, 234, 0.05), rgba(59, 130, 246, 0.05));
+  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
 }
 
 .contato-content {
@@ -1255,12 +1255,12 @@ export default {
 .contato-title {
   font-size: 2rem;
   font-weight: 800;
-  color: #111827;
+  color: white;
   margin: 0 0 1rem 0;
 }
 
 .contato-description {
-  color: #6b7280;
+  color: white;
   line-height: 1.6;
   margin: 0 0 2rem 0;
 }
@@ -1275,7 +1275,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: #374151;
+  color: white;
   font-weight: 500;
 }
 
