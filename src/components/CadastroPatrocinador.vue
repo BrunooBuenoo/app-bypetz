@@ -12,9 +12,9 @@
               <path d="M16 3.13C16.8003 3.32127 17.5037 3.78204 18.0098 4.43564C18.5159 5.08923 18.8002 5.89971 18.8002 6.735C18.8002 7.57029 18.5159 8.38077 18.0098 9.03436C17.5037 9.68796 16.8003 10.1487 16 10.34" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          Gerenciar Patrocinadores
+          Gerenciar Patrocinadores e Apoiadores
         </h2>
-        <p class="section-subtitle">Gerencie parceiros e patrocinadores da plataforma</p>
+        <p class="section-subtitle">Gerencie apoiadores, parceiros e patrocinadores premium da plataforma</p>
       </div>
       
       <div class="stats-cards">
@@ -61,9 +61,20 @@
       </div>
 
       <form @submit.prevent="submitPatrocinador" class="patrocinador-form">
+        <!-- Tipo -->
+        <div class="form-field">
+          <label for="tipo" class="field-label">Tipo *</label>
+          <select v-model="patrocinadorForm.tipo" id="tipo" required class="field-select" @change="onTipoChange">
+            <option value="">Selecione o tipo</option>
+            <option value="apoiador">Apoiador</option>
+            <option value="parceiro">Parceiro</option>
+            <option value="premium">Premium</option>
+          </select>
+        </div>
+
         <!-- Upload de Logo -->
-        <div class="form-section-group">
-          <h4 class="group-title">Logo do Patrocinador</h4>
+        <div v-if="patrocinadorForm.tipo !== 'apoiador'" class="form-section-group">
+          <h4 class="group-title">Logo do {{ getTipoLabel(patrocinadorForm.tipo) }}</h4>
           <div class="logo-upload-container">
             <div class="logo-upload-area" @click="triggerFileInput">
               <img v-if="patrocinadorForm.logo" :src="patrocinadorForm.logo" alt="Logo Preview" class="logo-preview" />
@@ -103,12 +114,14 @@
           <h4 class="group-title">Informações Básicas</h4>
           <div class="form-grid">
             <div class="form-field">
-              <label for="nome" class="field-label">Nome do Patrocinador *</label>
+              <label for="nome" class="field-label">
+                {{ patrocinadorForm.tipo === 'apoiador' ? 'Nome do Apoiador' : `Nome do ${getTipoLabel(patrocinadorForm.tipo)}` }} *
+              </label>
               <input
                 v-model="patrocinadorForm.nome"
                 type="text"
                 id="nome"
-                placeholder="Ex: Empresa ABC, Marca XYZ"
+                :placeholder="patrocinadorForm.tipo === 'apoiador' ? 'Ex: João Silva, Maria Santos' : 'Ex: Empresa ABC, Marca XYZ'"
                 required
                 class="field-input"
               />
@@ -124,7 +137,7 @@
               </select>
             </div>
 
-            <div class="form-field">
+            <div v-if="patrocinadorForm.tipo !== 'apoiador'" class="form-field">
               <label for="email" class="field-label">Email de Contato</label>
               <input
                 v-model="patrocinadorForm.email"
@@ -135,7 +148,7 @@
               />
             </div>
 
-            <div class="form-field">
+            <div v-if="patrocinadorForm.tipo !== 'apoiador'" class="form-field">
               <label for="telefone" class="field-label">Telefone</label>
               <input
                 v-model="patrocinadorForm.telefone"
@@ -146,7 +159,7 @@
               />
             </div>
 
-            <div class="form-field">
+            <div v-if="patrocinadorForm.tipo !== 'apoiador'" class="form-field">
               <label for="website" class="field-label">Website</label>
               <input
                 v-model="patrocinadorForm.website"
@@ -157,7 +170,7 @@
               />
             </div>
 
-            <div class="form-field">
+            <div v-if="patrocinadorForm.tipo !== 'apoiador'" class="form-field">
               <label for="categoria" class="field-label">Categoria</label>
               <select v-model="patrocinadorForm.categoria" id="categoria" class="field-select">
                 <option value="">Selecione uma categoria</option>
@@ -173,8 +186,8 @@
         </div>
 
         <!-- Período de Patrocínio -->
-        <div class="form-section-group">
-          <h4 class="group-title">Período de Patrocínio</h4>
+        <div v-if="patrocinadorForm.tipo !== 'apoiador'" class="form-section-group">
+          <h4 class="group-title">Período de {{ patrocinadorForm.tipo === 'parceiro' ? 'Parceria' : 'Patrocínio Premium' }}</h4>
           <div class="form-grid">
             <div class="form-field">
               <label for="dataInicio" class="field-label">Data de Início</label>
@@ -202,11 +215,15 @@
         <div class="form-section-group">
           <h4 class="group-title">Descrição</h4>
           <div class="form-field">
-            <label for="descricao" class="field-label">Descrição do Patrocinador</label>
+            <label for="descricao" class="field-label">
+              Descrição {{ patrocinadorForm.tipo === 'apoiador' ? 'do Apoiador' : `do ${getTipoLabel(patrocinadorForm.tipo)}` }}
+            </label>
             <textarea
               v-model="patrocinadorForm.descricao"
               id="descricao"
-              placeholder="Descreva o patrocinador, seus produtos/serviços e benefícios oferecidos"
+              :placeholder="patrocinadorForm.tipo === 'apoiador' 
+                ? 'Descreva o apoiador e sua contribuição para a plataforma' 
+                : 'Descreva o patrocinador, seus produtos/serviços e benefícios oferecidos'"
               rows="4"
               class="field-textarea"
             ></textarea>
@@ -480,6 +497,7 @@ export default {
     const isModalOpen = ref(false)
 
     const patrocinadorForm = ref({
+      tipo: '',
       nome: '',
       email: '',
       telefone: '',
@@ -536,6 +554,15 @@ export default {
         'outros': 'Outros'
       }
       return labels[categoria] || categoria
+    }
+
+    const getTipoLabel = (tipo) => {
+      const labels = {
+        'apoiador': 'Apoiador',
+        'parceiro': 'Parceiro',
+        'premium': 'Premium'
+      }
+      return labels[tipo] || tipo
     }
 
     const formatWebsite = (website) => {
@@ -653,8 +680,23 @@ export default {
             ...doc.data()
           })
         })
+
+        const apoiadoresQuery = query(
+          collection(db, 'apoiadores'),
+          orderBy('nome', 'asc')
+        )
+
+        const apoiadoresSnapshot = await getDocs(apoiadoresQuery)
+        const fetchedApoiadores = []
+
+        apoiadoresSnapshot.forEach((doc) => {
+          fetchedApoiadores.push({
+            id: doc.id,
+            ...doc.data()
+          })
+        })
         
-        sponsors.value = fetchedPatrocinadores
+        sponsors.value = [...fetchedPatrocinadores, ...fetchedApoiadores]
       } catch (error) {
         console.error('Erro ao buscar patrocinadores:', error)
         errorMessage.value = 'Erro ao carregar patrocinadores'
@@ -665,7 +707,7 @@ export default {
     }
 
     const submitPatrocinador = async () => {
-      if (!patrocinadorForm.value.nome.trim() || !patrocinadorForm.value.status) {
+      if (!patrocinadorForm.value.tipo || !patrocinadorForm.value.nome.trim() || !patrocinadorForm.value.status) {
         errorMessage.value = 'Preencha todos os campos obrigatórios'
         setTimeout(() => { errorMessage.value = '' }, 3000)
         return
@@ -685,11 +727,14 @@ export default {
           descricao: patrocinadorForm.value.descricao.trim(),
           logo: patrocinadorForm.value.logo,
           criadoEm: serverTimestamp(),
-          atualizadoEm: serverTimestamp()
+          atualizadoEm: serverTimestamp(),
+          tipo: patrocinadorForm.value.tipo
         }
 
+        const collectionName = patrocinadorForm.value.tipo === 'apoiador' ? 'apoiadores' : 'patrocinadores'
+
         if (editingPatrocinador.value) {
-          await updateDoc(doc(db, 'patrocinadores', editingPatrocinador.value.id), {
+          await updateDoc(doc(db, collectionName, editingPatrocinador.value.id), {
             ...patrocinadorData,
             criadoEm: editingPatrocinador.value.criadoEm
           })
@@ -707,7 +752,7 @@ export default {
           successMessage.value = 'Patrocinador atualizado com sucesso!'
           editingPatrocinador.value = null
         } else {
-          const docRef = await addDoc(collection(db, 'patrocinadores'), patrocinadorData)
+          const docRef = await addDoc(collection(db, collectionName), patrocinadorData)
           
           sponsors.value.push({
             id: docRef.id,
@@ -722,6 +767,7 @@ export default {
         sponsors.value.sort((a, b) => a.nome.localeCompare(b.nome))
 
         patrocinadorForm.value = {
+          tipo: '',
           nome: '',
           email: '',
           telefone: '',
@@ -748,6 +794,7 @@ export default {
       editingPatrocinador.value = patrocinador
       
       patrocinadorForm.value = {
+        tipo: patrocinador.tipo,
         nome: patrocinador.nome,
         email: patrocinador.email || '',
         telefone: patrocinador.telefone || '',
@@ -766,6 +813,7 @@ export default {
     const cancelEdit = () => {
       editingPatrocinador.value = null
       patrocinadorForm.value = {
+        tipo: '',
         nome: '',
         email: '',
         telefone: '',
@@ -783,7 +831,9 @@ export default {
       if (!confirm('Tem certeza que deseja excluir este patrocinador?')) return
 
       try {
-        await deleteDoc(doc(db, 'patrocinadores', patrocinadorId))
+        const patrocinador = sponsors.value.find(p => p.id === patrocinadorId)
+        const collectionName = patrocinador.tipo === 'apoiador' ? 'apoiadores' : 'patrocinadores'
+        await deleteDoc(doc(db, collectionName, patrocinadorId))
         sponsors.value = sponsors.value.filter(p => p.id !== patrocinadorId)
         successMessage.value = 'Patrocinador excluído com sucesso!'
         setTimeout(() => { successMessage.value = '' }, 3000)
@@ -811,7 +861,8 @@ export default {
 
     const handleModalStatusChange = async (updatedPatrocinador) => {
       try {
-        await updateDoc(doc(db, 'patrocinadores', updatedPatrocinador.id), {
+        const collectionName = updatedPatrocinador.tipo === 'apoiador' ? 'apoiadores' : 'patrocinadores'
+        await updateDoc(doc(db, collectionName, updatedPatrocinador.id), {
           status: updatedPatrocinador.status,
           atualizadoEm: serverTimestamp()
         })
@@ -833,6 +884,19 @@ export default {
         console.error('Erro ao alterar status:', error)
         errorMessage.value = 'Erro ao alterar status do patrocinador'
         setTimeout(() => { errorMessage.value = '' }, 3000)
+      }
+    }
+
+    const onTipoChange = () => {
+      // Limpar campos específicos quando mudar o tipo
+      if (patrocinadorForm.value.tipo === 'apoiador') {
+        patrocinadorForm.value.logo = ''
+        patrocinadorForm.value.email = ''
+        patrocinadorForm.value.telefone = ''
+        patrocinadorForm.value.website = ''
+        patrocinadorForm.value.categoria = ''
+        patrocinadorForm.value.dataInicio = ''
+        patrocinadorForm.value.dataFim = ''
       }
     }
 
@@ -858,6 +922,7 @@ export default {
       filteredPatrocinadores,
       getStatusLabel,
       getCategoriaLabel,
+      getTipoLabel,
       formatWebsite,
       formatPeriodo,
       triggerFileInput,
@@ -870,7 +935,8 @@ export default {
       openModal,
       closeModal,
       handleModalEdit,
-      handleModalStatusChange
+      handleModalStatusChange,
+      onTipoChange
     }
   }
 }

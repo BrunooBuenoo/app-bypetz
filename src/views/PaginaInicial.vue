@@ -3,6 +3,7 @@
     <HeroComponent/>
     <CardsComponent/>
     <Patrocinadores/>
+    <ConvitePatrocinadores/>
     <SecaoInfo/>
     <RodapeSite/>
   </div>
@@ -15,12 +16,15 @@ import CardsComponent from '../components/CardsComponent.vue'
 import RodapeSite from '../components/RodapeSite.vue'
 import ExemploComponente from '../components/Exemplo.vue'
 import Patrocinadores from './Patrocinadores.vue'
+import ConvitePatrocinadores from '../components/ConvitePatrocinadores.vue'
+
 
 export default {
   name: 'PaginaInicial',
   components: {
     HeroComponent,
     Patrocinadores,
+    ConvitePatrocinadores,
     ExemploComponente,
     CardsComponent,
     SecaoInfo,
