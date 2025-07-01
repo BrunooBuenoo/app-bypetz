@@ -12,12 +12,12 @@
         <!-- Menu Desktop -->
         <nav class="desktop-nav">
           <router-link to="/" class="nav-link">Início</router-link>
-          <router-link to="/feed" class="nav-link">Feed</router-link>
           <router-link to="/loja" class="nav-link">Loja</router-link>
+          <router-link to="/feed" class="nav-link">Feed</router-link>
           <router-link to="/cadastrar-pet" class="nav-link" v-if="isAuthenticated">Cadastrar Pet</router-link>
+          <router-link to="/pagina-apoiadores" class="nav-link">Apoiar Causa</router-link>
           <router-link to="/sobre" class="nav-link">Sobre</router-link>
           <router-link to="/contato" class="nav-link">Contato</router-link>
-          <router-link to="/pagina-apoiadores" class="nav-link">Apoiar Causa</router-link>
         </nav>
 
         <!-- Área do usuário -->

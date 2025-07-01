@@ -355,7 +355,7 @@
               <h3 class="plano-title">Apoiador</h3>
               <div class="plano-price">
                 <span class="price-currency">R$</span>
-                <span class="price-value">9,90</span>
+                <span class="texto-gradiente">9,90</span>
                 <span class="price-period">/mês</span>
               </div>
               <p class="plano-description">Apoio simbólico para ajudar a causa animal.</p>
@@ -382,7 +382,7 @@
               <h3 class="plano-title">Parceiro</h3>
               <div class="plano-price">
                 <span class="price-currency">R$</span>
-                <span class="price-value">39,90</span>
+                <span class="texto-gradiente">39,90</span>
                 <span class="price-period">/mês</span>
               </div>
               <p class="plano-description">Para quem quer mais visibilidade e apoiar ativamente.</p>
@@ -414,7 +414,7 @@
               <h3 class="plano-title">Premium</h3>
               <div class="plano-price">
                 <span class="price-currency">R$</span>
-                <span class="price-value">99,90</span>
+                <span class="texto-gradiente">99,90</span>
                 <span class="price-period">/mês</span>
               </div>
               <p class="plano-description">Mais presença na comunidade e impacto social.</p>
@@ -747,6 +747,16 @@ export default {
 </script>
 
 <style scoped>
+.texto-gradiente {
+  background: linear-gradient(135deg, #9333ea 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; /* Para navegadores que suportam */
+  color: transparent;
+  font-size: 3rem;
+  font-weight: 800;
+}
+
 .convite-patrocinadores {
   min-height: 100vh;
   background: #ffffff;
