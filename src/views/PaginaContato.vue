@@ -38,7 +38,7 @@
             <div class="contact-info">
               <h3 class="contact-title">E-mail</h3>
               <p class="contact-description">Suporte detalhado</p>
-              <span class="contact-detail">contato@bypetz.com.br</span>
+              <span class="contact-detail">contato.bypetz@gmail.com</span>
             </div>
           </a>
           

@@ -10,7 +10,7 @@
         
         <!-- Cachorrinho direita -->
         <div class="hero-dog hero-dog-right">
-          <img src="/src/assets/gatinho1.png" alt="Cachorrinho ByPetz" class="cat-image" />
+          <img src="/src/assets/gatinho1.png" alt="Gatinho ByPetz" class="cat-image" />
         </div>
         
         <div class="hero-content">
@@ -91,27 +91,34 @@
         </div>
       </section>
 
-      <!-- Estatísticas -->
+      <!-- Estatísticas Reais -->
       <section class="content-section">
         <div class="section-header">
           <h2 class="section-title">Nosso Impacto</h2>
+          <p v-if="loading" class="loading-text">Carregando estatísticas...</p>
         </div>
-        <div class="stats-grid">
+        <div class="stats-grid" v-if="!loading">
           <div class="stat-card">
-            <div class="stat-number">1000+</div>
+            <div class="stat-number">{{ totalPets }}+</div>
             <div class="stat-label">Pets Cadastrados</div>
           </div>
           <div class="stat-card">
-            <div class="stat-number">500+</div>
+            <div class="stat-number">{{ adoptedPets }}+</div>
             <div class="stat-label">Adoções Realizadas</div>
           </div>
           <div class="stat-card">
-            <div class="stat-number">2000+</div>
+            <div class="stat-number">{{ totalUsers }}+</div>
             <div class="stat-label">Usuários Ativos</div>
           </div>
           <div class="stat-card">
-            <div class="stat-number">50+</div>
-            <div class="stat-label">Cidades Atendidas</div>
+            <div class="stat-number">{{ totalComments }}+</div>
+            <div class="stat-label">Interações</div>
+          </div>
+        </div>
+        <div class="stats-grid" v-else>
+          <div class="stat-card" v-for="i in 4" :key="i">
+            <div class="stat-number loading-shimmer">--</div>
+            <div class="stat-label">Carregando...</div>
           </div>
         </div>
       </section>
@@ -137,12 +144,98 @@
 </template>
 
 <script>
-import RodapeSite from '../components/RodapeSite.vue';
+import { ref, onMounted } from 'vue'
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { db } from '../firebase/config'
+import RodapeSite from '../components/RodapeSite.vue'
+
 export default {
-    components: {
+  name: "PaginaSobre",
+  components: {
     RodapeSite
-  },  
-  name: "PaginaSobre"
+  },
+  setup() {
+    const loading = ref(true)
+    const totalPets = ref(0)
+    const adoptedPets = ref(0)
+    const totalUsers = ref(0)
+    const totalComments = ref(0)
+
+    const fetchRealStats = async () => {
+      try {
+        loading.value = true
+
+        // Buscar total de pets
+        const petsSnapshot = await getDocs(collection(db, 'pets'))
+        totalPets.value = petsSnapshot.size
+
+        // Buscar pets adotados
+        const adoptedQuery = query(
+          collection(db, 'pets'),
+          where('status', '==', 'adotado')
+        )
+        const adoptedSnapshot = await getDocs(adoptedQuery)
+        adoptedPets.value = adoptedSnapshot.size
+
+        // Buscar usuários únicos
+        const usersSet = new Set()
+        petsSnapshot.forEach((doc) => {
+          const pet = doc.data()
+          if (pet.userId) {
+            usersSet.add(pet.userId)
+          }
+        })
+
+        // Buscar comentários e usuários que comentaram
+        let commentsCount = 0
+        for (const petDoc of petsSnapshot.docs) {
+          try {
+            const commentsSnapshot = await getDocs(
+              collection(db, 'pets', petDoc.id, 'comments')
+            )
+            commentsCount += commentsSnapshot.size
+
+            // Adicionar usuários que comentaram
+            commentsSnapshot.forEach((commentDoc) => {
+              const comment = commentDoc.data()
+              if (comment.userId) {
+                usersSet.add(comment.userId)
+              }
+            })
+          } catch (err) {
+            console.log('Erro ao buscar comentários:', err)
+          }
+        }
+
+        totalUsers.value = usersSet.size
+        totalComments.value = commentsCount
+
+      } catch (error) {
+        console.error('Erro ao buscar estatísticas:', error)
+        // Valores padrão em caso de erro
+        totalPets.value = 0
+        adoptedPets.value = 0
+        totalUsers.value = 0
+        totalComments.value = 0
+      } finally {
+        setTimeout(() => {
+          loading.value = false
+        }, 1000)
+      }
+    }
+
+    onMounted(() => {
+      fetchRealStats()
+    })
+
+    return {
+      loading,
+      totalPets,
+      adoptedPets,
+      totalUsers,
+      totalComments
+    }
+  }
 }
 </script>
 
@@ -175,7 +268,7 @@ export default {
 
 .hero-dog-right {
   right: 2rem;
-  transform: scaleX(-1); /* Espelha a imagem da direita */
+  transform: scaleX(-1);
 }
 
 .dog-image {
@@ -196,7 +289,6 @@ export default {
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
 }
 
-/* Ajustar o hero-container para position relative */
 .hero-container {
   position: relative;
   max-width: 1280px;
@@ -256,6 +348,12 @@ export default {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+}
+
+.loading-text {
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 0.5rem;
 }
 
 /* Content Grid */
@@ -407,6 +505,19 @@ export default {
   color: #6b7280;
   font-weight: 500;
   font-size: 0.875rem;
+}
+
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite;
+  color: transparent;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* CTA Section */
@@ -639,7 +750,7 @@ export default {
   }
 
   .hero-dog {
-    display: none; /* Esconde as imagens em telas muito pequenas */
+    display: none;
   }
 }
 </style>
