@@ -212,7 +212,7 @@ export default {
       const apoiadoresCount = apoiadores.value.length
       if (apoiadoresCount === 0) return
       
-      const baseDuration = apoiadoresCount * 3
+      const baseDuration = apoiadoresCount * 0.5
       apoiadoresAnimationDuration.value = Math.max(15, Math.min(40, baseDuration))
     }
 
