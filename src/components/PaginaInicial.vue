@@ -20,7 +20,7 @@
         <div class="main-image-container">
           <div class="pets-image">
             <img 
-              src="/src/assets/pets.svg" 
+              src="/src/assets/pets-new1.svg" 
               alt="Pets - Cachorro e Gato" 
               class="pets-photo"
             />
