@@ -8,7 +8,6 @@
             <li><router-link to="/">Home</router-link></li>
             <li><router-link to="/cadastrar-pet">Cadastrar Pet</router-link></li>
             <li><router-link to="/feed">Feed</router-link></li>
-            <li><router-link to="/loja">Loja</router-link></li>
           </ul>
         </div>
 

@@ -12,7 +12,6 @@
         <!-- Menu Desktop -->
         <nav class="desktop-nav">
           <router-link to="/" class="nav-link">Início</router-link>
-          <router-link to="/loja" class="nav-link">Loja</router-link>
           <router-link to="/feed" class="nav-link">Feed</router-link>
           <router-link to="/cadastrar-pet" class="nav-link" v-if="isAuthenticated">Cadastrar Pet</router-link>
           <router-link to="/pagina-apoiadores" class="nav-link">Apoiar Causa</router-link>
@@ -134,12 +133,6 @@
                   </div>
                 </router-link>
                 
-                <router-link to="/loja" class="mobile-nav-card" @click="closeMobileMenu">
-                  <div class="nav-card-content">
-                    <span class="nav-card-title">Loja</span>
-                    <span class="nav-card-desc">Produtos para pets</span>
-                  </div>
-                </router-link>
                 
                 <router-link 
                   v-if="isAuthenticated" 

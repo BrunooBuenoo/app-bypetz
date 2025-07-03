@@ -429,7 +429,6 @@
 
           <!-- Seções específicas -->
           <PedidosAdmin v-else-if="activeSection === 'pedidos'" />
-          <CadastroProdutoClean v-else-if="activeSection === 'produtos'" />
           <CadastroCategoriaClean v-else-if="activeSection === 'categorias'" />
           <CadastroPatrocinadores v-else-if="activeSection === 'patrocinadores'" />
         </div>
@@ -446,16 +445,12 @@ import { db } from '../firebase/config'
 
 // Importar componentes clean
 import PedidosAdmin from '../components/PedidosAdmin.vue'
-import CadastroProdutoClean from '../components/CadastroProduto.vue'
-import CadastroCategoriaClean from '../components/CadastroCategoria.vue'
 import CadastroPatrocinadores from '../components/CadastroPatrocinador.vue'
 
 export default {
   name: 'DashboardClean',
   components: {
     PedidosAdmin,
-    CadastroProdutoClean,
-    CadastroCategoriaClean,
     CadastroPatrocinadores
   },
   setup() {

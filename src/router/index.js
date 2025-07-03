@@ -11,15 +11,10 @@ import PaginaPerfil from "../views/PaginaPerfil.vue"
 import PaginaSobre from "../views/PaginaSobre.vue"
 import PaginaContato from "../views/PaginaContato.vue"
 
-// Importar novos componentes da loja
-import Loja from "../views/Loja.vue"
-import Carrinho from "../views/Carrinho.vue"
-import FinalizarPedido from "../views/FinalizarPedido.vue"
 import Dashboard from "../views/Dashboard.vue"
-import Exemplo from "../components/Exemplo.vue" 
+
 import Patrocinadores from "../views/Patrocinadores.vue"
 import ConvitePatrocinadores from "../components/ConvitePatrocinadores.vue"
-import Apoiar from "../views/PaginaApoiadores.vue"
 import PaginaApoiadores from "../views/PaginaApoiadores.vue"
 
 const routes = [
@@ -72,23 +67,7 @@ const routes = [
     name: "Contato",
     component: PaginaContato,
   },
-  // 🛍️ ROTAS DA LOJA
-  {
-    path: "/loja",
-    name: "Loja",
-    component: Loja,
-  },
-  {
-    path: "/carrinho",
-    name: "Carrinho",
-    component: Carrinho,
-  },
-  {
-    path: "/finalizar",
-    name: "FinalizarPedido",
-    component: FinalizarPedido,
-    meta: { requiresAuth: true },
-  },
+ 
   // 🔐 ROTA ADMIN (Restrita)
   {
     path: "/dashboard",
